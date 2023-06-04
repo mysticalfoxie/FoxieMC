@@ -2,7 +2,7 @@ package me.m1chelle99.foxiemc.events;
 
 
 import me.m1chelle99.foxiemc.FoxieMCMod;
-import me.m1chelle99.foxiemc.entities.Foxie;
+import me.m1chelle99.foxiemc.entities.foxie.Foxie;
 import me.m1chelle99.foxiemc.init.EntityInit;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
