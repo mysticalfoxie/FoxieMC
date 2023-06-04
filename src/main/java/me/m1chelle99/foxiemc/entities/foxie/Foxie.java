@@ -21,14 +21,12 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
-import net.minecraft.world.entity.ai.goal.ClimbOnTopOfPowderSnowGoal;
-import net.minecraft.world.entity.ai.goal.LeapAtTargetGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.animal.*;
 import net.minecraft.world.entity.animal.goat.Goat;
@@ -40,12 +38,14 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -68,10 +68,11 @@ public class Foxie extends TamableAnimal {
 
     private static final EntityDataAccessor<Optional<UUID>> DATA_TRUSTED_ID_0 = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Optional<UUID>> DATA_TRUSTED_ID_1 = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BYTE);
+
     public float crouchAmount;
     public float _crouchAmount;
     private float interestedAngle;
-    private float _interestedAngle;// TODO: remove if unused 
     private int ticksSinceEaten;
 
     public Foxie(EntityType<? extends TamableAnimal> type, Level world) {
@@ -79,7 +80,7 @@ public class Foxie extends TamableAnimal {
 
         this.moveControl = new FoxieMoveControl(this);
         this.lookControl = new FoxieLookControl(this);
-        
+
         this.setPathfindingMalus(BlockPathTypes.DANGER_OTHER, 0.0F);
         this.setPathfindingMalus(BlockPathTypes.DAMAGE_OTHER, 0.0F);
 
@@ -87,17 +88,12 @@ public class Foxie extends TamableAnimal {
         this.setTame(false);
     }
 
-    // TODO: Use
-    public static AttributeSupplier.Builder createFoxieAttributes() {
+    public static AttributeSupplier.Builder getFoxieAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED)
                 .add(Attributes.MAX_HEALTH, MAX_HEALTH)
                 .add(Attributes.FOLLOW_RANGE, FOLLOW_RANGE)
                 .add(Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE);
-    }
-
-    public static AttributeSupplier.Builder getFoxieAttributes() {
-        return Mob.createMobAttributes();
     }
 
     public boolean canMove() {
@@ -121,10 +117,10 @@ public class Foxie extends TamableAnimal {
 
     protected void populateDefaultEquipmentSlots(@NotNull DifficultyInstance difficulty) {
         if (!(this.random.nextFloat() < 0.2F)) return;
-        
+
         float random = this.random.nextFloat();
         ItemStack stack;
-        if (random < 0.05F) 
+        if (random < 0.05F)
             stack = new ItemStack(Items.EMERALD);
         else if (random < 0.2F)
             stack = new ItemStack(Items.EGG);
@@ -141,7 +137,7 @@ public class Foxie extends TamableAnimal {
     }
 
     protected SoundEvent getAmbientSound() {
-        if (this.isSleeping())
+        if (this.getFlag(FoxieStates.SLEEPING))
             return SoundEvents.FOX_SLEEP;
 
         if (this.level.isDay() || !(this.random.nextFloat() < 0.1F))
@@ -278,6 +274,7 @@ public class Foxie extends TamableAnimal {
         }
     }
 
+    // todo: doesnt spit out item c;
     private void spitOutItem(ItemStack stack) {
         if (stack.isEmpty() || this.level.isClientSide) return;
 
@@ -425,10 +422,12 @@ public class Foxie extends TamableAnimal {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FoxieFloatGoal(this));
-        this.goalSelector.addGoal(1, new ClimbOnTopOfPowderSnowGoal(this, this.level));
+        this.goalSelector.addGoal(0, new ClimbOnTopOfPowderSnowGoal(this, this.level));
         this.goalSelector.addGoal(1, new FoxieFaceplantGoal(this));
         this.goalSelector.addGoal(2, new FoxiePanicGoal(this, PANIC_MOVEMENT_SPEED_MULTIPLIER));
         // TODO: Custom breeding... Im not breedable like an animal... grrr! put that berries away! *grrrr*
+
+        this.goalSelector.addGoal(3, new SitWhenOrderedToGoal(this));
 
         // TODO: Foxie sits in "foxiemc:basket" goal
         // TODO: Foxie sits on bed goal
@@ -437,22 +436,28 @@ public class Foxie extends TamableAnimal {
         this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, Player.class, 16.0F, 1.6D, 1.4D, this::isScaryHuman));
         this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, Animal.class, 8.0F, 1.6D, 1.4D, this::isThreatening));
 
-        this.goalSelector.addGoal(5, new FoxieStalkPreyGoal(this));
-        this.goalSelector.addGoal(6, new FoxiePounceGoal(this));
-        this.goalSelector.addGoal(6, new FoxieSeekShelterGoal(this, SEEK_SHELTER_MOVEMENT_SPEED_MULTIPLIER));
-        this.goalSelector.addGoal(7, new FoxieMeleeAttackGoal(this, ATTACK_MOVEMENT_SPEED_MULTIPLIER, FOLLOW_PREY_EVEN_IF_NOT_SEEN));
-        this.goalSelector.addGoal(7, new FoxieSleepGoal(this));
+        this.goalSelector.addGoal(5, new FoxieStalkPreyGoal(this)); // TODO: doesnt stalk
+        this.goalSelector.addGoal(6, new FoxiePounceGoal(this)); // TODO: doesnt pounce
+        this.goalSelector.addGoal(7, new FoxieSeekShelterGoal(this, SEEK_SHELTER_MOVEMENT_SPEED_MULTIPLIER)); // Doesnt work ;c 
+
+
+        // TODO: killing prey doesnt reset food bar
+        // To make it perfect: Prey is guaranteed to spawn it's drops, foxie holds it in her mouth and eats it after some time
+        this.goalSelector.addGoal(8, new FoxieMeleeAttackGoal(this, ATTACK_MOVEMENT_SPEED_MULTIPLIER, FOLLOW_PREY_EVEN_IF_NOT_SEEN));
+
+        // TODO: Foxie cant sleep at thunder
+        this.goalSelector.addGoal(9, new FoxieSleepGoal(this)); // maybe only sleep at night  - bigger Cooldown
 
         // TODO: Foxie follow parent goal
 
-        this.goalSelector.addGoal(9, new FoxieStrollThroughVillageGoal(this, STROLL_THROUGH_VILLAGE_INTERVAL));
-        this.goalSelector.addGoal(10, new FoxieEatBerriesGoal(this, EAT_BERRIES_SPEED_MULTIPLIER, BERRIES_SEARCH_RANGE, 3));
-        this.goalSelector.addGoal(10, new LeapAtTargetGoal(this, 0.4F));
-        this.goalSelector.addGoal(11, new WaterAvoidingRandomStrollGoal(this, 1.0D));
-        this.goalSelector.addGoal(11, new FoxieSearchForItemsGoal(this));
-        this.goalSelector.addGoal(12, new FoxieLookAtPlayerGoal(this, PLAYER_LOOK_DISTANCE));
-        this.goalSelector.addGoal(13, new FoxiePerchAndSearchGoal(this));
-        this.targetSelector.addGoal(3, new FoxieDefendTrustedTargetGoal(this));
+        this.goalSelector.addGoal(10, new FoxieStrollThroughVillageGoal(this, STROLL_THROUGH_VILLAGE_INTERVAL));
+        this.goalSelector.addGoal(11, new FoxieEatBerriesGoal(this, EAT_BERRIES_SPEED_MULTIPLIER, BERRIES_SEARCH_RANGE, 3));
+        this.goalSelector.addGoal(12, new LeapAtTargetGoal(this, 0.4F));
+        this.goalSelector.addGoal(13, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(14, new FoxieSearchForItemsGoal(this));
+        this.goalSelector.addGoal(15, new FoxieLookAtPlayerGoal(this, PLAYER_LOOK_DISTANCE));
+        this.goalSelector.addGoal(16, new FoxiePerchAndSearchGoal(this));
+        this.targetSelector.addGoal(17, new FoxieDefendTrustedTargetGoal(this));
     }
 
     private void setPreyGoals() {
@@ -480,7 +485,6 @@ public class Foxie extends TamableAnimal {
             }
         }
 
-        this._interestedAngle = this.interestedAngle;
         if (this.getFlag(FoxieStates.INTERESTED))
             this.interestedAngle += (1.0F - this.interestedAngle) * 0.4F;
         else
@@ -501,7 +505,7 @@ public class Foxie extends TamableAnimal {
         if (!this.level.isClientSide)
             this.doServerAIStep();
 
-        if (this.isSleeping() || this.isImmobile()) {
+        if (this.getFlag(FoxieStates.SLEEPING) || this.isImmobile()) {
             this.jumping = false;
             this.xxa = 0.0F;
             this.zza = 0.0F;
@@ -511,6 +515,50 @@ public class Foxie extends TamableAnimal {
 
         if (this.getFlag(FoxieStates.DEFENDING) && this.random.nextFloat() < 0.05F)
             this.playSound(SoundEvents.FOX_AGGRO, 1.0F, 1.0F);
+    }
+
+    private InteractionResult clientMobInteract(Player player, ItemStack stack) {
+        if (this.isOwnedBy(player) || this.isTame() || stack.is(Items.BONE) && !this.isTame())
+            return InteractionResult.CONSUME;
+        else return InteractionResult.PASS;
+    }
+
+    private InteractionResult serverMobInteract(Player player, ItemStack stack, InteractionHand hand) {
+        if (!this.isTame() && stack.is(Items.CHICKEN)) {
+            if (!player.getAbilities().instabuild)
+                stack.shrink(1);
+
+            var success = this.random.nextInt(5) == 0;
+            if (success && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player)) {
+                this.tame(player);
+                this.navigation.stop();
+                this.setTarget(null);
+                this.setOrderedToSit(true);
+                this.level.broadcastEntityEvent(this, (byte) 7);
+            } else {
+                this.level.broadcastEntityEvent(this, (byte) 6);
+            }
+
+            return InteractionResult.SUCCESS;
+        } else if (this.isFood(stack) && this.getHealth() < this.getMaxHealth()) {
+            this.heal((float) Objects.requireNonNull(stack.getFoodProperties(this)).getNutrition());
+            if (!player.getAbilities().instabuild)
+                stack.shrink(1);
+
+            this.gameEvent(GameEvent.MOB_INTERACT, this.eyeBlockPosition());
+            return InteractionResult.SUCCESS;
+        }
+
+        return super.mobInteract(player, hand);
+    }
+
+    public @NotNull InteractionResult mobInteract(Player player, @NotNull InteractionHand hand) {
+        var stack = player.getItemInHand(hand);
+
+        if (this.level.isClientSide)
+            return this.clientMobInteract(player, stack);
+        else
+            return this.serverMobInteract(player, stack, hand);
     }
 
     private boolean canEat(ItemStack items) {
