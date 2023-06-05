@@ -285,12 +285,18 @@ public class FoxieModel extends EntityModel<Foxie> {
             this.rArm01.y = 0.1F - 1.25F;
             this.lHindLeg01.y = 0.2F - 1.25F;
             this.rHindLeg01.y = 0.2F - 1.25F;
-            this.body.y = 14.1F + 1.25F;
         } else {
             this.lArm01.y = 0.1F;
             this.rArm01.y = 0.1F;
             this.lHindLeg01.y = 0.2F;
             this.rHindLeg01.y = 0.2F;
+        }
+
+        if (foxie.getFlag(FoxieStates.SLEEPING)) {
+            this.body.y = 19.0F;
+        } else if (foxie.getFlag(FoxieStates.SITTING)) {
+            this.body.y = 16.5F;
+        } else {
             this.body.y = 14.1F;
         }
 
