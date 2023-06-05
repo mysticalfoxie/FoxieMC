@@ -65,13 +65,15 @@ public class Foxie extends TamableAnimal {
     public static final Double MAX_HEALTH = 10.0D;
     public static final Double FOLLOW_RANGE = 40.0D;
     public static final Double ATTACK_DAMAGE = 3.0D;
+    public static final Integer TICKS_UNTIL_HUNGER = 1500;
 
     private static final EntityDataAccessor<Optional<UUID>> DATA_TRUSTED_ID_0 = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Optional<UUID>> DATA_TRUSTED_ID_1 = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Integer> DATA_FLAGS_ID = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> DATA_CROUCH_AMOUNT = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.FLOAT);
     private float interestedAngle;
-    private int ticksSinceEaten;
+    private int _ticksSinceLastEaten = 0;
+    private ItemEntity _spittedItem;
 
     public Foxie(EntityType<? extends TamableAnimal> type, Level world) {
         super(type, world);
@@ -95,8 +97,16 @@ public class Foxie extends TamableAnimal {
                 .add(Attributes.ATTACK_KNOCKBACK);
     }
 
+    public int getTicksSinceLastFood() {
+        return this._ticksSinceLastEaten;
+    }
+
+    public void setTicksSinceLastFood(int ticks) {
+        this._ticksSinceLastEaten = ticks;
+    }
+
     @Override
-    public EntityDimensions getDimensions(Pose pose) {
+    public @NotNull EntityDimensions getDimensions(@NotNull Pose pose) {
         return EntityDimensions.scalable(.65F, .65F);
     }
 
@@ -266,6 +276,7 @@ public class Foxie extends TamableAnimal {
     }
 
     public void clearStates() {
+        this.setFlag(FoxieStates.COMMAND_DOWN, false);
         this.setFlag(FoxieStates.INTERESTED, false);
         this.setFlag(FoxieStates.CROUCHING, false);
         this.setFlag(FoxieStates.SITTING, false);
@@ -274,8 +285,10 @@ public class Foxie extends TamableAnimal {
         this.setFlag(FoxieStates.FACEPLANTED, false);
     }
 
-    protected void pickUpItem(ItemEntity item) {
+    protected void pickUpItem(@NotNull ItemEntity item) {
+        if (item == _spittedItem) return;
         var stack = item.getItem();
+
         if (this.canHoldItem(stack)) {
             int i = stack.getCount();
             if (i > 1)
@@ -287,17 +300,17 @@ public class Foxie extends TamableAnimal {
             this.handDropChances[EquipmentSlot.MAINHAND.getIndex()] = 2.0F;
             this.take(item, stack.getCount());
             item.discard();
-            this.ticksSinceEaten = 0;
         }
     }
 
-    // todo: doesnt spit out item c;
+    // todo: doesnt spit out item except for hunger c;
     private void spitOutItem(ItemStack stack) {
         if (stack.isEmpty() || this.level.isClientSide) return;
 
         var entity = new ItemEntity(this.level, this.getX() + this.getLookAngle().x, this.getY() + 1.0D, this.getZ() + this.getLookAngle().z, stack);
         entity.setPickUpDelay(40);
         entity.setThrower(this.getUUID());
+
         this.playSound(SoundEvents.FOX_SPIT, 1.0F, 1.0F);
         this.level.addFreshEntity(entity);
     }
@@ -330,6 +343,8 @@ public class Foxie extends TamableAnimal {
         this.setFlag(FoxieStates.SITTING, compound.getBoolean("Sitting"));
         this.setFlag(FoxieStates.CROUCHING, compound.getBoolean("Crouching"));
         this.setFlag(FoxieStates.COMMAND_DOWN, compound.getBoolean("CommandDown"));
+        this._ticksSinceLastEaten = compound.getInt("TicksSinceLastFood");
+
         if (this.level instanceof ServerLevel)
             this.setPreyGoals();
     }
@@ -354,7 +369,7 @@ public class Foxie extends TamableAnimal {
     public boolean canHoldItem(ItemStack stack) {
         var item = stack.getItem();
         var itemstack = this.getItemBySlot(EquipmentSlot.MAINHAND);
-        return itemstack.isEmpty() || this.ticksSinceEaten > 0 && item.isEdible() && !itemstack.getItem().isEdible();
+        return itemstack.isEmpty() || this.getTicksSinceLastFood() > 0 && item.isEdible() && !itemstack.getItem().isEdible();
     }
 
     public void addTrustedUUID(@Nullable UUID id) {
@@ -377,6 +392,7 @@ public class Foxie extends TamableAnimal {
         compound.putBoolean("Sitting", this.getFlag(FoxieStates.SITTING));
         compound.putBoolean("Crouching", this.getFlag(FoxieStates.CROUCHING));
         compound.putBoolean("CommandDown", this.getFlag(FoxieStates.COMMAND_DOWN));
+        compound.putInt("TicksSinceLastFood", this._ticksSinceLastEaten);
     }
 
     public SpawnGroupData finalizeSpawn(
@@ -559,7 +575,7 @@ public class Foxie extends TamableAnimal {
         }
 
         // Wake foxie up, get up (this is currently both, down command and sleeping, TODO: Change that! c:)
-        if (this.getFlag(FoxieStates.SLEEPING)) {
+        if (this.getFlag(FoxieStates.SLEEPING) || this.getFlag(FoxieStates.COMMAND_DOWN)) {
             this.setFlag(FoxieStates.SLEEPING, false);
             this.setFlag(FoxieStates.COMMAND_DOWN, false);
             // immediately show interest for something when getting up again
@@ -624,19 +640,28 @@ public class Foxie extends TamableAnimal {
                 .isEdible() &&
                 this.onGround &&
                 this.getTarget() == null &&
-                !this.getFlag(FoxieStates.SLEEPING);
+                !this.getFlag(FoxieStates.SLEEPING) &&
+                !this.getFlag(FoxieStates.COMMAND_DOWN);
     }
 
     public void doServerAIStep() {
         if (!this.isAlive()) return;
         if (!this.isEffectiveAi()) return;
 
-        ++this.ticksSinceEaten;
+        var ticksSinceEaten = this.getTicksSinceLastFood();
+        this.setTicksSinceLastFood(++ticksSinceEaten);
 
         var itemstack = this.getItemBySlot(EquipmentSlot.MAINHAND);
         if (!this.canEat(itemstack)) {
-            var entity = this.getTarget();
-            if (entity != null && entity.isAlive())
+            // TODO: Remove redundancy  
+            var entity = new ItemEntity(this.level, this.getX() + this.getLookAngle().x, this.getY() + 1.0D, this.getZ() + this.getLookAngle().z, itemstack);
+            entity.setPickUpDelay(40);
+            entity.setThrower(this.getUUID());
+            this.playSound(SoundEvents.FOX_SPIT, 1.0F, 1.0F);
+            _spittedItem = entity;
+
+            var target = this.getTarget();
+            if (target != null && target.isAlive())
                 return;
 
             this.setFlag(FoxieStates.CROUCHING, false);
@@ -644,16 +669,16 @@ public class Foxie extends TamableAnimal {
             return;
         }
 
-        if (this.ticksSinceEaten > 600) {
+        if (ticksSinceEaten > TICKS_UNTIL_HUNGER) {
             var stack = itemstack.finishUsingItem(this.level, this);
             if (!stack.isEmpty())
                 this.setItemSlot(EquipmentSlot.MAINHAND, stack);
 
-            this.ticksSinceEaten = 0;
+            this.setTicksSinceLastFood(0);
             return;
         }
 
-        if (this.ticksSinceEaten > 560 && this.random.nextFloat() < 0.1F) {
+        if (ticksSinceEaten > TICKS_UNTIL_HUNGER - 100 && this.random.nextFloat() < 0.1F) {
             this.playSound(this.getEatingSound(itemstack), 1.0F, 1.0F);
             this.level.broadcastEntityEvent(this, (byte) 45);
         }

@@ -20,7 +20,13 @@ public class FoxieMeleeAttackGoal extends MeleeAttackGoal {
         if (p_28725_ <= d0 && this.isTimeToAttack()) {
             this.resetAttackCooldown();
             foxie.doHurtTarget(prey);
-            foxie.playSound(SoundEvents.FOX_BITE, 1.0F, 1.0F);
+
+            if (prey.isDeadOrDying()) {
+                foxie.setTicksSinceLastFood(0);
+                foxie.playSound(SoundEvents.FOX_EAT, 1.0F, 1.0F);
+            } else {
+                foxie.playSound(SoundEvents.FOX_BITE, 1.0F, 1.0F);
+            }
         }
     }
 
@@ -30,11 +36,13 @@ public class FoxieMeleeAttackGoal extends MeleeAttackGoal {
     }
 
     public boolean canUse() {
-        return !foxie.getFlag(FoxieStates.SITTING)
+        return foxie.getTicksSinceLastFood() > Foxie.TICKS_UNTIL_HUNGER
+                && !foxie.getFlag(FoxieStates.SITTING)
                 && !foxie.getFlag(FoxieStates.COMMAND_DOWN)
                 && !foxie.getFlag(FoxieStates.SLEEPING)
                 && !foxie.getFlag(FoxieStates.CROUCHING)
                 && !foxie.getFlag(FoxieStates.FACEPLANTED)
+                && foxie.getMainHandItem().isEmpty()
                 && super.canUse();
     }
 }

@@ -69,7 +69,7 @@ public class FoxiePounceGoal extends JumpGoal {
 
         foxie.getLookControl().setLookAt(prey, 60.0F, 30.0F);
         Vec3 vec3 = (new Vec3(prey.getX() - foxie.getX(), prey.getY() - foxie.getY(), prey.getZ() - foxie.getZ())).normalize();
-        foxie.setDeltaMovement(foxie.getDeltaMovement().add(vec3.x * 0.8D, 0.9D, vec3.z * 0.8D));
+        foxie.setDeltaMovement(foxie.getDeltaMovement().add(vec3.x * 0.7D, 0.7D, vec3.z * 0.7D));
     }
 
     public void stop() {
