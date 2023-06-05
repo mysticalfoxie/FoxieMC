@@ -22,6 +22,7 @@ public class FoxieObeyDownCommandGoal extends Goal {
     @Override
     public void start() {
         // TODO: Crouch amount doesn't work with current model. => Temporary solved with sleep in Model definition 
+        foxie.getNavigation().stop();
         foxie.setFlag(FoxieStates.SLEEPING, true);
 
         if (foxie.getRandom().nextBoolean())

@@ -19,7 +19,7 @@ public class FoxieFaceplantGoal extends Goal {
     }
 
     public boolean canUse() {
-        return foxie.getFlag(FoxieStates.FACEPLANTED);
+        return foxie.getFlag(FoxieStates.FACEPLANTED) && !foxie.getFlag(FoxieStates.SLEEPING);
     }
 
     public boolean canContinueToUse() {

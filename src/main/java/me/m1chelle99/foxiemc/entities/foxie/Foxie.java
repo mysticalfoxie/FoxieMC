@@ -3,7 +3,7 @@ package me.m1chelle99.foxiemc.entities.foxie;
 import com.google.common.collect.Lists;
 import me.m1chelle99.foxiemc.entities.foxie.controls.FoxieLookControl;
 import me.m1chelle99.foxiemc.entities.foxie.controls.FoxieMoveControl;
-import me.m1chelle99.foxiemc.entities.foxie.goals.FoxieObeyDownCommandGoal;
+import me.m1chelle99.foxiemc.entities.foxie.goals.*;
 import me.m1chelle99.foxiemc.init.EntityInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -26,6 +26,11 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
+import net.minecraft.world.entity.ai.goal.ClimbOnTopOfPowderSnowGoal;
+import net.minecraft.world.entity.ai.goal.LeapAtTargetGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.animal.*;
 import net.minecraft.world.entity.animal.goat.Goat;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -429,10 +434,10 @@ public class Foxie extends TamableAnimal {
 
     @Override
     protected void registerGoals() {
-//        this.goalSelector.addGoal(0, new FoxieFloatGoal(this));
-//        this.goalSelector.addGoal(0, new ClimbOnTopOfPowderSnowGoal(this, this.level));
-//        this.goalSelector.addGoal(1, new FoxieFaceplantGoal(this));
-//        this.goalSelector.addGoal(2, new FoxiePanicGoal(this, PANIC_MOVEMENT_SPEED_MULTIPLIER));
+        this.goalSelector.addGoal(0, new FoxieFloatGoal(this));
+        this.goalSelector.addGoal(0, new ClimbOnTopOfPowderSnowGoal(this, this.level));
+        this.goalSelector.addGoal(1, new FoxieFaceplantGoal(this));
+        this.goalSelector.addGoal(2, new FoxiePanicGoal(this, PANIC_MOVEMENT_SPEED_MULTIPLIER));
         // TODO: Custom breeding... Im not breedable like an animal... grrr! put that berries away! *grrrr*
 
         this.goalSelector.addGoal(3, new FoxieObeyDownCommandGoal(this));
@@ -441,41 +446,40 @@ public class Foxie extends TamableAnimal {
         // TODO: Foxie sits on bed goal
         // TODO: Foxie sits on block goal
 
-//        this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, Player.class, 16.0F, 1.6D, 1.4D, this::isScaryHuman));
-//        this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, Animal.class, 8.0F, 1.6D, 1.4D, this::isThreatening));
+        this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, Player.class, 16.0F, 1.6D, 1.4D, this::isScaryHuman));
+        this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, Animal.class, 8.0F, 1.6D, 1.4D, this::isThreatening));
 
-//        this.goalSelector.addGoal(5, new FoxieStalkPreyGoal(this)); // TODO: doesnt stalk
-//        this.goalSelector.addGoal(6, new FoxiePounceGoal(this)); // TODO: doesnt pounce
+        this.goalSelector.addGoal(5, new FoxieStalkPreyGoal(this)); // TODO: doesnt stalk
+        this.goalSelector.addGoal(6, new FoxiePounceGoal(this)); // TODO: doesnt pounce
 
         // TODO: foxie seeks shelter now, BUT somewhere deep down in caves. :/  
         // TODO: Tree should be enough
-//        this.goalSelector.addGoal(7, new FoxieSeekShelterGoal(this, SEEK_SHELTER_MOVEMENT_SPEED_MULTIPLIER));
-
+        this.goalSelector.addGoal(7, new FoxieSeekShelterGoal(this, SEEK_SHELTER_MOVEMENT_SPEED_MULTIPLIER));
 
         // TODO: killing prey doesnt reset food bar
         // To make it perfect: Prey is guaranteed to spawn it's drops, foxie holds it in her mouth and eats it after some time
-//        this.goalSelector.addGoal(8, new FoxieMeleeAttackGoal(this, ATTACK_MOVEMENT_SPEED_MULTIPLIER, FOLLOW_PREY_EVEN_IF_NOT_SEEN));
+        this.goalSelector.addGoal(8, new FoxieMeleeAttackGoal(this, ATTACK_MOVEMENT_SPEED_MULTIPLIER, FOLLOW_PREY_EVEN_IF_NOT_SEEN));
 
         // TODO: Foxie cant sleep at thunder
-//        this.goalSelector.addGoal(9, new FoxieSleepGoal(this)); // maybe only sleep at night  - bigger Cooldown
+        this.goalSelector.addGoal(9, new FoxieSleepGoal(this)); // maybe only sleep at night  - bigger Cooldown
 
         // TODO: Foxie follow parent goal
 
-//        this.goalSelector.addGoal(10, new FoxieStrollThroughVillageGoal(this, STROLL_THROUGH_VILLAGE_INTERVAL));
-//        this.goalSelector.addGoal(11, new FoxieEatBerriesGoal(this, EAT_BERRIES_SPEED_MULTIPLIER, BERRIES_SEARCH_RANGE, 3));
-//        this.goalSelector.addGoal(12, new LeapAtTargetGoal(this, 0.4F));
-//        this.goalSelector.addGoal(13, new WaterAvoidingRandomStrollGoal(this, 1.0D));
-//        this.goalSelector.addGoal(14, new FoxieSearchForItemsGoal(this));
-//        this.goalSelector.addGoal(15, new FoxieLookAtPlayerGoal(this, PLAYER_LOOK_DISTANCE));
-//        this.goalSelector.addGoal(16, new FoxiePerchAndSearchGoal(this));
-//        this.targetSelector.addGoal(17, new FoxieDefendTrustedTargetGoal(this));
+        this.goalSelector.addGoal(10, new FoxieStrollThroughVillageGoal(this, STROLL_THROUGH_VILLAGE_INTERVAL));
+        this.goalSelector.addGoal(11, new FoxieEatBerriesGoal(this, EAT_BERRIES_SPEED_MULTIPLIER, BERRIES_SEARCH_RANGE, 3));
+        this.goalSelector.addGoal(12, new LeapAtTargetGoal(this, 0.4F));
+        this.goalSelector.addGoal(13, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(14, new FoxieSearchForItemsGoal(this));
+        this.goalSelector.addGoal(15, new FoxieLookAtPlayerGoal(this, PLAYER_LOOK_DISTANCE));
+        this.goalSelector.addGoal(16, new FoxiePerchAndSearchGoal(this));
+        this.targetSelector.addGoal(17, new FoxieDefendTrustedTargetGoal(this));
     }
 
     private void setPreyGoals() {
 
-//        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Animal.class, 10, false, false, this::isPrey));
-//        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Turtle.class, 10, false, false, Turtle.BABY_ON_LAND_SELECTOR));
-//        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractFish.class, 20, false, false, e -> e instanceof AbstractSchoolingFish));
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Animal.class, 10, false, false, this::isPrey));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Turtle.class, 10, false, false, Turtle.BABY_ON_LAND_SELECTOR));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractFish.class, 20, false, false, e -> e instanceof AbstractSchoolingFish));
 
     }
 

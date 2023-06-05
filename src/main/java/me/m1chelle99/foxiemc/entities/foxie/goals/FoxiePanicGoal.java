@@ -15,4 +15,8 @@ public class FoxiePanicGoal extends PanicGoal {
     public boolean shouldPanic() {
         return !foxie.getFlag(FoxieStates.DEFENDING) && super.shouldPanic();
     }
+
+    public void start() {
+        foxie.clearStates();
+    }
 }
