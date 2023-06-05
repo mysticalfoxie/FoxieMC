@@ -321,6 +321,7 @@ public class Foxie extends TamableAnimal {
         this.setFlag(FoxieStates.SLEEPING, compound.getBoolean("Sleeping"));
         this.setFlag(FoxieStates.SITTING, compound.getBoolean("Sitting"));
         this.setFlag(FoxieStates.CROUCHING, compound.getBoolean("Crouching"));
+        this.setFlag(FoxieStates.COMMAND_DOWN, compound.getBoolean("CommandDown"));
         if (this.level instanceof ServerLevel)
             this.setPreyGoals();
     }
@@ -367,6 +368,7 @@ public class Foxie extends TamableAnimal {
         compound.putBoolean("Sleeping", this.getFlag(FoxieStates.SLEEPING));
         compound.putBoolean("Sitting", this.getFlag(FoxieStates.SITTING));
         compound.putBoolean("Crouching", this.getFlag(FoxieStates.CROUCHING));
+        compound.putBoolean("CommandDown", this.getFlag(FoxieStates.COMMAND_DOWN));
     }
 
     public SpawnGroupData finalizeSpawn(
@@ -605,6 +607,9 @@ public class Foxie extends TamableAnimal {
             return this.serverMobInteract(player, stack, hand);
     }
 
+    // TODO: This has to be more precise. For example foxie should prefer always the better food. 
+    // It can't be that foxie likes rotten flesh over chicken for example! 
+    // I need some sort of Ranking here ;) [That can become a player item as well, some sort of receipt]
     private boolean canEat(ItemStack items) {
         return items
                 .getItem()
