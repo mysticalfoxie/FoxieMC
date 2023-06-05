@@ -18,6 +18,9 @@ public class FoxiePounceGoal extends JumpGoal {
         if (foxie.getFlag(FoxieStates.COMMAND_DOWN))
             return false;
 
+        if (foxie.getTicksSinceLastFood() < Foxie.TICKS_UNTIL_HUNGER)
+            return false;
+
         if (!foxie.isFullyCrouched())
             return false;
 
@@ -25,10 +28,8 @@ public class FoxiePounceGoal extends JumpGoal {
         if (prey == null || !prey.isAlive())
             return false;
 
-        // Remove this for now... 
-        // doesnt make sense that foxie cancels the pounce when the prey sees her in the last moment
-        // if (prey.getMotionDirection() != prey.getDirection())
-        //     return false;
+        if (prey.getMotionDirection() != prey.getDirection())
+            return false;
 
         var clearway = foxie.isPathClearTo(prey);
         if (!clearway) {

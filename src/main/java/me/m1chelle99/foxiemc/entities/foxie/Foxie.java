@@ -307,12 +307,12 @@ public class Foxie extends TamableAnimal {
     private void spitOutItem(ItemStack stack) {
         if (stack.isEmpty() || this.level.isClientSide) return;
 
-        var entity = new ItemEntity(this.level, this.getX() + this.getLookAngle().x, this.getY() + 1.0D, this.getZ() + this.getLookAngle().z, stack);
-        entity.setPickUpDelay(40);
-        entity.setThrower(this.getUUID());
+        _spittedItem = new ItemEntity(this.level, this.getX() + this.getLookAngle().x, this.getY() + 1.0D, this.getZ() + this.getLookAngle().z, stack);
+        _spittedItem.setPickUpDelay(40);
+        _spittedItem.setThrower(this.getUUID());
 
         this.playSound(SoundEvents.FOX_SPIT, 1.0F, 1.0F);
-        this.level.addFreshEntity(entity);
+        this.level.addFreshEntity(_spittedItem);
     }
 
     private void dropItemStack(ItemStack stack) {
@@ -652,13 +652,10 @@ public class Foxie extends TamableAnimal {
         this.setTicksSinceLastFood(++ticksSinceEaten);
 
         var itemstack = this.getItemBySlot(EquipmentSlot.MAINHAND);
-        if (!this.canEat(itemstack)) {
-            // TODO: Remove redundancy  
-            var entity = new ItemEntity(this.level, this.getX() + this.getLookAngle().x, this.getY() + 1.0D, this.getZ() + this.getLookAngle().z, itemstack);
-            entity.setPickUpDelay(40);
-            entity.setThrower(this.getUUID());
-            this.playSound(SoundEvents.FOX_SPIT, 1.0F, 1.0F);
-            _spittedItem = entity;
+
+        if (!itemstack.isEmpty() && ticksSinceEaten > TICKS_UNTIL_HUNGER && !this.canEat(itemstack)) {
+            this.spitOutItem(itemstack);
+            this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 
             var target = this.getTarget();
             if (target != null && target.isAlive())

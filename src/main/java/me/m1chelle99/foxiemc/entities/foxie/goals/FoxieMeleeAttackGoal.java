@@ -45,4 +45,9 @@ public class FoxieMeleeAttackGoal extends MeleeAttackGoal {
                 && foxie.getMainHandItem().isEmpty()
                 && super.canUse();
     }
+
+    @Override
+    public boolean canContinueToUse() {
+        return canUse() && super.canContinueToUse();
+    }
 }
