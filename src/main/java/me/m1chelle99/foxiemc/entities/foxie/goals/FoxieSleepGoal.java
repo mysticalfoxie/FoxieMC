@@ -15,13 +15,19 @@ public class FoxieSleepGoal extends FoxieBehaviorGoal {
         this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK, Goal.Flag.JUMP));
     }
 
+    @Override
     public boolean canUse() {
+        // TODO: Foxie should sleep even when being commanded to stay downed. -> Just get back to this state after sleeping
+        if (foxie.getFlag(FoxieStates.COMMAND_DOWN))
+            return false;
+
         if (foxie.xxa != 0.0F || foxie.yya != 0.0F || foxie.zza != 0.0F)
             return false;
 
         return this.canSleep() || foxie.isSleeping();
     }
 
+    @Override
     public boolean canContinueToUse() {
         return this.canSleep();
     }
@@ -34,11 +40,13 @@ public class FoxieSleepGoal extends FoxieBehaviorGoal {
         return false;
     }
 
+    @Override
     public void stop() {
         this.countdown = foxie.getRandom().nextInt(WAIT_TIME_BEFORE_SLEEP);
         foxie.clearStates();
     }
 
+    @Override
     public void start() {
         foxie.setFlag(FoxieStates.SITTING, false);
         foxie.setFlag(FoxieStates.CROUCHING, false);

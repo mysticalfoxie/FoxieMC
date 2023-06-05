@@ -31,6 +31,7 @@ public class FoxieMeleeAttackGoal extends MeleeAttackGoal {
 
     public boolean canUse() {
         return !foxie.getFlag(FoxieStates.SITTING)
+                && !foxie.getFlag(FoxieStates.COMMAND_DOWN)
                 && !foxie.getFlag(FoxieStates.SLEEPING)
                 && !foxie.getFlag(FoxieStates.CROUCHING)
                 && !foxie.getFlag(FoxieStates.FACEPLANTED)

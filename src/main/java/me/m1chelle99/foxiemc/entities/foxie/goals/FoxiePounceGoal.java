@@ -15,6 +15,9 @@ public class FoxiePounceGoal extends JumpGoal {
     }
 
     public boolean canUse() {
+        if (foxie.getFlag(FoxieStates.COMMAND_DOWN))
+            return false;
+
         if (!foxie.isFullyCrouched())
             return false;
 
@@ -71,8 +74,7 @@ public class FoxiePounceGoal extends JumpGoal {
 
     public void stop() {
         foxie.setFlag(FoxieStates.CROUCHING, false);
-        foxie.crouchAmount = 0.0F;
-        foxie._crouchAmount = 0.0F;
+        foxie.setCrouchAmount(0.0F);
         foxie.setFlag(FoxieStates.INTERESTED, false);
         foxie.setFlag(FoxieStates.POUNCING, false);
     }

@@ -24,6 +24,7 @@ public abstract class FoxieBehaviorGoal extends Goal {
         return !foxie.level.canSeeSky(pos) && foxie.getWalkTargetValue(pos) >= 0.0F;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected boolean alertable() {
         return !foxie.level.getNearbyEntities(LivingEntity.class, this.alertableTargeting, foxie,
                 foxie.getBoundingBox().inflate(Foxie.ALERTING_RANGE, 10.0D, Foxie.ALERTING_RANGE)).isEmpty();

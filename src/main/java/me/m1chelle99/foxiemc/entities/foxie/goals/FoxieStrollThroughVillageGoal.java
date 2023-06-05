@@ -29,6 +29,7 @@ public class FoxieStrollThroughVillageGoal extends StrollThroughVillageGoal {
         return !foxie.getFlag(FoxieStates.SLEEPING)
                 && !foxie.getFlag(FoxieStates.SITTING)
                 && !foxie.getFlag(FoxieStates.DEFENDING)
+                && !foxie.getFlag(FoxieStates.COMMAND_DOWN)
                 && foxie.getTarget() == null;
     }
 }

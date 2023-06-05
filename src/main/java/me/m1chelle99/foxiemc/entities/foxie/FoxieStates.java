@@ -8,4 +8,5 @@ public final class FoxieStates {
     public static final int SLEEPING = 32;
     public static final int FACEPLANTED = 64;
     public static final int DEFENDING = 128;
+    public static final int COMMAND_DOWN = 256;
 }

@@ -15,6 +15,9 @@ public class FoxieSeekShelterGoal extends FleeSunGoal {
     }
 
     public boolean canUse() {
+        if (foxie.getFlag(FoxieStates.COMMAND_DOWN))
+            return false;
+        
         if (foxie.getFlag(FoxieStates.SLEEPING) || this.mob.getTarget() != null)
             return false;
 

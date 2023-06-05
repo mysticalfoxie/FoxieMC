@@ -15,6 +15,7 @@ public class FoxieStalkPreyGoal extends Goal {
     }
 
     public boolean canUse() {
+        if (foxie.getFlag(FoxieStates.COMMAND_DOWN)) return false;
         if (foxie.getFlag(FoxieStates.SLEEPING)) return false;
         var target = foxie.getTarget();
         if (target == null) return false;

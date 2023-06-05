@@ -21,6 +21,7 @@ public class FoxiePerchAndSearchGoal extends FoxieBehaviorGoal {
         return foxie.getLastHurtByMob() == null
                 && foxie.getRandom().nextFloat() < 0.02F
                 && !foxie.getFlag(FoxieStates.SLEEPING)
+                && !foxie.getFlag(FoxieStates.COMMAND_DOWN)
                 && foxie.getTarget() == null
                 && foxie.getNavigation().isDone()
                 && !this.alertable()

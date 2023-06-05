@@ -89,7 +89,9 @@ public class FoxieEatBerriesGoal extends MoveToBlockGoal {
     }
 
     public boolean canUse() {
-        return !foxie.getFlag(FoxieStates.SLEEPING) && super.canUse();
+        return !foxie.getFlag(FoxieStates.SLEEPING)
+                && !foxie.getFlag(FoxieStates.COMMAND_DOWN)
+                && super.canUse();
     }
 
     public void start() {

@@ -59,6 +59,7 @@ public class FoxieDefendTrustedTargetGoal extends NearestAttackableTargetGoal<Li
         foxie.playSound(SoundEvents.FOX_AGGRO, 1.0F, 1.0F);
         foxie.setFlag(FoxieStates.DEFENDING, true);
         foxie.setFlag(FoxieStates.SLEEPING, false);
+        foxie.setFlag(FoxieStates.COMMAND_DOWN, false);
         super.start();
     }
 }

@@ -14,7 +14,7 @@ public class FoxieFloatGoal extends FloatGoal {
 
     public void start() {
         super.start();
-        foxie.clearStates();
+        // foxie.clearStates();
     }
 
     public boolean canUse() {

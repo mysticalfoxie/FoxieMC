@@ -28,8 +28,7 @@ public class FoxieRenderer extends MobRenderer<Foxie, FoxieModel> {
     @NotNull
     @Override
     public ResourceLocation getTextureLocation(Foxie foxie) {
-        if (foxie.isSleeping()) return TEXTURE_SLEEP;
-
+        if (foxie.getFlag(FoxieStates.SLEEPING)) return TEXTURE_SLEEP;
         return TEXTURE;
     }
 
