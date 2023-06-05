@@ -7,6 +7,7 @@ import net.minecraft.world.entity.ai.goal.PanicGoal;
 public class FoxiePanicGoal extends PanicGoal {
     private final Foxie foxie;
 
+    // TODO: Make foxie smarter! Currently foxie is just... huh? what happened. ouch. ;c damn... 
     public FoxiePanicGoal(Foxie foxie, double speed_modifier) {
         super(foxie, speed_modifier);
         this.foxie = foxie;

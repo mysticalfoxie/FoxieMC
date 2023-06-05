@@ -26,10 +26,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
-import net.minecraft.world.entity.ai.goal.ClimbOnTopOfPowderSnowGoal;
-import net.minecraft.world.entity.ai.goal.LeapAtTargetGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.animal.*;
 import net.minecraft.world.entity.animal.goat.Goat;
@@ -441,38 +438,39 @@ public class Foxie extends TamableAnimal {
         // TODO: Custom breeding... Im not breedable like an animal... grrr! put that berries away! *grrrr*
 
         this.goalSelector.addGoal(3, new FoxieObeyDownCommandGoal(this));
+        this.goalSelector.addGoal(4, new FollowOwnerGoal(this, 1.0D, 15.0F, 1.0F, false));
 
         // TODO: Foxie sits in "foxiemc:basket" goal
         // TODO: Foxie sits on bed goal
         // TODO: Foxie sits on block goal
 
-        this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, Player.class, 16.0F, 1.6D, 1.4D, this::isScaryHuman));
-        this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, Animal.class, 8.0F, 1.6D, 1.4D, this::isThreatening));
+        this.goalSelector.addGoal(5, new AvoidEntityGoal<>(this, Player.class, 16.0F, 1.6D, 1.4D, this::isScaryHuman));
+        this.goalSelector.addGoal(6, new AvoidEntityGoal<>(this, Animal.class, 8.0F, 1.6D, 1.4D, this::isThreatening));
 
-        this.goalSelector.addGoal(5, new FoxieStalkPreyGoal(this)); // TODO: doesnt stalk
-        this.goalSelector.addGoal(6, new FoxiePounceGoal(this)); // TODO: doesnt pounce
+        this.goalSelector.addGoal(7, new FoxieStalkPreyGoal(this)); // TODO: doesnt stalk
+        this.goalSelector.addGoal(8, new FoxiePounceGoal(this)); // TODO: doesnt pounce
 
         // TODO: foxie seeks shelter now, BUT somewhere deep down in caves. :/  
         // TODO: Tree should be enough
-        this.goalSelector.addGoal(7, new FoxieSeekShelterGoal(this, SEEK_SHELTER_MOVEMENT_SPEED_MULTIPLIER));
+        this.goalSelector.addGoal(9, new FoxieSeekShelterGoal(this, SEEK_SHELTER_MOVEMENT_SPEED_MULTIPLIER));
 
         // TODO: killing prey doesnt reset food bar
         // To make it perfect: Prey is guaranteed to spawn it's drops, foxie holds it in her mouth and eats it after some time
-        this.goalSelector.addGoal(8, new FoxieMeleeAttackGoal(this, ATTACK_MOVEMENT_SPEED_MULTIPLIER, FOLLOW_PREY_EVEN_IF_NOT_SEEN));
+        this.goalSelector.addGoal(10, new FoxieMeleeAttackGoal(this, ATTACK_MOVEMENT_SPEED_MULTIPLIER, FOLLOW_PREY_EVEN_IF_NOT_SEEN));
 
         // TODO: Foxie cant sleep at thunder
-        this.goalSelector.addGoal(9, new FoxieSleepGoal(this)); // maybe only sleep at night  - bigger Cooldown
+        this.goalSelector.addGoal(11, new FoxieSleepGoal(this)); // maybe only sleep at night  - bigger Cooldown
 
         // TODO: Foxie follow parent goal
 
-        this.goalSelector.addGoal(10, new FoxieStrollThroughVillageGoal(this, STROLL_THROUGH_VILLAGE_INTERVAL));
-        this.goalSelector.addGoal(11, new FoxieEatBerriesGoal(this, EAT_BERRIES_SPEED_MULTIPLIER, BERRIES_SEARCH_RANGE, 3));
-        this.goalSelector.addGoal(12, new LeapAtTargetGoal(this, 0.4F));
-        this.goalSelector.addGoal(13, new WaterAvoidingRandomStrollGoal(this, 1.0D));
-        this.goalSelector.addGoal(14, new FoxieSearchForItemsGoal(this));
-        this.goalSelector.addGoal(15, new FoxieLookAtPlayerGoal(this, PLAYER_LOOK_DISTANCE));
-        this.goalSelector.addGoal(16, new FoxiePerchAndSearchGoal(this));
-        this.targetSelector.addGoal(17, new FoxieDefendTrustedTargetGoal(this));
+        this.goalSelector.addGoal(12, new FoxieStrollThroughVillageGoal(this, STROLL_THROUGH_VILLAGE_INTERVAL));
+        this.goalSelector.addGoal(13, new FoxieEatBerriesGoal(this, EAT_BERRIES_SPEED_MULTIPLIER, BERRIES_SEARCH_RANGE, 3));
+        this.goalSelector.addGoal(14, new LeapAtTargetGoal(this, 0.4F));
+        this.goalSelector.addGoal(15, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(16, new FoxieSearchForItemsGoal(this));
+        this.goalSelector.addGoal(17, new FoxieLookAtPlayerGoal(this, PLAYER_LOOK_DISTANCE));
+        this.goalSelector.addGoal(18, new FoxiePerchAndSearchGoal(this));
+        this.targetSelector.addGoal(19, new FoxieDefendTrustedTargetGoal(this));
     }
 
     private void setPreyGoals() {
