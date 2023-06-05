@@ -87,11 +87,16 @@ public class Foxie extends TamableAnimal {
     }
 
     public static AttributeSupplier.Builder getFoxieAttributes() {
-        return Mob.createMobAttributes()
+        return LivingEntity.createLivingAttributes()
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED)
                 .add(Attributes.MAX_HEALTH, MAX_HEALTH)
                 .add(Attributes.FOLLOW_RANGE, FOLLOW_RANGE)
                 .add(Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE);
+    }
+
+    @Override
+    public EntityDimensions getDimensions(Pose pose) {
+        return EntityDimensions.scalable(.65F, .65F);
     }
 
     public float getCrouchAmount() {
@@ -159,6 +164,8 @@ public class Foxie extends TamableAnimal {
         return SoundEvents.FOX_AMBIENT;
     }
 
+    // TODO: Doesnt have something todo with the leash offset perse, buuuuuuut! to write that idea down:
+    // Foxie should run almost aside of you when on leash. You don't allow foxie too much freedom with this.
     public @NotNull Vec3 getLeashOffset() {
         return new Vec3(0.0D, 0.55F * this.getEyeHeight(), this.getBbWidth() * 0.4F);
     }
