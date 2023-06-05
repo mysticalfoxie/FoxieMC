@@ -438,7 +438,10 @@ public class Foxie extends TamableAnimal {
 
         this.goalSelector.addGoal(5, new FoxieStalkPreyGoal(this)); // TODO: doesnt stalk
         this.goalSelector.addGoal(6, new FoxiePounceGoal(this)); // TODO: doesnt pounce
-        this.goalSelector.addGoal(7, new FoxieSeekShelterGoal(this, SEEK_SHELTER_MOVEMENT_SPEED_MULTIPLIER)); // Doesnt work ;c 
+
+        // TODO: foxie seeks shelter now, BUT somewhere deep down in caves. :/  
+        // TODO: Tree should be enough
+        this.goalSelector.addGoal(7, new FoxieSeekShelterGoal(this, SEEK_SHELTER_MOVEMENT_SPEED_MULTIPLIER));
 
 
         // TODO: killing prey doesnt reset food bar
