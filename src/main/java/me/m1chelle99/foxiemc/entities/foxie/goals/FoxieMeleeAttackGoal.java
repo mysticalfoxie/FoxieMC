@@ -19,7 +19,7 @@ public class FoxieMeleeAttackGoal extends MeleeAttackGoal {
         double d0 = this.getAttackReachSqr(prey);
         if (p_28725_ <= d0 && this.isTimeToAttack()) {
             this.resetAttackCooldown();
-            this.mob.doHurtTarget(prey);
+            foxie.doHurtTarget(prey);
             foxie.playSound(SoundEvents.FOX_BITE, 1.0F, 1.0F);
         }
     }

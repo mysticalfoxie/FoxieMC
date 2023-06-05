@@ -91,7 +91,8 @@ public class Foxie extends TamableAnimal {
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED)
                 .add(Attributes.MAX_HEALTH, MAX_HEALTH)
                 .add(Attributes.FOLLOW_RANGE, FOLLOW_RANGE)
-                .add(Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE);
+                .add(Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE)
+                .add(Attributes.ATTACK_KNOCKBACK);
     }
 
     @Override
