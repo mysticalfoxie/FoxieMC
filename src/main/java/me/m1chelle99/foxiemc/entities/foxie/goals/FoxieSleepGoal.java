@@ -1,7 +1,7 @@
 package me.m1chelle99.foxiemc.entities.foxie.goals;
 
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
-import me.m1chelle99.foxiemc.entities.foxie.FoxieStates;
+import me.m1chelle99.foxiemc.entities.foxie.controls.FoxieAIControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
@@ -18,7 +18,7 @@ public class FoxieSleepGoal extends FoxieBehaviorGoal {
     @Override
     public boolean canUse() {
         // TODO: Foxie should sleep even when being commanded to stay downed. -> Just get back to this state after sleeping
-        if (foxie.getFlag(FoxieStates.COMMAND_DOWN))
+        if (foxie.getFlag(FoxieAIControl.COMMAND_DOWN))
             return false;
 
         if (foxie.xxa != 0.0F || foxie.yya != 0.0F || foxie.zza != 0.0F)
@@ -48,11 +48,11 @@ public class FoxieSleepGoal extends FoxieBehaviorGoal {
 
     @Override
     public void start() {
-        foxie.setFlag(FoxieStates.SITTING, false);
-        foxie.setFlag(FoxieStates.CROUCHING, false);
-        foxie.setFlag(FoxieStates.INTERESTED, false);
+        foxie.setFlag(FoxieAIControl.SITTING, false);
+        foxie.setFlag(FoxieAIControl.CROUCHING, false);
+        foxie.setFlag(FoxieAIControl.INTERESTED, false);
         foxie.setJumping(false);
-        foxie.setFlag(FoxieStates.SLEEPING, true);
+        foxie.setFlag(FoxieAIControl.SLEEPING, true);
         foxie.getNavigation().stop();
         foxie.getMoveControl().setWantedPosition(foxie.getX(), foxie.getY(), foxie.getZ(), 0.0D);
     }

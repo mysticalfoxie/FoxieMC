@@ -1,7 +1,7 @@
 package me.m1chelle99.foxiemc.entities.foxie.goals;
 
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
-import me.m1chelle99.foxiemc.entities.foxie.FoxieStates;
+import me.m1chelle99.foxiemc.entities.foxie.controls.FoxieAIControl;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -19,7 +19,7 @@ public class FoxieSearchForItemsGoal extends Goal {
     }
 
     public boolean canUse() {
-        if (foxie.getFlag(FoxieStates.COMMAND_DOWN))
+        if (foxie.getFlag(FoxieAIControl.COMMAND_DOWN))
             return false;
 
         if (!foxie.getItemBySlot(EquipmentSlot.MAINHAND).isEmpty())

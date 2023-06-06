@@ -5,7 +5,7 @@ import com.mojang.math.Vector3f;
 import me.m1chelle99.foxiemc.FoxieMCMod;
 import me.m1chelle99.foxiemc.client.models.FoxieModel;
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
-import me.m1chelle99.foxiemc.entities.foxie.FoxieStates;
+import me.m1chelle99.foxiemc.entities.foxie.controls.FoxieAIControl;
 import me.m1chelle99.foxiemc.entities.foxie.layers.FoxieHeldItemLayer;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -28,14 +28,14 @@ public class FoxieRenderer extends MobRenderer<Foxie, FoxieModel> {
     @NotNull
     @Override
     public ResourceLocation getTextureLocation(Foxie foxie) {
-        if (foxie.getFlag(FoxieStates.SLEEPING)) return TEXTURE_SLEEP;
+        if (foxie.getFlag(FoxieAIControl.SLEEPING)) return TEXTURE_SLEEP;
         return TEXTURE;
     }
 
     @Override
     protected void setupRotations(@NotNull Foxie foxie, @NotNull PoseStack pose, float x, float y, float z) {
         super.setupRotations(foxie, pose, x, y, z);
-        if (foxie.getFlag(FoxieStates.POUNCING) || foxie.getFlag(FoxieStates.FACEPLANTED)) {
+        if (foxie.getFlag(FoxieAIControl.POUNCING) || foxie.getFlag(FoxieAIControl.FACEPLANTED)) {
             var rotation = -Mth.lerp(z, foxie.xRotO, foxie.getXRot());
             pose.mulPose(Vector3f.XP.rotationDegrees(rotation));
         }

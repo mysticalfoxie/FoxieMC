@@ -1,7 +1,7 @@
 package me.m1chelle99.foxiemc.entities.foxie.goals;
 
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
-import me.m1chelle99.foxiemc.entities.foxie.FoxieStates;
+import me.m1chelle99.foxiemc.entities.foxie.controls.FoxieAIControl;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -89,14 +89,14 @@ public class FoxieEatBerriesGoal extends MoveToBlockGoal {
     }
 
     public boolean canUse() {
-        return !foxie.getFlag(FoxieStates.SLEEPING)
-                && !foxie.getFlag(FoxieStates.COMMAND_DOWN)
+        return !foxie.getFlag(FoxieAIControl.SLEEPING)
+                && !foxie.getFlag(FoxieAIControl.COMMAND_DOWN)
                 && super.canUse();
     }
 
     public void start() {
         this.ticksWaited = 0;
-        foxie.setFlag(FoxieStates.SITTING, false);
+        foxie.setFlag(FoxieAIControl.SITTING, false);
         super.start();
     }
 }

@@ -1,7 +1,7 @@
 package me.m1chelle99.foxiemc.entities.foxie.goals;
 
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
-import me.m1chelle99.foxiemc.entities.foxie.FoxieStates;
+import me.m1chelle99.foxiemc.entities.foxie.controls.FoxieAIControl;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
@@ -31,17 +31,17 @@ public class FoxieMeleeAttackGoal extends MeleeAttackGoal {
     }
 
     public void start() {
-        foxie.setFlag(FoxieStates.INTERESTED, false);
+        foxie.setFlag(FoxieAIControl.INTERESTED, false);
         super.start();
     }
 
     public boolean canUse() {
         return foxie.getTicksSinceLastFood() > Foxie.TICKS_UNTIL_HUNGER
-                && !foxie.getFlag(FoxieStates.SITTING)
-                && !foxie.getFlag(FoxieStates.COMMAND_DOWN)
-                && !foxie.getFlag(FoxieStates.SLEEPING)
-                && !foxie.getFlag(FoxieStates.CROUCHING)
-                && !foxie.getFlag(FoxieStates.FACEPLANTED)
+                && !foxie.getFlag(FoxieAIControl.SITTING)
+                && !foxie.getFlag(FoxieAIControl.COMMAND_DOWN)
+                && !foxie.getFlag(FoxieAIControl.SLEEPING)
+                && !foxie.getFlag(FoxieAIControl.CROUCHING)
+                && !foxie.getFlag(FoxieAIControl.FACEPLANTED)
                 && foxie.getMainHandItem().isEmpty()
                 && super.canUse();
     }

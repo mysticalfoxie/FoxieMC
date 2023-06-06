@@ -1,7 +1,6 @@
 package me.m1chelle99.foxiemc.entities.foxie.controls;
 
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
-import me.m1chelle99.foxiemc.entities.foxie.FoxieStates;
 import net.minecraft.world.entity.ai.control.LookControl;
 
 public class FoxieLookControl extends LookControl {
@@ -13,14 +12,14 @@ public class FoxieLookControl extends LookControl {
     }
 
     protected boolean resetXRotOnTick() {
-        return !foxie.getFlag(FoxieStates.POUNCING)
-                && !foxie.getFlag(FoxieStates.CROUCHING)
-                && !foxie.getFlag(FoxieStates.INTERESTED)
-                && !foxie.getFlag(FoxieStates.FACEPLANTED);
+        return !foxie.getFlag(FoxieAIControl.POUNCING)
+                && !foxie.getFlag(FoxieAIControl.CROUCHING)
+                && !foxie.getFlag(FoxieAIControl.INTERESTED)
+                && !foxie.getFlag(FoxieAIControl.FACEPLANTED);
     }
 
     public void tick() {
-        if (!foxie.getFlag(FoxieStates.SLEEPING))
+        if (!foxie.getFlag(FoxieAIControl.SLEEPING))
             super.tick();
     }
 }

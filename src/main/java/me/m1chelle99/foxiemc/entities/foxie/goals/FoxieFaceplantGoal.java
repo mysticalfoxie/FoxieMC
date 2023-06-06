@@ -1,7 +1,7 @@
 package me.m1chelle99.foxiemc.entities.foxie.goals;
 
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
-import me.m1chelle99.foxiemc.entities.foxie.FoxieStates;
+import me.m1chelle99.foxiemc.entities.foxie.controls.FoxieAIControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
@@ -19,7 +19,7 @@ public class FoxieFaceplantGoal extends Goal {
     }
 
     public boolean canUse() {
-        return foxie.getFlag(FoxieStates.FACEPLANTED) && !foxie.getFlag(FoxieStates.SLEEPING);
+        return foxie.getFlag(FoxieAIControl.FACEPLANTED) && !foxie.getFlag(FoxieAIControl.SLEEPING);
     }
 
     public boolean canContinueToUse() {
@@ -31,7 +31,7 @@ public class FoxieFaceplantGoal extends Goal {
     }
 
     public void stop() {
-        foxie.setFlag(FoxieStates.FACEPLANTED, false);
+        foxie.setFlag(FoxieAIControl.FACEPLANTED, false);
     }
 
     public void tick() {

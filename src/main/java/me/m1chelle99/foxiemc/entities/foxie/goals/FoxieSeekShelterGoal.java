@@ -1,7 +1,7 @@
 package me.m1chelle99.foxiemc.entities.foxie.goals;
 
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
-import me.m1chelle99.foxiemc.entities.foxie.FoxieStates;
+import me.m1chelle99.foxiemc.entities.foxie.controls.FoxieAIControl;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.goal.FleeSunGoal;
 
@@ -15,10 +15,10 @@ public class FoxieSeekShelterGoal extends FleeSunGoal {
     }
 
     public boolean canUse() {
-        if (foxie.getFlag(FoxieStates.COMMAND_DOWN))
+        if (foxie.getFlag(FoxieAIControl.COMMAND_DOWN))
             return false;
-        
-        if (foxie.getFlag(FoxieStates.SLEEPING) || this.mob.getTarget() != null)
+
+        if (foxie.getFlag(FoxieAIControl.SLEEPING) || this.mob.getTarget() != null)
             return false;
 
         if (foxie.level.isRaining() || foxie.level.isThundering())

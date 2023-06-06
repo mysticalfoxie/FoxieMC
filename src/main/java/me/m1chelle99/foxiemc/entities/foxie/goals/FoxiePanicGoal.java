@@ -1,7 +1,7 @@
 package me.m1chelle99.foxiemc.entities.foxie.goals;
 
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
-import me.m1chelle99.foxiemc.entities.foxie.FoxieStates;
+import me.m1chelle99.foxiemc.entities.foxie.controls.FoxieAIControl;
 import net.minecraft.world.entity.ai.goal.PanicGoal;
 
 public class FoxiePanicGoal extends PanicGoal {
@@ -14,7 +14,7 @@ public class FoxiePanicGoal extends PanicGoal {
     }
 
     public boolean shouldPanic() {
-        return !foxie.getFlag(FoxieStates.DEFENDING) && super.shouldPanic();
+        return !foxie.getFlag(FoxieAIControl.DEFENDING) && super.shouldPanic();
     }
 
     public void start() {

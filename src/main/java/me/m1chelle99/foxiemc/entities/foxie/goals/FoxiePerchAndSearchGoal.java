@@ -1,7 +1,7 @@
 package me.m1chelle99.foxiemc.entities.foxie.goals;
 
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
-import me.m1chelle99.foxiemc.entities.foxie.FoxieStates;
+import me.m1chelle99.foxiemc.entities.foxie.controls.FoxieAIControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
@@ -20,13 +20,13 @@ public class FoxiePerchAndSearchGoal extends FoxieBehaviorGoal {
     public boolean canUse() {
         return foxie.getLastHurtByMob() == null
                 && foxie.getRandom().nextFloat() < 0.02F
-                && !foxie.getFlag(FoxieStates.SLEEPING)
-                && !foxie.getFlag(FoxieStates.COMMAND_DOWN)
+                && !foxie.getFlag(FoxieAIControl.SLEEPING)
+                && !foxie.getFlag(FoxieAIControl.COMMAND_DOWN)
                 && foxie.getTarget() == null
                 && foxie.getNavigation().isDone()
                 && !this.alertable()
-                && !foxie.getFlag(FoxieStates.POUNCING)
-                && !foxie.getFlag(FoxieStates.CROUCHING);
+                && !foxie.getFlag(FoxieAIControl.POUNCING)
+                && !foxie.getFlag(FoxieAIControl.CROUCHING);
     }
 
     public boolean canContinueToUse() {
@@ -36,12 +36,12 @@ public class FoxiePerchAndSearchGoal extends FoxieBehaviorGoal {
     public void start() {
         this.resetLook();
         this.looksRemaining = 2 + foxie.getRandom().nextInt(3);
-        foxie.setFlag(FoxieStates.SITTING, true);
+        foxie.setFlag(FoxieAIControl.SITTING, true);
         foxie.getNavigation().stop();
     }
 
     public void stop() {
-        foxie.setFlag(FoxieStates.SITTING, false);
+        foxie.setFlag(FoxieAIControl.SITTING, false);
     }
 
     public void tick() {

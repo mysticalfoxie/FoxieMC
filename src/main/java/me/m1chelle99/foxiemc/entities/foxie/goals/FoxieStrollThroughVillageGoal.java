@@ -1,7 +1,7 @@
 package me.m1chelle99.foxiemc.entities.foxie.goals;
 
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
-import me.m1chelle99.foxiemc.entities.foxie.FoxieStates;
+import me.m1chelle99.foxiemc.entities.foxie.controls.FoxieAIControl;
 import net.minecraft.world.entity.ai.goal.StrollThroughVillageGoal;
 
 public class FoxieStrollThroughVillageGoal extends StrollThroughVillageGoal {
@@ -26,10 +26,10 @@ public class FoxieStrollThroughVillageGoal extends StrollThroughVillageGoal {
     }
 
     private boolean canFoxieMove() {
-        return !foxie.getFlag(FoxieStates.SLEEPING)
-                && !foxie.getFlag(FoxieStates.SITTING)
-                && !foxie.getFlag(FoxieStates.DEFENDING)
-                && !foxie.getFlag(FoxieStates.COMMAND_DOWN)
+        return !foxie.getFlag(FoxieAIControl.SLEEPING)
+                && !foxie.getFlag(FoxieAIControl.SITTING)
+                && !foxie.getFlag(FoxieAIControl.DEFENDING)
+                && !foxie.getFlag(FoxieAIControl.COMMAND_DOWN)
                 && foxie.getTarget() == null;
     }
 }

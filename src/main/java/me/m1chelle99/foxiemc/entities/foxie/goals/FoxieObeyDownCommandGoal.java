@@ -1,7 +1,7 @@
 package me.m1chelle99.foxiemc.entities.foxie.goals;
 
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
-import me.m1chelle99.foxiemc.entities.foxie.FoxieStates;
+import me.m1chelle99.foxiemc.entities.foxie.controls.FoxieAIControl;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.goal.Goal;
 
@@ -16,14 +16,14 @@ public class FoxieObeyDownCommandGoal extends Goal {
     @Override
     public boolean canUse() {
         // TODO: Animation for going down on all paws
-        return foxie.getFlag(FoxieStates.COMMAND_DOWN);
+        return foxie.getFlag(FoxieAIControl.COMMAND_DOWN);
     }
 
     @Override
     public void start() {
         // TODO: Crouch amount doesn't work with current model. => Temporary solved with sleep in Model definition 
         foxie.getNavigation().stop();
-        foxie.setFlag(FoxieStates.SLEEPING, true);
+        foxie.setFlag(FoxieAIControl.SLEEPING, true);
 
         if (foxie.getRandom().nextBoolean())
             foxie.playSound(SoundEvents.FOX_AMBIENT, .75F, .75F);
@@ -33,7 +33,7 @@ public class FoxieObeyDownCommandGoal extends Goal {
 
     @Override
     public void stop() {
-        foxie.setFlag(FoxieStates.SLEEPING, false);
+        foxie.setFlag(FoxieAIControl.SLEEPING, false);
     }
 
     @Override

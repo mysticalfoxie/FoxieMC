@@ -12,7 +12,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.m1chelle99.foxiemc.FoxieMCMod;
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
-import me.m1chelle99.foxiemc.entities.foxie.FoxieStates;
+import me.m1chelle99.foxiemc.entities.foxie.controls.FoxieAIControl;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -213,12 +213,12 @@ public class FoxieModel extends EntityModel<Foxie> {
         this.rArm01.xRot = Mth.cos(limbSwing * 0.6662F + (float) Math.PI) * limbSwingAmount + 0.22689280275926282F;
         this.body.xRot = 0;
 
-        if (!foxie.getFlag(FoxieStates.SLEEPING) && !foxie.getFlag(FoxieStates.FACEPLANTED) && !foxie.getFlag(FoxieStates.CROUCHING)) {
+        if (!foxie.getFlag(FoxieAIControl.SLEEPING) && !foxie.getFlag(FoxieAIControl.FACEPLANTED) && !foxie.getFlag(FoxieAIControl.CROUCHING)) {
             this.head.xRot = rad(headPitch);
             this.head.yRot = rad(netHeadYaw);
         }
 
-        if (foxie.getFlag(FoxieStates.SLEEPING)) {
+        if (foxie.getFlag(FoxieAIControl.SLEEPING)) {
             this.setRotateAngle(lHindLeg02, 0.8028514559173915F, 0.0F, 0.0F);
             this.setRotateAngle(lHindLeg03, -0.5410520681182421F, 0.0F, 0.0F);
             this.setRotateAngle(lEar04, 0.0F, 0.0F, 0.40980330836826856F);
@@ -260,7 +260,7 @@ public class FoxieModel extends EntityModel<Foxie> {
             this.head.zRot = Mth.cos(ageInTicks * 0.027F) / 22.0F;
         }
 
-        if (foxie.getFlag(FoxieStates.SITTING)) {
+        if (foxie.getFlag(FoxieAIControl.SITTING)) {
             this.setRotateAngleDeg(this.neck, 50, 0, 0);
             this.setRotateAngleDeg(this.body, -50, 0, 0);
             this.setRotateAngleDeg(this.rear, -40, 0, 0);
@@ -280,7 +280,7 @@ public class FoxieModel extends EntityModel<Foxie> {
             this.head.xRot -= Math.toRadians(20);
         }
 
-        if (foxie.getCrouchAmount() > 0 && (foxie.getFlag(FoxieStates.CROUCHING) || foxie.getFlag(FoxieStates.COMMAND_DOWN))) {
+        if (foxie.getCrouchAmount() > 0 && (foxie.getFlag(FoxieAIControl.CROUCHING) || foxie.getFlag(FoxieAIControl.COMMAND_DOWN))) {
             this.lArm01.y = 0.1F - 1.25F;
             this.rArm01.y = 0.1F - 1.25F;
             this.lHindLeg01.y = 0.2F - 1.25F;
@@ -292,15 +292,15 @@ public class FoxieModel extends EntityModel<Foxie> {
             this.rHindLeg01.y = 0.2F;
         }
 
-        if (foxie.getFlag(FoxieStates.SLEEPING)) {
+        if (foxie.getFlag(FoxieAIControl.SLEEPING)) {
             this.body.y = 19.0F;
-        } else if (foxie.getFlag(FoxieStates.SITTING)) {
+        } else if (foxie.getFlag(FoxieAIControl.SITTING)) {
             this.body.y = 16.5F;
         } else {
             this.body.y = 14.1F;
         }
 
-        if (foxie.getFlag(FoxieStates.FACEPLANTED)) {
+        if (foxie.getFlag(FoxieAIControl.FACEPLANTED)) {
             this.rotation += 0.67F;
             this.body.xRot = Mth.cos(this.rotation * 0.4662F) * 0.1F;
         }

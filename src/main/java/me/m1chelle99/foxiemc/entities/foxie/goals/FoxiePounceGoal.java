@@ -1,7 +1,7 @@
 package me.m1chelle99.foxiemc.entities.foxie.goals;
 
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
-import me.m1chelle99.foxiemc.entities.foxie.FoxieStates;
+import me.m1chelle99.foxiemc.entities.foxie.controls.FoxieAIControl;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.goal.JumpGoal;
 import net.minecraft.world.level.block.Blocks;
@@ -15,7 +15,7 @@ public class FoxiePounceGoal extends JumpGoal {
     }
 
     public boolean canUse() {
-        if (foxie.getFlag(FoxieStates.COMMAND_DOWN))
+        if (foxie.getFlag(FoxieAIControl.COMMAND_DOWN))
             return false;
 
         if (foxie.getTicksSinceLastFood() < Foxie.TICKS_UNTIL_HUNGER)
@@ -34,8 +34,8 @@ public class FoxiePounceGoal extends JumpGoal {
         var clearway = foxie.isPathClearTo(prey);
         if (!clearway) {
             foxie.getNavigation().createPath(prey, 0);
-            foxie.setFlag(FoxieStates.CROUCHING, false);
-            foxie.setFlag(FoxieStates.INTERESTED, false);
+            foxie.setFlag(FoxieAIControl.CROUCHING, false);
+            foxie.setFlag(FoxieAIControl.INTERESTED, false);
         }
 
         return clearway;
@@ -50,7 +50,7 @@ public class FoxiePounceGoal extends JumpGoal {
         return (!(d0 * d0 < (double) 0.05F)
                 || !(Math.abs(foxie.getXRot()) < 15.0F)
                 || !foxie.isOnGround())
-                && !foxie.getFlag(FoxieStates.FACEPLANTED);
+                && !foxie.getFlag(FoxieAIControl.FACEPLANTED);
     }
 
     public boolean isInterruptable() {
@@ -59,8 +59,8 @@ public class FoxiePounceGoal extends JumpGoal {
 
     public void start() {
         foxie.setJumping(true);
-        foxie.setFlag(FoxieStates.POUNCING, true);
-        foxie.setFlag(FoxieStates.INTERESTED, false);
+        foxie.setFlag(FoxieAIControl.POUNCING, true);
+        foxie.setFlag(FoxieAIControl.INTERESTED, false);
 
         var prey = foxie.getTarget();
         if (prey == null) {
@@ -74,10 +74,10 @@ public class FoxiePounceGoal extends JumpGoal {
     }
 
     public void stop() {
-        foxie.setFlag(FoxieStates.CROUCHING, false);
+        foxie.setFlag(FoxieAIControl.CROUCHING, false);
         foxie.setCrouchAmount(0.0F);
-        foxie.setFlag(FoxieStates.INTERESTED, false);
-        foxie.setFlag(FoxieStates.POUNCING, false);
+        foxie.setFlag(FoxieAIControl.INTERESTED, false);
+        foxie.setFlag(FoxieAIControl.POUNCING, false);
     }
 
     public void tick() {
@@ -85,7 +85,7 @@ public class FoxiePounceGoal extends JumpGoal {
         if (prey != null)
             foxie.getLookControl().setLookAt(prey, 60.0F, 30.0F);
 
-        if (!foxie.getFlag(FoxieStates.FACEPLANTED)) {
+        if (!foxie.getFlag(FoxieAIControl.FACEPLANTED)) {
             var vec = foxie.getDeltaMovement();
             if (vec.y * vec.y < (double) 0.03F && foxie.getXRot() != 0.0F) {
                 //noinspection deprecation
@@ -102,7 +102,7 @@ public class FoxiePounceGoal extends JumpGoal {
         } else if (foxie.getXRot() > 0.0F && foxie.isOnGround() && (float) foxie.getDeltaMovement().y != 0.0F && foxie.level.getBlockState(foxie.blockPosition()).is(Blocks.SNOW)) {
             foxie.setXRot(60.0F);
             foxie.setTarget(null);
-            foxie.setFlag(FoxieStates.FACEPLANTED, true);
+            foxie.setFlag(FoxieAIControl.FACEPLANTED, true);
         }
     }
 }

@@ -1,7 +1,7 @@
 package me.m1chelle99.foxiemc.entities.foxie.goals;
 
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
-import me.m1chelle99.foxiemc.entities.foxie.FoxieStates;
+import me.m1chelle99.foxiemc.entities.foxie.controls.FoxieAIControl;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
@@ -57,9 +57,9 @@ public class FoxieDefendTrustedTargetGoal extends NearestAttackableTargetGoal<Li
         }
 
         foxie.playSound(SoundEvents.FOX_AGGRO, 1.0F, 1.0F);
-        foxie.setFlag(FoxieStates.DEFENDING, true);
-        foxie.setFlag(FoxieStates.SLEEPING, false);
-        foxie.setFlag(FoxieStates.COMMAND_DOWN, false);
+        foxie.setFlag(FoxieAIControl.DEFENDING, true);
+        foxie.setFlag(FoxieAIControl.SLEEPING, false);
+        foxie.setFlag(FoxieAIControl.COMMAND_DOWN, false);
         super.start();
     }
 }
