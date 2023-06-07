@@ -52,8 +52,8 @@ public class Foxie extends TamableAnimal {
     private float interestedAngle;
     private ItemEntity _spittedItem;
 
-    public Foxie(EntityType<? extends TamableAnimal> type, Level world) {
-        super(type, world);
+    public Foxie(EntityType<? extends TamableAnimal> type, Level level) {
+        super(type, level);
 
         this.moveControl = new FoxieMoveControl(this);
         this.lookControl = new FoxieLookControl(this);
@@ -69,11 +69,11 @@ public class Foxie extends TamableAnimal {
         this.setCanPickUpLoot(true);
         this.setTame(false);
     }
-    
+
     @SubscribeEvent
     public static void onDamageReceived(LivingHurtEvent event) {
         if (!(event.getEntity() instanceof Foxie)) return;
-        var foxie = (Foxie)event.getEntity();
+        var foxie = (Foxie) event.getEntity();
         foxie.stateControl.onHurt(event);
     }
 
@@ -126,7 +126,7 @@ public class Foxie extends TamableAnimal {
 
         this.setItemSlot(EquipmentSlot.MAINHAND, stack);
     }
-    
+
     public void runTo(@NotNull Vec3 position, double multiplier) {
         this.getNavigation().moveTo(position.x, position.y, position.z, multiplier);
     }
@@ -134,7 +134,7 @@ public class Foxie extends TamableAnimal {
     public Vec3 getRandomTargetWithin(int distance) {
         return DefaultRandomPos.getPos(this, distance, 4);
     }
-    
+
     public int getRandomTicksWithin(float min_seconds, float max_seconds) {
         var min_ticks = Math.round(min_seconds * 20);
         var max_ticks = Math.round(max_seconds * 20);

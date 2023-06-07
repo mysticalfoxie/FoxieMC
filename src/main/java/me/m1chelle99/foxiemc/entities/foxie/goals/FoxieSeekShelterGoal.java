@@ -1,90 +1,80 @@
 package me.m1chelle99.foxiemc.entities.foxie.goals;
 
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
-import me.m1chelle99.foxiemc.entities.foxie.goals.panic.FoxieAbstractPanicGoal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.level.levelgen.Heightmap;
 
 public class FoxieSeekShelterGoal extends Goal {
     private final Foxie foxie;
+    private BlockPos target;
 
     public FoxieSeekShelterGoal(Foxie foxie) {
         this.foxie = foxie;
     }
-    
+
     @Override
     public boolean canUse() {
         if (!this.foxie.stateControl.canSeekShelter()) return false;
         if (!this.foxie.level.isRaining() && !this.foxie.level.isThundering()) return false;
         return this.standsInRain();
     }
-    
+
     @Override
     public void start() {
-        
-    } 
-    
-    // TODO: WHITEBOX TESTING!!!! URGENTLY
-    public BlockPos findShelter() {
-        var position_start = this.foxie.blockPosition();
-        var y_start = position_start.getY() - 2;
-        var y_end = position_start.getY() + 2;
-        
-        // Iterate Block Height in range of +/- 2 height
-        // TODO: Search from current y first 
-        for (int y = y_start; y < y_end; y++) {  
-            
-            // TODO: Bug: the surface would be cover as well now!
-            
-            for (int distance = 1; distance < 10; distance++) {
-                
-                // Apply radius first before searching
-                var position_current = new BlockPos(position_start.getX(), position_start.getY(), position_start.getZ());
-                for (int front = distance; front > 0; front--)
-                    position_current = position_current.north();
-                    
-                for (int right_right = 0; right_right < distance; right_right++) {
-                    if (this.hasCover(position_current))
-                        return position_current;
-                    position_current = position_start.east();
-                }
-                
-                for (int down = -distance; down < distance; down++) {
-                    if (this.hasCover(position_current))
-                        return position_current;
-                    position_current.south();
-                }
-                
-                for (int left = -distance; left < distance; left++) {
-                    if (this.hasCover(position_current))
-                        return position_current;
-                    position_current.west();                    
-                }
-                
-                for (int top = -distance; top < distance; top++) {
-                    if (this.hasCover(position_current))
-                        return position_current;
-                    position_current.north();
-                }
-                
-                for (int left_right = -distance; left_right < 0; left_right++) {
-                    if (this.hasCover(position_current))
-                        return position_current;
-                    position_current.east();
-                }
-                
-                // No shelter found in current radius 
-                
-            }
-            
-            
-        }
-        
-        var position_current = new BlockPos(position.getX(), position.getY(), position.getZ());
+        this.target = this.findShelter();
+        this.foxie.getNavigation().moveTo(target.getX(), target.getY(), target.getZ(), 1.0F);
     }
     
-    public boolean hasCover(BlockPos position) {
-        var position_current = new BlockPos(position.getX(), position.getY(), position.getZ());
+    public void 
+
+    // TODO: WHITEBOX TESTING!!!! URGENTLY
+    public BlockPos findShelter() {
+
+        var position_start = this.foxie.blockPosition();
+
+        for (int distance = 1; distance < 5; distance++) {
+
+            // Apply radius first before searching
+            var current_x = position_start.getX();
+            var current_z = position_start.getZ() + distance;
+
+            for (int tl_to_tr = -distance; tl_to_tr < distance; tl_to_tr++) {
+                var top_solid = this.foxie.level.getHeight(Heightmap.Types.WORLD_SURFACE, current_x, current_z);
+                if (this.hasCover(current_x, top_solid, current_z) && this.canNavigateTo(current_x, top_solid, current_z))
+                    return new BlockPos(current_x, top_solid, current_z);
+                current_x++;
+            }
+
+            for (int tr_to_br = -distance; tr_to_br < distance; tr_to_br++) {
+                var top_solid = this.foxie.level.getHeight(Heightmap.Types.WORLD_SURFACE, current_x, current_z);
+                if (this.hasCover(current_x, top_solid, current_z) && this.canNavigateTo(current_x, top_solid, current_z))
+                    return new BlockPos(current_x, top_solid, current_z);
+                current_z--;
+            }
+
+            for (int br_to_bl = distance; br_to_bl > -distance; br_to_bl--) {
+                var top_solid = this.foxie.level.getHeight(Heightmap.Types.WORLD_SURFACE, current_x, current_z);
+                if (this.hasCover(current_x, top_solid, current_z) && this.canNavigateTo(current_x, top_solid, current_z))
+                    return new BlockPos(current_x, top_solid, current_z);
+                current_x--;
+            }
+
+            for (int bl_to_tl = distance; bl_to_tl > -distance; bl_to_tl--) {
+                var top_solid = this.foxie.level.getHeight(Heightmap.Types.WORLD_SURFACE, current_x, current_z);
+                if (this.hasCover(current_x, top_solid, current_z) && this.canNavigateTo(current_x, top_solid, current_z))
+                    return new BlockPos(current_x, top_solid, current_z);
+                current_z++;
+            }
+
+            // No shelter found in current radius
+        }
+        
+        return null;
+    }
+
+    public boolean hasCover(int x, int y, int z) {
+        var position_current = new BlockPos(x, y, z);
 
         for (int i = 0; i < 32; i++) {
             if (!this.foxie.level.getBlockState(position_current).isAir())
@@ -94,9 +84,16 @@ public class FoxieSeekShelterGoal extends Goal {
 
         return false;
     }
-    
+
+    public boolean canNavigateTo(int x, int y, int z) {
+        var pos = new BlockPos(x, y, z);
+        var path = this.foxie.getNavigation().createPath(pos, 10);
+        if (path == null) return false;
+        return path.canReach();
+    }
+
     public boolean standsInRain() {
-        var position_start = this.foxie.blockPosition();
-        return !this.hasCover(position_start);
+        var pos = this.foxie.blockPosition();
+        return !this.hasCover(pos.getX(), pos.getY(), pos.getZ());
     }
 }
