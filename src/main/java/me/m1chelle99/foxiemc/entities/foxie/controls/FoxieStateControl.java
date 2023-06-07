@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -123,6 +124,26 @@ public class FoxieStateControl {
         return !this.isSleeping()
                 && !this.isCommanded()
                 && !this.isPouncing();
+    }
+    
+    private LivingHurtEvent _lastHurtEvent;
+        
+    private boolean _isInPanic;
+    
+    public boolean isInPanic() {
+        return this._isInPanic;
+    }
+
+    public boolean setInPanic() {
+        return setInPanic(true);
+    }
+
+    public boolean setInPanic(boolean value = true) {
+        
+    }
+    
+    public void onHurt(LivingHurtEvent event) {
+        // 
     }
 
     private void calculateHungerStrength() {

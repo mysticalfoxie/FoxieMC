@@ -1,4 +1,4 @@
-package me.m1chelle99.foxiemc.entities.foxie.goals;
+package me.m1chelle99.foxiemc.entities.foxie.goals.panic;
 
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
 import me.m1chelle99.foxiemc.entities.foxie.FoxieConstants;
@@ -7,32 +7,28 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
 
-public class FoxieFirePanicGoal extends Goal {
-    private final Foxie foxie;
-    private Vec3 target;
+public class FoxieFirePanicGoal extends FoxieAbstractPanicGoal {
     private int cooldown;
 
     public FoxieFirePanicGoal(Foxie foxie) {
-
-        this.foxie = foxie;
-    }
-    
-    public boolean canUse() {
-        return this.foxie.isOnFire();
+        super(foxie);
     }
 
-    public void start() {
-        this.cooldown = this.foxie.getRandomTicksWithin(3, 8);
-        this.setNewTarget();
-        this.foxie.runTo(this.target, FoxieConstants.MS_PANIC_MULTIPLIER);
-    }
-    
+    @Override
+    public boolean canUse() { return super.canUse() &&  this.foxie.isOnFire(); }
+
+    @Override
     public void setNewTarget() {
         this.setWaterAsTarget();
         if (this.target == null)
             this.target = this.foxie.getRandomTargetWithin(3);
     }
-    
+
+    @Override
+    public void setCooldown() {
+        this.cooldown = this.foxie.getRandomTicksWithin(3, 8);
+    }
+
     public void setWaterAsTarget() {
         var position = this.foxie.blockPosition();
         var current_block = this.foxie.level.getBlockState(position);
@@ -45,22 +41,10 @@ public class FoxieFirePanicGoal extends Goal {
 
         this.target = new Vec3(match.get().getX(), match.get().getY(), match.get().getZ());
     }
-    
+
+    @Override
     public void stop() {
         this.target = null;
         this.cooldown = 0;
-    }
-    
-    public boolean requiresUpdateEveryTick() { return true; }
-
-    public boolean canContinueToUse() { return this.cooldown > 0 || this.foxie.isDeadOrDying(); }
-    
-    public void tick() {
-        if (this.foxie.level.isClientSide) return;
-        if (this.cooldown <= 0) return;
-        this.cooldown--;
-        
-        if (!this.foxie.getNavigation().isDone()) return;
-        this.setNewTarget();
     }
 }

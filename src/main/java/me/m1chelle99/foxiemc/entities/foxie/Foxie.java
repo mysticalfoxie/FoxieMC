@@ -34,6 +34,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,6 +68,13 @@ public class Foxie extends TamableAnimal {
 
         this.setCanPickUpLoot(true);
         this.setTame(false);
+    }
+    
+    @SubscribeEvent
+    public static void onDamageReceived(LivingHurtEvent event) {
+        if (!(event.getEntity() instanceof Foxie)) return;
+        var foxie = (Foxie)event.getEntity();
+        foxie.stateControl.onHurt(event);
     }
 
     public static AttributeSupplier.Builder getFoxieAttributes() {
@@ -118,7 +127,7 @@ public class Foxie extends TamableAnimal {
         this.setItemSlot(EquipmentSlot.MAINHAND, stack);
     }
     
-    public void runTo(Vec3 position, double multiplier) {
+    public void runTo(@NotNull Vec3 position, double multiplier) {
         this.getNavigation().moveTo(position.x, position.y, position.z, multiplier);
     }
 
