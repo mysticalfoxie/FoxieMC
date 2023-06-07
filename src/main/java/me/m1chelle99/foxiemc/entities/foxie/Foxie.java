@@ -20,6 +20,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.animal.*;
 import net.minecraft.world.entity.animal.goat.Goat;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -115,6 +116,20 @@ public class Foxie extends TamableAnimal {
             stack = new ItemStack(Items.FEATHER);
 
         this.setItemSlot(EquipmentSlot.MAINHAND, stack);
+    }
+    
+    public void runTo(Vec3 position, double multiplier) {
+        this.getNavigation().moveTo(position.x, position.y, position.z, multiplier);
+    }
+
+    public Vec3 getRandomTargetWithin(int distance) {
+        return DefaultRandomPos.getPos(this, distance, 4);
+    }
+    
+    public int getRandomTicksWithin(float min_seconds, float max_seconds) {
+        var min_ticks = Math.round(min_seconds * 20);
+        var max_ticks = Math.round(max_seconds * 20);
+        return this.getRandom().nextInt(min_ticks, max_ticks);
     }
 
     protected SoundEvent getAmbientSound() {
