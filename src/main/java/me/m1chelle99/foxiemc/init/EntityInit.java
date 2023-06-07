@@ -1,7 +1,7 @@
 package me.m1chelle99.foxiemc.init;
 
 import me.m1chelle99.foxiemc.FoxieMCMod;
-import me.m1chelle99.foxiemc.entities.foxie.Foxie;
+import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.registries.DeferredRegister;
