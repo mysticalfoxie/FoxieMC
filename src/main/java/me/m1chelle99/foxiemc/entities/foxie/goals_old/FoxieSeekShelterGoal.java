@@ -1,4 +1,4 @@
-package me.m1chelle99.foxiemc.entities.foxie.goals;
+package me.m1chelle99.foxiemc.entities.foxie.goals_old;
 
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
 import me.m1chelle99.foxiemc.entities.foxie.controls.FoxieAIControl;

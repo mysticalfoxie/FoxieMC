@@ -1,7 +1,7 @@
 package me.m1chelle99.foxiemc.entities.foxie;
 
 import me.m1chelle99.foxiemc.entities.foxie.controls.*;
-import me.m1chelle99.foxiemc.entities.foxie.goals.*;
+import me.m1chelle99.foxiemc.entities.foxie.goals_old.*;
 import me.m1chelle99.foxiemc.init.EntityInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -44,6 +44,8 @@ public class Foxie extends TamableAnimal {
     public final FoxieMouthControl mouthControl;
     public final FoxieStateControl stateControl;
 
+    public final FoxieActivityControl activityControl;
+    public final FoxieHungerControl hungerControl;
     private float interestedAngle;
     private ItemEntity _spittedItem;
 
@@ -56,6 +58,7 @@ public class Foxie extends TamableAnimal {
         this.stateControl = new FoxieStateControl(this);
         this.mouthControl = new FoxieMouthControl(this);
         this.hungerControl = new FoxieHungerControl(this);
+        this.activityControl = new FoxieActivityControl(this);
 
         this.setPathfindingMalus(BlockPathTypes.DANGER_OTHER, 0.0F);
         this.setPathfindingMalus(BlockPathTypes.DAMAGE_OTHER, 0.0F);
@@ -294,7 +297,7 @@ public class Foxie extends TamableAnimal {
         this.goalSelector.addGoal(0, new FoxieFloatGoal(this));
         this.goalSelector.addGoal(0, new ClimbOnTopOfPowderSnowGoal(this, this.level));
         this.goalSelector.addGoal(1, new FoxieFaceplantGoal(this));
-        this.goalSelector.addGoal(2, new FoxiePanicGoal(this, FoxieConstants.PANIC_MOVEMENT_SPEED_MULTIPLIER));
+        this.goalSelector.addGoal(2, new FoxiePanicGoal(this, FoxieConstants.MS_PANIC_MULTIPLIER));
         // TODO: Custom breeding... Im not breedable like an animal... grrr! put that berries away! *grrrr*
 
         this.goalSelector.addGoal(3, new FoxieObeyDownCommandGoal(this));

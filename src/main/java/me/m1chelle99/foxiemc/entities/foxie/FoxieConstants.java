@@ -8,7 +8,7 @@ public final class FoxieConstants {
     public static final Double ATTACK_DAMAGE = 3.0D;
 
     // AI Modifiers    
-    public static final Double PANIC_MOVEMENT_SPEED_MULTIPLIER = 2.5D;
+    public static final Double MS_PANIC_MULTIPLIER = 2.5D;
     public static final Double EAT_BERRIES_SPEED_MULTIPLIER = 1.2D;
     public static final int BERRIES_SEARCH_RANGE = 20;
     public static final Double SEEK_SHELTER_MOVEMENT_SPEED_MULTIPLIER = 1.25D;

@@ -13,6 +13,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class FoxieHeldItemLayer extends RenderLayer<Foxie, FoxieModel> {
@@ -21,7 +22,7 @@ public class FoxieHeldItemLayer extends RenderLayer<Foxie, FoxieModel> {
     }
 
     @Override
-    public void render(PoseStack stack, MultiBufferSource bufferIn, int packedLightIn, Foxie entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(@NotNull PoseStack stack, @NotNull MultiBufferSource bufferIn, int packedLightIn, Foxie entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         ItemStack itemstack = entity.getItemBySlot(EquipmentSlot.MAINHAND);
         if (!itemstack.isEmpty()) {
             boolean sleeping = entity.isSleeping();
