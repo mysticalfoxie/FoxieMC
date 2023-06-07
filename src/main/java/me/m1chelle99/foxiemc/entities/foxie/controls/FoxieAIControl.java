@@ -3,6 +3,7 @@ package me.m1chelle99.foxiemc.entities.foxie.controls;
 import me.m1chelle99.foxiemc.entities.foxie.Foxie;
 import org.jetbrains.annotations.Nullable;
 
+import java.security.PublicKey;
 import java.util.UUID;
 
 public class FoxieAIControl {
@@ -22,8 +23,6 @@ public class FoxieAIControl {
 
     public boolean isPanic() { return this._isPanic; }
     
-    public boolean 
-    
     public void setPanic(boolean value) { this._isPanic = value; }
     
     public void trust(@Nullable UUID id) {
@@ -33,5 +32,4 @@ public class FoxieAIControl {
 
     public boolean isTrusted(UUID player) {
         return this.foxie.stateControl.isTrusted(player);
-    
 }

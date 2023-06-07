@@ -8,8 +8,6 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
 
 public class FoxieFirePanicGoal extends FoxieAbstractPanicGoal {
-    private int cooldown;
-
     public FoxieFirePanicGoal(Foxie foxie) {
         super(foxie);
     }
@@ -40,11 +38,5 @@ public class FoxieFirePanicGoal extends FoxieAbstractPanicGoal {
         if (match.isEmpty()) return;
 
         this.target = new Vec3(match.get().getX(), match.get().getY(), match.get().getZ());
-    }
-
-    @Override
-    public void stop() {
-        this.target = null;
-        this.cooldown = 0;
     }
 }

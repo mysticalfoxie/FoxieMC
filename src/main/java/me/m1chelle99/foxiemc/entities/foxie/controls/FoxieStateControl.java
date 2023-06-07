@@ -9,6 +9,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.openjdk.nashorn.api.tree.ReturnTree;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -124,6 +125,10 @@ public class FoxieStateControl {
         return !this.isSleeping()
                 && !this.isCommanded()
                 && !this.isPouncing();
+    }
+    
+    public boolean canSeekShelter() {
+        return !this.isCommanded() && !this.isPouncing() && !this.isInPanic();
     }
     
     private LivingHurtEvent _lastHurtEvent;
