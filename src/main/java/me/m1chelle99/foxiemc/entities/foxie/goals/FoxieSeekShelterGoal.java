@@ -17,83 +17,82 @@ public class FoxieSeekShelterGoal extends Goal {
     public boolean canUse() {
         if (!this.foxie.stateControl.canSeekShelter()) return false;
         if (!this.foxie.level.isRaining() && !this.foxie.level.isThundering()) return false;
-        return this.standsInRain();
+        return this.foxie.level.isRainingAt(this.foxie.blockPosition());
     }
 
     @Override
-    public void start() {
-        this.target = this.findShelter();
-        this.foxie.getNavigation().moveTo(target.getX(), target.getY(), target.getZ(), 1.0F);
+    public void stop() {
+        this.target = null;
     }
-    
-    public void 
+
+    @Override
+    public void tick() {
+        if (this.target != null && this.foxie.getNavigation().isInProgress()) return;
+        if (this.target != null && !this.foxie.getNavigation().isStuck()) return;
+
+        this.target = this.findNewShelter();
+        var navigator = this.foxie.getNavigation();
+        navigator.moveTo(target.getX(), target.getY(), target.getZ(), 1.0F);
+    }
+
+    @Override
+    public boolean canContinueToUse() {
+        var pos = this.foxie.blockPosition();
+        return this.foxie.level.isRainingAt(pos);
+    }
 
     // TODO: WHITEBOX TESTING!!!! URGENTLY
-    public BlockPos findShelter() {
+    public BlockPos findNewShelter() {
+        var start = this.foxie.blockPosition();
 
-        var position_start = this.foxie.blockPosition();
+        for (int distance = 1; distance < 10; distance++) {
 
-        for (int distance = 1; distance < 5; distance++) {
-
-            // Apply radius first before searching
-            var current_x = position_start.getX();
-            var current_z = position_start.getZ() + distance;
-
-            for (int tl_to_tr = -distance; tl_to_tr < distance; tl_to_tr++) {
-                var top_solid = this.foxie.level.getHeight(Heightmap.Types.WORLD_SURFACE, current_x, current_z);
-                if (this.hasCover(current_x, top_solid, current_z) && this.canNavigateTo(current_x, top_solid, current_z))
-                    return new BlockPos(current_x, top_solid, current_z);
-                current_x++;
+            for (int t = 0; t < distance; t++) {
+                var x = start.getX();
+                var z = start.getZ() + t;
+                var y = this.foxie.level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
+                if (this.foxie.level.isRainingAt(new BlockPos(x, y, z))) continue;
+                if (this.isUnreachable(x, y, z)) continue;
+                return new BlockPos(x, y, z);
             }
 
-            for (int tr_to_br = -distance; tr_to_br < distance; tr_to_br++) {
-                var top_solid = this.foxie.level.getHeight(Heightmap.Types.WORLD_SURFACE, current_x, current_z);
-                if (this.hasCover(current_x, top_solid, current_z) && this.canNavigateTo(current_x, top_solid, current_z))
-                    return new BlockPos(current_x, top_solid, current_z);
-                current_z--;
+            for (int r = 0; r < distance; r++) {
+                var x = start.getX() + r;
+                var z = start.getZ();
+                var y = this.foxie.level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
+                if (this.foxie.level.isRainingAt(new BlockPos(x, y, z))) continue;
+                if (this.isUnreachable(x, y, z)) continue;
+                return new BlockPos(x, y, z);
             }
 
-            for (int br_to_bl = distance; br_to_bl > -distance; br_to_bl--) {
-                var top_solid = this.foxie.level.getHeight(Heightmap.Types.WORLD_SURFACE, current_x, current_z);
-                if (this.hasCover(current_x, top_solid, current_z) && this.canNavigateTo(current_x, top_solid, current_z))
-                    return new BlockPos(current_x, top_solid, current_z);
-                current_x--;
+            for (int b = 0; b < (distance / 2); b++) {
+                var x = start.getX();
+                var z = start.getZ() - b;
+                var y = this.foxie.level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
+                if (this.foxie.level.isRainingAt(new BlockPos(x, y, z))) continue;
+                if (this.isUnreachable(x, y, z)) continue;
+                return new BlockPos(x, y, z);
             }
 
-            for (int bl_to_tl = distance; bl_to_tl > -distance; bl_to_tl--) {
-                var top_solid = this.foxie.level.getHeight(Heightmap.Types.WORLD_SURFACE, current_x, current_z);
-                if (this.hasCover(current_x, top_solid, current_z) && this.canNavigateTo(current_x, top_solid, current_z))
-                    return new BlockPos(current_x, top_solid, current_z);
-                current_z++;
+            for (int l = 0; l < distance; l++) {
+                var x = start.getX() - l;
+                var z = start.getZ();
+                var y = this.foxie.level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
+                if (this.foxie.level.isRainingAt(new BlockPos(x, y, z))) continue;
+                if (this.isUnreachable(x, y, z)) continue;
+                return new BlockPos(x, y, z);
             }
 
             // No shelter found in current radius
         }
-        
+
         return null;
     }
 
-    public boolean hasCover(int x, int y, int z) {
-        var position_current = new BlockPos(x, y, z);
-
-        for (int i = 0; i < 32; i++) {
-            if (!this.foxie.level.getBlockState(position_current).isAir())
-                return true;
-            position_current = position_current.above();
-        }
-
-        return false;
-    }
-
-    public boolean canNavigateTo(int x, int y, int z) {
+    public boolean isUnreachable(int x, int y, int z) {
         var pos = new BlockPos(x, y, z);
         var path = this.foxie.getNavigation().createPath(pos, 10);
-        if (path == null) return false;
-        return path.canReach();
-    }
-
-    public boolean standsInRain() {
-        var pos = this.foxie.blockPosition();
-        return !this.hasCover(pos.getX(), pos.getY(), pos.getZ());
+        if (path == null) return true;
+        return !path.canReach();
     }
 }
