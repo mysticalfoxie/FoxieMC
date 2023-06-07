@@ -3,7 +3,6 @@ package me.m1chelle99.foxiemc.entity.foxie.controls;
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.player.Player;
@@ -12,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class FoxieHungerControl {
     private final Foxie foxie;
+    private int _ticksSinceLastEaten = 0;
 
     public FoxieHungerControl(Foxie foxie) {
 
@@ -63,19 +63,19 @@ public class FoxieHungerControl {
         this.foxie.heal(nutrition);
     }
 
-    public boolean canInteract(@NotNull Player player, @NotNull InteractionHand hand) {
+    public boolean canInteract(@NotNull Player player) {
         if (!this.foxie.aiControl.canEat()) return false;
         var item = player.getMainHandItem();
         return this.isEdible(item);
     }
 
-    public InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
-        this.eatItemInMouth();
+    public InteractionResult interact(@NotNull Player player) {
+        this.eatItemFromHand(player.getMainHandItem());
         return InteractionResult.CONSUME;
     }
 
     private void tryEat() {
-        if (!this.foxie.stateControl.isHungry()) return;
+        if (!this.isHungry()) return;
         if (!this.foxie.aiControl.canEat()) return;
         if (!this.foxie.mouthControl.hasItem()) return;
 
@@ -88,9 +88,26 @@ public class FoxieHungerControl {
             return;
         }
 
-        if (!this.foxie.stateControl.isHeavilyHungry()) return;
+        if (!this.isHeavilyHungry()) return;
 
         this.eatItemInMouth();
+    }
+
+
+    public boolean isSatiated() {
+        return this.foxie.stateControl.getHungerStrength() == 0;
+    }
+
+    public boolean isHungry() {
+        return this.isHeavilyHungry() || this.isSlightlyHungry();
+    }
+
+    public boolean isSlightlyHungry() {
+        return this.foxie.stateControl.getHungerStrength() == 1;
+    }
+
+    public boolean isHeavilyHungry() {
+        return this.foxie.stateControl.getHungerStrength() >= 2;
     }
 
     public void tick() {
@@ -98,8 +115,7 @@ public class FoxieHungerControl {
         if (!this.foxie.isAlive()) return;
         if (!this.foxie.isEffectiveAi()) return;
 
-        var ticksSinceEaten = this.foxie.stateControl.getTicksSinceLastEaten();
-        this.foxie.stateControl.setTicksSinceLastFood(++ticksSinceEaten);
+        ++_ticksSinceLastEaten;
 
         this.tryEat();
     }

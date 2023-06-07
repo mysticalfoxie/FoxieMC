@@ -1,7 +1,6 @@
 package me.m1chelle99.foxiemc.entity.foxie.controls;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.player.Player;
@@ -42,12 +41,12 @@ public class FoxieOwnerControl {
     }
 
     // TODO: Handle both client but server
-    public boolean canInteract(@NotNull Player player, @NotNull InteractionHand hand) {
+    public boolean canInteract(@NotNull Player player) {
         var item = player.getMainHandItem();
         //this.
     }
 
-    public InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
+    public InteractionResult interact(@NotNull Player player) {
         // Give foxie some food
         // TODO: Refuse to eat when tummy's full, even if health is slightly lower
         if (this.isFood(stack) && this.getHealth() < this.getMaxHealth()) {

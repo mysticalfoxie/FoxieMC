@@ -140,4 +140,8 @@ public class FoxieMouthControl {
 
         this.foxie.setItemSlot(EquipmentSlot.MAINHAND, stack);
     }
+
+    public void tick() {
+
+    }
 }

@@ -31,7 +31,7 @@ public class Foxie extends TamableAnimal {
     public static final String ID = "foxie";
     public final FoxieAIControl aiControl;
     public final FoxieMouthControl mouthControl;
-    public final FoxieStateControl stateControl;
+    public final FoxieDataControl stateControl;
     public final FoxieHungerControl hungerControl;
     private final FoxieOwnerControl ownerControl;
 
@@ -41,7 +41,7 @@ public class Foxie extends TamableAnimal {
         this.moveControl = new FoxieMoveControl(this);
         this.lookControl = new FoxieLookControl(this);
         this.aiControl = new FoxieAIControl(this);
-        this.stateControl = new FoxieStateControl(this);
+        this.stateControl = new FoxieDataControl(this);
         this.mouthControl = new FoxieMouthControl(this);
         this.hungerControl = new FoxieHungerControl(this);
         this.ownerControl = new FoxieOwnerControl(this);
@@ -234,11 +234,8 @@ public class Foxie extends TamableAnimal {
     }
 
     public @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand hand) {
-        if (this.ownerControl.canInteract(player, hand))
-            return this.ownerControl.interact(player, hand);
-
-        if (this.hungerControl.canInteract(player, hand))
-            return this.hungerControl.interact(player, hand);
+        if (this.ownerControl.canInteract(player)) return this.ownerControl.interact(player);
+        if (this.hungerControl.canInteract(player)) return this.hungerControl.interact(player);
 
         return InteractionResult.PASS;
     }

@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
-public class FoxieStateControl {
+public class FoxieDataControl {
     private static final EntityDataAccessor<Boolean> SITTING = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> INTERESTED = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> POUNCING = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BOOLEAN);
@@ -29,11 +29,10 @@ public class FoxieStateControl {
 
 
     private final Foxie foxie;
-    private int _ticksSinceLastEaten = 0;
-    private LivingHurtEvent _lastHurtEvent;
+    public LivingHurtEvent lastHurtEvent;
     private boolean _isInPanic;
 
-    public FoxieStateControl(Foxie foxie) {
+    public FoxieDataControl(Foxie foxie) {
         this.foxie = foxie;
     }
 
@@ -97,33 +96,13 @@ public class FoxieStateControl {
         this.foxie.getEntityData().set(TRUSTING, Optional.empty());
     }
 
-    public int getTicksSinceLastEaten() {
-        return this._ticksSinceLastEaten;
-    }
-
-    public void setTicksSinceLastFood(int ticks) {
-        this._ticksSinceLastEaten = ticks;
-    }
-
     public boolean isTrusted(@Nullable UUID id) {
         var value = this.foxie.getEntityData().get(TRUSTING);
         return value.isPresent() && value.get() == id;
     }
 
-    public boolean isSatiated() {
-        return this.foxie.getEntityData().get(HUNGER_STRENGTH) == 0;
-    }
-
-    public boolean isHungry() {
-        return this.isHeavilyHungry() || this.isSlightlyHungry();
-    }
-
-    public boolean isSlightlyHungry() {
-        return this.foxie.getEntityData().get(HUNGER_STRENGTH) == 1;
-    }
-
-    public boolean isHeavilyHungry() {
-        return this.foxie.getEntityData().get(HUNGER_STRENGTH) >= 2;
+    public int getHungerStrength() {
+        return this.foxie.getEntityData().get(HUNGER_STRENGTH);
     }
 
     public boolean canMove() {
