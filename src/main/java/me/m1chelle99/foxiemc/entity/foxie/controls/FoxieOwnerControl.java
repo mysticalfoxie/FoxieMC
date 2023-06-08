@@ -1,15 +1,14 @@
 package me.m1chelle99.foxiemc.entity.foxie.controls;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
+import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraftforge.event.ForgeEventFactory;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
+import java.util.UUID;
 
 public class FoxieOwnerControl {
     private final Foxie foxie;
@@ -20,7 +19,11 @@ public class FoxieOwnerControl {
     }
 
     public void isTame() {
+        this.foxie.isTame();
+    }
 
+    public boolean isOwner(UUID uuid) {
+        return this.foxie.getOwnerUUID() == uuid;
     }
 
     public void tryTame(Player player, ItemStack stack) {
@@ -41,39 +44,28 @@ public class FoxieOwnerControl {
     }
 
     // TODO: Handle both client but server
-    public boolean canInteract(@NotNull Player player) {
-        var item = player.getMainHandItem();
-        //this.
+    public boolean canInteract(Player player) {
+        if (!this.isOwner(player.getUUID())) return false;
+        if (this.foxie.aiControl.isSleeping()) return true;
+        return this.foxie.aiControl.canBeCommanded();
     }
 
-    public InteractionResult interact(@NotNull Player player) {
-        // Give foxie some food
-        // TODO: Refuse to eat when tummy's full, even if health is slightly lower
-        if (this.isFood(stack) && this.getHealth() < this.getMaxHealth()) {
-            var food_data = Objects.requireNonNull(stack.getFoodProperties(this));
-            this.heal((float) food_data.getNutrition());
-            if (!player.getAbilities().instabuild)
-                stack.shrink(1);
+    public InteractionResult wakeUp() {
+        this.foxie.aiControl.setCommand(FoxieConstants.COMMAND_SIT);
+        return InteractionResult.SUCCESS;
+    }
 
-            this.gameEvent(GameEvent.MOB_INTERACT, this.eyeBlockPosition());
-            return InteractionResult.SUCCESS;
-        }
+    public InteractionResult interact() {
+        if (this.foxie.aiControl.isSleeping())
+            return this.wakeUp();
 
-        // Wake foxie up, get up (this is currently both, down command and sleeping, TODO: Change that! c:)
-        if (this.getFlag(FoxieAIControl.SLEEPING) || this.getFlag(FoxieAIControl.COMMAND_DOWN)) {
-            this.setFlag(FoxieAIControl.SLEEPING, false);
-            this.setFlag(FoxieAIControl.COMMAND_DOWN, false);
-            // immediately show interest for something when getting up again
-            this.setFlag(FoxieAIControl.INTERESTED, true);
-            return InteractionResult.SUCCESS;
-        }
+        if (!this.foxie.aiControl.canBeCommanded())
+            return InteractionResult.PASS;
 
-        // Foxie lay down buddy!
-        if (!this.getFlag(FoxieAIControl.COMMAND_DOWN)) {
-            this.clearStates();
-            this.setFlag(FoxieAIControl.COMMAND_DOWN, true);
-            return InteractionResult.SUCCESS;
-        }
+        if (!this.foxie.aiControl.isCommanded())
+            this.foxie.aiControl.setCommand(FoxieConstants.COMMAND_SIT);
+        else
+            this.foxie.aiControl.setCommand(FoxieConstants.COMMAND_NONE);
 
         return InteractionResult.PASS;
     }

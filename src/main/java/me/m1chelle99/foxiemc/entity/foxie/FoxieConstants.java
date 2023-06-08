@@ -29,6 +29,15 @@ public final class FoxieConstants {
     public static final Integer HUNGER_HEAVY = 2;
 
     // Commands
-    public static final Integer COMMAND_NONE = 0;
-    public static final Integer COMMAND_DOWN = 1;
+    public static final Byte COMMAND_NONE = 0;
+    public static final Byte COMMAND_SIT = 1;
+
+    // Activities
+    public static final Byte ACTIVITY_NONE = 0;
+    public static final Byte ACTIVITY_PANIC = 1;
+    public static final Byte ACTIVITY_SEEK_SHELTER = 2;
+    public static final Byte ACTIVITY_SLEEP = 3;
+    public static final Byte ACTIVITY_OBEY = 4;
+    public static final Byte ACTIVITY_HUNT = 5;
+    public static final Byte ACTIVITY_STRAY = 6;
 }

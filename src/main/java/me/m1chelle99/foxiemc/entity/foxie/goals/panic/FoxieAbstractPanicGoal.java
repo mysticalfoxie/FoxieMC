@@ -16,7 +16,7 @@ public abstract class FoxieAbstractPanicGoal extends Goal {
 
     public boolean canUse() {
         if (this.foxie.isDeadOrDying()) return false;
-        return this.foxie.stateControl.isInPanic();
+        return this.foxie.aiControl.isPanic();
     }
 
     public void start() {

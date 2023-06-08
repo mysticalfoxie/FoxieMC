@@ -31,7 +31,7 @@ public class Foxie extends TamableAnimal {
     public static final String ID = "foxie";
     public final FoxieAIControl aiControl;
     public final FoxieMouthControl mouthControl;
-    public final FoxieDataControl stateControl;
+    public final FoxieDataControl dataControl;
     public final FoxieHungerControl hungerControl;
     private final FoxieOwnerControl ownerControl;
 
@@ -40,8 +40,8 @@ public class Foxie extends TamableAnimal {
 
         this.moveControl = new FoxieMoveControl(this);
         this.lookControl = new FoxieLookControl(this);
+        this.dataControl = new FoxieDataControl(this);
         this.aiControl = new FoxieAIControl(this);
-        this.stateControl = new FoxieDataControl(this);
         this.mouthControl = new FoxieMouthControl(this);
         this.hungerControl = new FoxieHungerControl(this);
         this.ownerControl = new FoxieOwnerControl(this);
@@ -55,7 +55,7 @@ public class Foxie extends TamableAnimal {
     @SubscribeEvent
     public static void onDamageReceived(LivingHurtEvent event) {
         if (!(event.getEntity() instanceof Foxie foxie)) return;
-        foxie.stateControl.onHurt(event);
+        foxie.aiControl.onHurt();
     }
 
     public static AttributeSupplier.Builder getFoxieAttributes() {
@@ -96,7 +96,7 @@ public class Foxie extends TamableAnimal {
     }
 
     protected SoundEvent getAmbientSound() {
-        return this.stateControl.getAmbientSound();
+        return this.aiControl.getAmbientSound();
     }
 
     protected void pickUpItem(@NotNull ItemEntity item) {
@@ -179,12 +179,12 @@ public class Foxie extends TamableAnimal {
 
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.stateControl.defineStates();
+        this.dataControl.defineStates();
     }
 
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.stateControl.readSaveData(compound);
+        this.dataControl.readSaveData(compound);
     }
 
     public boolean canTakeItem(@NotNull ItemStack stack) {
@@ -202,7 +202,7 @@ public class Foxie extends TamableAnimal {
 
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        this.stateControl.writeSaveData(compound);
+        this.dataControl.writeSaveData(compound);
     }
 
     public SpawnGroupData finalizeSpawn(
@@ -234,8 +234,8 @@ public class Foxie extends TamableAnimal {
     }
 
     public @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand hand) {
-        if (this.ownerControl.canInteract(player)) return this.ownerControl.interact(player);
         if (this.hungerControl.canInteract(player)) return this.hungerControl.interact(player);
+        if (this.ownerControl.canInteract(player)) return this.ownerControl.interact();
 
         return InteractionResult.PASS;
     }
