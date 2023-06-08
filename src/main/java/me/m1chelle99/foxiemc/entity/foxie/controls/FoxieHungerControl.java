@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.gameevent.GameEvent;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("CommentedOutCode") // TODO: Remove before merge
 public class FoxieHungerControl {
     private final Foxie foxie;
     private int _ticksSinceLastEaten = 0;
@@ -44,7 +45,7 @@ public class FoxieHungerControl {
 
         // TODO: Implement over a span of ticks! UwU #tomakeitperfect
         this.foxie.playSound(SoundEvents.FOX_EAT, 1.0F, 1.0F);
-
+        this.foxie.mouthControl.summonFoodParticles();
         this.foxie.level.broadcastEntityEvent(this.foxie, EntityEvent.FOX_EAT);
         this.foxie.heal(nutrition);
     }
@@ -61,10 +62,17 @@ public class FoxieHungerControl {
         if (!player.isCreative()) stack.shrink(-1);
         this._ticksSinceLastEaten = 0;
         this.foxie.playSound(SoundEvents.FOX_EAT, 1.0F, 1.0F);
+        this.foxie.mouthControl.summonFoodParticles();
         this.foxie.level.broadcastEntityEvent(this.foxie, EntityEvent.FOX_EAT);
         this.foxie.gameEvent(GameEvent.MOB_INTERACT, this.foxie.eyeBlockPosition());
         this.foxie.heal(nutrition);
     }
+
+//    public boolean isPrey(LivingEntity entity) {
+//        return entity instanceof Chicken
+//                || entity instanceof Rabbit
+//                || entity instanceof Sheep;
+//    }
 
     public boolean canInteract(@NotNull Player player) {
         if (!this.foxie.aiControl.canEat()) return false;

@@ -27,6 +27,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("CommentedOutCode") // TODO: Remove before merge
 public class Foxie extends TamableAnimal {
     public static final String ID = "foxie";
     public final FoxieAIControl aiControl;
@@ -231,6 +232,7 @@ public class Foxie extends TamableAnimal {
     public void tick() {
         super.tick();
         this.aiControl.tick();
+        this.hungerControl.tick();
     }
 
     public @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand hand) {
@@ -250,5 +252,9 @@ public class Foxie extends TamableAnimal {
     @Override
     public AgeableMob getBreedOffspring(@NotNull ServerLevel world, @NotNull AgeableMob foxie) {
         return EntityInit.FOXIE.get().create(world);
+    }
+
+    public float[] getHandDropChances() {
+        return this.handDropChances;
     }
 }

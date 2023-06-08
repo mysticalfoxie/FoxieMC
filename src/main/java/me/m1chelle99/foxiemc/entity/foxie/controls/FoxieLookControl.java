@@ -11,15 +11,9 @@ public class FoxieLookControl extends LookControl {
         this.foxie = foxie;
     }
 
-    protected boolean resetXRotOnTick() {
-        return !foxie.getFlag(FoxieAIControl.POUNCING)
-                && !foxie.getFlag(FoxieAIControl.CROUCHING)
-                && !foxie.getFlag(FoxieAIControl.INTERESTED)
-                && !foxie.getFlag(FoxieAIControl.FACEPLANTED);
-    }
-
     public void tick() {
-        if (!foxie.getFlag(FoxieAIControl.SLEEPING))
-            super.tick();
+        if (!this.foxie.aiControl.canLook()) return;
+        
+        super.tick();
     }
 }

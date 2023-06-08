@@ -6,7 +6,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -78,13 +77,8 @@ public class FoxieDataControl {
         return this.foxie.getEntityData().get(TRUSTING);
     }
 
-    public void setTrusted(@NotNull UUID id) {
-        this.foxie.getEntityData().set(TRUSTING, Optional.of(id));
-    }
-
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public void setTrusted(Optional<UUID> value) {
-        this.foxie.getEntityData().set(TRUSTING, value);
+    public void setTrusted(UUID value) {
+        this.foxie.getEntityData().set(TRUSTING, Optional.of(value));
     }
 
     public void readSaveData(CompoundTag compound) {

@@ -1,22 +1,19 @@
 package me.m1chelle99.foxiemc.entity.foxie.controls;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
+import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.Chicken;
-import net.minecraft.world.entity.animal.Rabbit;
-import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("CommentedOutCode") // TODO: Remove before merge
 public class FoxieMouthControl {
     private final Foxie foxie;
 
@@ -25,16 +22,17 @@ public class FoxieMouthControl {
         this.foxie = foxie;
     }
 
-    // todo: doesnt spit out item except for hunger c;
+    // todo: doesn't spit out item except for hunger c;
     private void spitOutItem(ItemStack stack) {
         if (stack.isEmpty() || this.foxie.level.isClientSide) return;
 
-        _spittedItem = new ItemEntity(this.foxie.level, this.foxie.getX() + this.foxie.getLookAngle().x, this.foxie.getY() + 1.0D, this.foxie.getZ() + this.foxie.getLookAngle().z, stack);
-        _spittedItem.setPickUpDelay(40);
-        _spittedItem.setThrower(this.foxie.getUUID());
+        var pos = new Vec3(this.foxie.getX() + this.foxie.getLookAngle().x, this.foxie.getY() + 1.0D, this.foxie.getZ() + this.foxie.getLookAngle().z);
+        var item = new ItemEntity(this.foxie.level, pos.x, pos.y, pos.z, stack);
+        item.setThrower(this.foxie.getUUID());
+        item.setPickUpDelay(FoxieConstants.PICKUP_DELAY);
 
         this.foxie.playSound(SoundEvents.FOX_SPIT, 1.0F, 1.0F);
-        this.foxie.level.addFreshEntity(_spittedItem);
+        this.foxie.level.addFreshEntity(item);
     }
 
     public void drop() {
@@ -49,14 +47,8 @@ public class FoxieMouthControl {
         this.foxie.level.addFreshEntity(item);
     }
 
-    public @NotNull SoundEvent getEatingSound(@NotNull ItemStack stack) {
-        return SoundEvents.FOX_EAT;
-    }
-
     public void pickupItem(@NotNull ItemEntity item) {
-        if (item == _spittedItem) return;
         var stack = item.getItem();
-
         if (this.foxie.canHoldItem(stack)) {
             int i = stack.getCount();
             if (i > 1)
@@ -65,25 +57,18 @@ public class FoxieMouthControl {
             this.spitOutItem(this.foxie.getItemBySlot(EquipmentSlot.MAINHAND));
             this.foxie.onItemPickup(item);
             this.foxie.setItemSlot(EquipmentSlot.MAINHAND, stack.split(1));
-            // TODO: Verify it's 100% sure. Idk if it's 1.0 or 100.
-            this.foxie.handDropChances[EquipmentSlot.MAINHAND.getIndex()] = 2.0F;
+            this.foxie.getHandDropChances()[EquipmentSlot.MAINHAND.getIndex()] = 1.0F;
             this.foxie.take(item, stack.getCount());
             item.discard();
         }
     }
 
-
-    public boolean isPrey(LivingEntity entity) {
-        return entity instanceof Chicken
-                || entity instanceof Rabbit
-                || entity instanceof Sheep;
-    }
-
-    public boolean canHoldItem(ItemStack stack) {
-        var item = stack.getItem();
-        var held = this.foxie.getItemBySlot(EquipmentSlot.MAINHAND);
-        return held.isEmpty() || this.getTicksSinceLastFood() > 0 && item.isEdible() && !held.getItem().isEdible();
-    }
+//    public boolean canHoldItem(ItemStack stack) {
+//        if (this.foxie.hungerControl.isHungry() && this.foxie.hungerControl.isEdible(stack)) return true;
+//        if (this.foxie.hungerControl.isHeavilyHungry()) return false;
+//
+//        return !this.hasItem();
+//    }
 
     public boolean canTakeItem(ItemStack stack) {
         var slot = Mob.getEquipmentSlotForItem(stack);
@@ -101,8 +86,15 @@ public class FoxieMouthControl {
         return this.foxie.getItemBySlot(EquipmentSlot.MAINHAND);
     }
 
-    public void eatItem() {
+    private void setItem(ItemStack item) {
+        this.foxie.setItemSlot(EquipmentSlot.MAINHAND, item);
+    }
 
+    public void eatItem() {
+        var item = this.getItem();
+        item = item.finishUsingItem(this.foxie.level, this.foxie);
+        if (!item.isEmpty())
+            this.setItem(item);
     }
 
     public void summonFoodParticles() {
@@ -141,7 +133,7 @@ public class FoxieMouthControl {
         this.foxie.setItemSlot(EquipmentSlot.MAINHAND, stack);
     }
 
-    public void tick() {
-
-    }
+//    public void tick() {
+//
+//    }
 }

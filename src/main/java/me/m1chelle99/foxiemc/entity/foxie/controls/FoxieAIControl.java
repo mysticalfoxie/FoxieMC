@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.UUID;
 
+@SuppressWarnings("CommentedOutCode") // TODO: Remove before merge
 public class FoxieAIControl {
     private final Foxie foxie;
     private byte _currentActivity;
@@ -52,7 +53,7 @@ public class FoxieAIControl {
 //            this.foxie.goalSelector.addGoal(3, new FoxieObeyDownCommandGoal(this));
 //            this.foxie.goalSelector.addGoal(4, new FollowOwnerGoal(this, 1.0D, 15.0F, 1.0F, false));
 
-        // TODO: Custom breeding... Im not breedable like a casual animal... grrr! put that berries away! *grrrr*
+        // TODO: Custom breeding... Im not breedable like a casual animal... grrr! put that berries away! *grrr*
         // TODO: Foxie sits in "foxiemc:basket" goal
         // TODO: Foxie sits on bed goal
         // TODO: Foxie sits on block goal
@@ -67,7 +68,7 @@ public class FoxieAIControl {
         // TODO: Tree should be enough
 //            this.foxie.goalSelector.addGoal(9, new FoxieSeekShelterGoal(this, FoxieConstants.SEEK_SHELTER_MOVEMENT_SPEED_MULTIPLIER));
 
-        // TODO: killing prey doesnt reset food bar
+        // TODO: killing prey doesn't reset food bar
         // To make it perfect: Prey is guaranteed to spawn it's drops, foxie holds it in her mouth and eats it after some time
 //            this.foxie.goalSelector.addGoal(10, new FoxieMeleeAttackGoal(this, FoxieConstants.ATTACK_MOVEMENT_SPEED_MULTIPLIER, FoxieConstants.FOLLOW_PREY_EVEN_IF_NOT_SEEN));
 
@@ -152,5 +153,9 @@ public class FoxieAIControl {
 
     public boolean canBeCommanded() {
         return this._currentActivity != FoxieConstants.ACTIVITY_PANIC;
+    }
+
+    public boolean canLook() {
+        return this._currentActivity != FoxieConstants.ACTIVITY_SLEEP;
     }
 }

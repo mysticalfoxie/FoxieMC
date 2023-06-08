@@ -18,6 +18,7 @@ public final class FoxieConstants {
     public static final int STROLL_THROUGH_VILLAGE_INTERVAL = 200;
     public static final Double ALERTING_RANGE = 15.0D;
     public static final Float PLAYER_LOOK_DISTANCE = 32.0F;
+    public static final int PICKUP_DELAY = 300;
 
     // Hunger Ticks
     public static final Integer TICKS_UNTIL_SLIGHT_HUNGER = 1500;
