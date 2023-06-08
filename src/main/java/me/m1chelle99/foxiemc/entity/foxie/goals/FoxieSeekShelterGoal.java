@@ -23,7 +23,7 @@ public class FoxieSeekShelterGoal extends Goal {
 
     @Override
     public void start() {
-        this.foxie.aiControl.activate(FoxieConstants.ACTIVITY_SEEK_SHELTER);
+        this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_SEEK_SHELTER);
     }
 
     @Override

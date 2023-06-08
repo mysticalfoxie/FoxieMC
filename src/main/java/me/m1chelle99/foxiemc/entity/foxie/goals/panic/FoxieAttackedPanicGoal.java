@@ -14,7 +14,7 @@ public class FoxieAttackedPanicGoal extends FoxieAbstractPanicGoal {
 
     @Override
     public boolean canUse() {
-        return super.canUse() && this.foxie.getLastHurtByMobTimestamp() == 0;
+        return super.canUse() && this.foxie.getLastHurtByMob() != null;
     }
 
     @Override

@@ -5,6 +5,8 @@ import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.EnumSet;
+
 public abstract class FoxieAbstractPanicGoal extends Goal {
     protected final Foxie foxie;
     protected Vec3 target;
@@ -12,6 +14,7 @@ public abstract class FoxieAbstractPanicGoal extends Goal {
 
     public FoxieAbstractPanicGoal(Foxie foxie) {
         this.foxie = foxie;
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE));
     }
 
     public boolean canUse() {
@@ -29,6 +32,7 @@ public abstract class FoxieAbstractPanicGoal extends Goal {
     public void stop() {
         this.target = null;
         this.cooldown = 0;
+        this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
     }
 
     public abstract void setNewTarget();
@@ -50,5 +54,7 @@ public abstract class FoxieAbstractPanicGoal extends Goal {
 
         if (!this.foxie.getNavigation().isDone()) return;
         this.setNewTarget();
+        if (this.target != null)
+            this.foxie.runTo(this.target, FoxieConstants.MS_PANIC_MULTIPLIER);
     }
 }

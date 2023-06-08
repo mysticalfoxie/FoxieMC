@@ -9,6 +9,10 @@ public class FoxieDefaultPanicGoal extends FoxieAbstractPanicGoal {
         super(foxie);
     }
 
+    public boolean canUse() {
+        return super.canUse() && !this.foxie.isOnFire() && this.foxie.getLastHurtByMob() == null;
+    }
+
     @Override
     public void setNewTarget() {
         this.target = this.foxie.getRandomTargetWithin(3);

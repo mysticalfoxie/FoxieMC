@@ -2,12 +2,7 @@ package me.m1chelle99.foxiemc.entity.foxie.controls;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
-import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieClimbSnowGoal;
-import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieFloatGoal;
-import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieSeekShelterGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.panic.FoxieAttackedPanicGoal;
-import me.m1chelle99.foxiemc.entity.foxie.goals.panic.FoxieDefaultPanicGoal;
-import me.m1chelle99.foxiemc.entity.foxie.goals.panic.FoxieFirePanicGoal;
 import me.m1chelle99.foxiemc.helper.EntityHelper;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -19,47 +14,20 @@ import java.util.UUID;
 @SuppressWarnings("CommentedOutCode") // TODO: Remove before merge
 public class FoxieAIControl {
     private final Foxie foxie;
-    private byte _currentActivity;
 
     public FoxieAIControl(Foxie foxie) {
         this.foxie = foxie;
     }
 
-    public boolean canEat() {
-        return !this.foxie.dataControl.isSleeping();
-    }
+    public static void register(Foxie foxie) {
+//        foxie.goalSelector.addGoal(0, new FoxieFloatGoal(foxie));
+//        foxie.goalSelector.addGoal(0, new FoxieClimbSnowGoal(foxie));
 
-    public boolean isPanic() {
-        return this._currentActivity == FoxieConstants.ACTIVITY_PANIC;
-    }
+//        foxie.goalSelector.addGoal(1, new FoxieFirePanicGoal(foxie));
+        foxie.goalSelector.addGoal(1, new FoxieAttackedPanicGoal(foxie));
+//        foxie.goalSelector.addGoal(1, new FoxieDefaultPanicGoal(foxie));
 
-    public void trust(@Nullable UUID id) {
-        if (id == null) return;
-        if (this.isTrusted(id)) return;
-        this.foxie.dataControl.setTrusted(id);
-    }
-
-    public boolean isCommanded() {
-        if (this._currentActivity != FoxieConstants.ACTIVITY_OBEY) return false;
-        return this.foxie.dataControl.getCommand() != FoxieConstants.COMMAND_NONE;
-    }
-    
-    public boolean isTamable() {
-        if (this._currentActivity == FoxieConstants.ACTIVITY_SLEEP) return false;
-        if (this._currentActivity == FoxieConstants.ACTIVITY_PANIC) return false;
-        if (this._currentActivity == FoxieConstants.ACTIVITY_HUNT) return false;
-        return this._currentActivity != FoxieConstants.ACTIVITY_SEEK_SHELTER;
-    }
-
-    public void register() {
-        this.foxie.goalSelector.addGoal(0, new FoxieFloatGoal(this.foxie));
-        this.foxie.goalSelector.addGoal(0, new FoxieClimbSnowGoal(this.foxie));
-
-        this.foxie.goalSelector.addGoal(1, new FoxieFirePanicGoal(this.foxie));
-        this.foxie.goalSelector.addGoal(1, new FoxieAttackedPanicGoal(this.foxie));
-        this.foxie.goalSelector.addGoal(1, new FoxieDefaultPanicGoal(this.foxie));
-
-        this.foxie.goalSelector.addGoal(2, new FoxieSeekShelterGoal(this.foxie));
+//        foxie.goalSelector.addGoal(2, new FoxieSeekShelterGoal(foxie));
 
 
 //            this.foxie.goalSelector.addGoal(3, new FoxieObeyDownCommandGoal(this));
@@ -102,15 +70,40 @@ public class FoxieAIControl {
 //            this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractFish.class, 20, false, false, e -> e instanceof AbstractSchoolingFish));
     }
 
+    public boolean canEat() {
+        return !this.foxie.dataControl.isSleeping();
+    }
+
+    public boolean isPanic() {
+        return this.foxie.dataControl.getActivity() == FoxieConstants.ACTIVITY_PANIC;
+    }
+
+    public void trust(@Nullable UUID id) {
+        if (id == null) return;
+        if (this.isTrusted(id)) return;
+        this.foxie.dataControl.setTrusted(id);
+    }
+
+    public boolean isCommanded() {
+        if (this.foxie.dataControl.getActivity() != FoxieConstants.ACTIVITY_OBEY) return false;
+        return this.foxie.dataControl.getCommand() != FoxieConstants.COMMAND_NONE;
+    }
+
+    public boolean isTamable() {
+        if (this.foxie.dataControl.getActivity() == FoxieConstants.ACTIVITY_SLEEP) return false;
+        if (this.foxie.dataControl.getActivity() == FoxieConstants.ACTIVITY_PANIC) return false;
+        if (this.foxie.dataControl.getActivity() == FoxieConstants.ACTIVITY_HUNT) return false;
+        return this.foxie.dataControl.getActivity() != FoxieConstants.ACTIVITY_SEEK_SHELTER;
+    }
+
     public boolean canSeekShelter() {
-        if (this._currentActivity == FoxieConstants.ACTIVITY_OBEY) return false;
-        return this._currentActivity != FoxieConstants.ACTIVITY_PANIC;
+        if (this.foxie.dataControl.getActivity() == FoxieConstants.ACTIVITY_OBEY) return false;
+        return this.foxie.dataControl.getActivity() != FoxieConstants.ACTIVITY_PANIC;
     }
 
     public boolean canMove() {
-        if (this._currentActivity == FoxieConstants.ACTIVITY_PANIC) return false;
-        if (this._currentActivity == FoxieConstants.ACTIVITY_OBEY) return false;
-        return this._currentActivity != FoxieConstants.ACTIVITY_SLEEP;
+        if (this.foxie.dataControl.getActivity() == FoxieConstants.ACTIVITY_OBEY) return false;
+        return this.foxie.dataControl.getActivity() != FoxieConstants.ACTIVITY_SLEEP;
     }
 
     // TODO: Trusted state holds forever currently. Change that.
@@ -121,7 +114,7 @@ public class FoxieAIControl {
 
     public void onHurt() {
         // this._lastHurtEvent = event; -> LivingHurtEvent
-        this.activate(FoxieConstants.ACTIVITY_PANIC);
+        this.startActivity(FoxieConstants.ACTIVITY_PANIC);
     }
 
     public boolean isSleeping() {
@@ -129,7 +122,7 @@ public class FoxieAIControl {
     }
 
     public SoundEvent getAmbientSound() {
-        if (this._currentActivity == FoxieConstants.ACTIVITY_SLEEP)
+        if (this.foxie.dataControl.getActivity() == FoxieConstants.ACTIVITY_SLEEP)
             return SoundEvents.FOX_SLEEP;
 
         if (this.foxie.level.isDay() || !(this.foxie.getRandom().nextFloat() < 0.1F))
@@ -141,26 +134,26 @@ public class FoxieAIControl {
         return SoundEvents.FOX_AMBIENT;
     }
 
-    public void activate(Byte activity) {
-        this._currentActivity = activity;
+    public void startActivity(Byte activity) {
+        this.foxie.dataControl.setActivity(activity);
     }
 
     public void setCommand(Byte command) {
         if (Objects.equals(command, FoxieConstants.COMMAND_NONE)) {
-            this.activate(FoxieConstants.ACTIVITY_NONE);
+            this.startActivity(FoxieConstants.ACTIVITY_NONE);
             return;
         }
 
-        this.activate(FoxieConstants.ACTIVITY_OBEY);
+        this.startActivity(FoxieConstants.ACTIVITY_OBEY);
         this.foxie.dataControl.setCommand(command);
     }
 
     public boolean canBeCommanded() {
-        return this._currentActivity != FoxieConstants.ACTIVITY_PANIC;
+        return this.foxie.dataControl.getActivity() != FoxieConstants.ACTIVITY_PANIC;
     }
 
     public boolean canLook() {
-        return this._currentActivity != FoxieConstants.ACTIVITY_SLEEP;
+        return this.foxie.dataControl.getActivity() != FoxieConstants.ACTIVITY_SLEEP;
     }
 
     public boolean isSitting() {

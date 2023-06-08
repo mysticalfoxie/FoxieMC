@@ -22,8 +22,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,6 +35,7 @@ public class Foxie extends TamableAnimal {
     public final FoxieOwnerControl ownerControl;
 
     public Foxie(EntityType<? extends TamableAnimal> type, Level level) {
+        super(type, level);
 
         this.moveControl = new FoxieMoveControl(this);
         this.lookControl = new FoxieLookControl(this);
@@ -46,18 +45,10 @@ public class Foxie extends TamableAnimal {
         this.hungerControl = new FoxieHungerControl(this);
         this.ownerControl = new FoxieOwnerControl(this);
 
-        super(type, level);
-
         this.setPathfindingMalus(BlockPathTypes.DANGER_OTHER, 0.0F);
         this.setPathfindingMalus(BlockPathTypes.DAMAGE_OTHER, 0.0F);
 
         this.setCanPickUpLoot(true);
-    }
-
-    @SubscribeEvent
-    public static void onDamageReceived(LivingHurtEvent event) {
-        if (!(event.getEntity() instanceof Foxie foxie)) return;
-        foxie.aiControl.onHurt();
     }
 
     public static AttributeSupplier.Builder getFoxieAttributes() {
@@ -227,7 +218,7 @@ public class Foxie extends TamableAnimal {
 
     @Override
     protected void registerGoals() {
-        this.aiControl.register();
+        FoxieAIControl.register(this);
     }
 
     public void tick() {

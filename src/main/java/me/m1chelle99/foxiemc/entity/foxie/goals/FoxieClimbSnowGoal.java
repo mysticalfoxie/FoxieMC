@@ -14,6 +14,6 @@ public class FoxieClimbSnowGoal extends ClimbOnTopOfPowderSnowGoal {
 
     @Override
     public void start() {
-        this.foxie.aiControl.activate(FoxieConstants.ACTIVITY_NONE);
+        this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
     }
 }

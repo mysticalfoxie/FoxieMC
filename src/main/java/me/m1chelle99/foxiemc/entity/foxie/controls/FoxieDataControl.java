@@ -18,6 +18,7 @@ public class FoxieDataControl {
     private static final EntityDataAccessor<Optional<UUID>> TRUSTING = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Integer> HUNGER_STRENGTH = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Byte> COMMAND = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Byte> ACTIVITY = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BYTE);
 
     private final Foxie foxie;
 
@@ -26,6 +27,7 @@ public class FoxieDataControl {
     }
 
     public static void defineStates(Foxie foxie) {
+        foxie.getEntityData().define(ACTIVITY, FoxieConstants.ACTIVITY_NONE);
         foxie.getEntityData().define(SITTING, false);
         foxie.getEntityData().define(INTERESTED, false);
         foxie.getEntityData().define(POUNCING, false);
@@ -89,6 +91,14 @@ public class FoxieDataControl {
 
     public void setTrusted(UUID value) {
         this.foxie.getEntityData().set(TRUSTING, Optional.of(value));
+    }
+    
+    public byte getActivity() {
+        return this.foxie.getEntityData().get(ACTIVITY);
+    }
+
+    public void setActivity(byte value) {
+        this.foxie.getEntityData().set(ACTIVITY, value);
     }
 
     public void readSaveData(CompoundTag compound) {

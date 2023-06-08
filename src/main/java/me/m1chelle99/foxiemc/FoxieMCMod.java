@@ -1,6 +1,7 @@
 package me.m1chelle99.foxiemc;
 
 import com.mojang.logging.LogUtils;
+import me.m1chelle99.foxiemc.events.ModServerEvents;
 import me.m1chelle99.foxiemc.init.EntityInit;
 import me.m1chelle99.foxiemc.init.ItemInit;
 import net.minecraft.world.item.CreativeModeTab;
@@ -35,6 +36,7 @@ public class FoxieMCMod {
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(ModServerEvents.class);
     }
 
     // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
