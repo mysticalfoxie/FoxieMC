@@ -20,7 +20,7 @@ public class FoxieFirePanicGoal extends FoxieAbstractPanicGoal {
     public void setNewTarget() {
         this.setWaterAsTarget();
         if (this.target == null)
-            this.target = this.foxie.getRandomTargetWithin(3);
+            this.target = this.foxie.getRandomTargetWithin(5);
     }
 
     @Override

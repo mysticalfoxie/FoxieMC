@@ -2,7 +2,11 @@ package me.m1chelle99.foxiemc.entity.foxie.controls;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
+import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieClimbSnowGoal;
+import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieFloatGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.panic.FoxieAttackedPanicGoal;
+import me.m1chelle99.foxiemc.entity.foxie.goals.panic.FoxieDefaultPanicGoal;
+import me.m1chelle99.foxiemc.entity.foxie.goals.panic.FoxieFirePanicGoal;
 import me.m1chelle99.foxiemc.helper.EntityHelper;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -20,12 +24,12 @@ public class FoxieAIControl {
     }
 
     public static void register(Foxie foxie) {
-//        foxie.goalSelector.addGoal(0, new FoxieFloatGoal(foxie));
-//        foxie.goalSelector.addGoal(0, new FoxieClimbSnowGoal(foxie));
+        foxie.goalSelector.addGoal(0, new FoxieFloatGoal(foxie));
+        foxie.goalSelector.addGoal(0, new FoxieClimbSnowGoal(foxie));
 
-//        foxie.goalSelector.addGoal(1, new FoxieFirePanicGoal(foxie));
+        foxie.goalSelector.addGoal(1, new FoxieFirePanicGoal(foxie));
         foxie.goalSelector.addGoal(1, new FoxieAttackedPanicGoal(foxie));
-//        foxie.goalSelector.addGoal(1, new FoxieDefaultPanicGoal(foxie));
+        foxie.goalSelector.addGoal(1, new FoxieDefaultPanicGoal(foxie));
 
 //        foxie.goalSelector.addGoal(2, new FoxieSeekShelterGoal(foxie));
 

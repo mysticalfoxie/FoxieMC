@@ -9,12 +9,12 @@ public final class FoxieConstants {
     public static final Double ATTACK_DAMAGE = 3.0D;
 
     // AI Modifiers    
-    public static final Double MS_PANIC_MULTIPLIER = 1.75D;
-    public static final Double EAT_BERRIES_SPEED_MULTIPLIER = 1.2D;
+    public static final Double MS_PANIC_MULTIPLIER = 1.5D;
+    public static final Double EAT_BERRIES_SPEED_MULTIPLIER = 1.15D;
     public static final int BERRIES_SEARCH_RANGE = 20;
-    public static final Double SEEK_SHELTER_MOVEMENT_SPEED_MULTIPLIER = 1.25D;
+    public static final Double SEEK_SHELTER_MOVEMENT_SPEED_MULTIPLIER = 1.3D;
     public static final boolean FOLLOW_PREY_EVEN_IF_NOT_SEEN = true; // foxie has a good nose <3 
-    public static final Double ATTACK_MOVEMENT_SPEED_MULTIPLIER = 1.5D;
+    public static final Double ATTACK_MOVEMENT_SPEED_MULTIPLIER = 1.25D;
     public static final int WAIT_TIME_BEFORE_SLEEP = 140;
     public static final int STROLL_THROUGH_VILLAGE_INTERVAL = 200;
     public static final Double ALERTING_RANGE = 15.0D;
