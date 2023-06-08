@@ -37,7 +37,6 @@ public class Foxie extends TamableAnimal {
     public final FoxieOwnerControl ownerControl;
 
     public Foxie(EntityType<? extends TamableAnimal> type, Level level) {
-        super(type, level);
 
         this.moveControl = new FoxieMoveControl(this);
         this.lookControl = new FoxieLookControl(this);
@@ -46,6 +45,8 @@ public class Foxie extends TamableAnimal {
         this.mouthControl = new FoxieMouthControl(this);
         this.hungerControl = new FoxieHungerControl(this);
         this.ownerControl = new FoxieOwnerControl(this);
+
+        super(type, level);
 
         this.setPathfindingMalus(BlockPathTypes.DANGER_OTHER, 0.0F);
         this.setPathfindingMalus(BlockPathTypes.DAMAGE_OTHER, 0.0F);
@@ -180,7 +181,7 @@ public class Foxie extends TamableAnimal {
 
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.dataControl.defineStates();
+        FoxieDataControl.defineStates(this);
     }
 
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {

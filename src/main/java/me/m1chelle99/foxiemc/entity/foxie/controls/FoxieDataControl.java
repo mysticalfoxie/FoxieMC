@@ -25,6 +25,16 @@ public class FoxieDataControl {
         this.foxie = foxie;
     }
 
+    public static void defineStates(Foxie foxie) {
+        foxie.getEntityData().define(SITTING, false);
+        foxie.getEntityData().define(INTERESTED, false);
+        foxie.getEntityData().define(POUNCING, false);
+        foxie.getEntityData().define(SLEEPING, false);
+        foxie.getEntityData().define(TRUSTING, Optional.empty());
+        foxie.getEntityData().define(COMMAND, FoxieConstants.COMMAND_NONE);
+        foxie.getEntityData().define(HUNGER_STRENGTH, FoxieConstants.HUNGER_NONE);
+    }
+
     public boolean isSitting() {
         return this.foxie.getEntityData().get(SITTING);
     }
@@ -101,15 +111,5 @@ public class FoxieDataControl {
         compound.putByte("Command", this.getCommand());
         this.getTrusted().ifPresent(uuid -> compound.putUUID("Trusted", uuid));
         compound.putInt("TicksSinceLastEaten", this.foxie.hungerControl.getTicksSinceLastEaten());
-    }
-
-    public void defineStates() {
-        this.foxie.getEntityData().define(SITTING, false);
-        this.foxie.getEntityData().define(INTERESTED, false);
-        this.foxie.getEntityData().define(POUNCING, false);
-        this.foxie.getEntityData().define(SLEEPING, false);
-        this.foxie.getEntityData().define(TRUSTING, Optional.empty());
-        this.foxie.getEntityData().define(COMMAND, FoxieConstants.COMMAND_NONE);
-        this.foxie.getEntityData().define(HUNGER_STRENGTH, FoxieConstants.HUNGER_NONE);
     }
 }
