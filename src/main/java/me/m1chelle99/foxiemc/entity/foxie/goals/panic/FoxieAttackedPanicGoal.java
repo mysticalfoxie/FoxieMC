@@ -1,6 +1,7 @@
 package me.m1chelle99.foxiemc.entity.foxie.goals.panic;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
+import me.m1chelle99.foxiemc.helper.EntityHelper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 
@@ -35,6 +36,6 @@ public class FoxieAttackedPanicGoal extends FoxieAbstractPanicGoal {
 
     @Override
     public void setCooldown() {
-        this.cooldown = this.foxie.getRandomTicksWithin(6, 15);
+        this.cooldown = EntityHelper.getRandomTicksWithin(this.foxie, 6, 15);
     }
 }

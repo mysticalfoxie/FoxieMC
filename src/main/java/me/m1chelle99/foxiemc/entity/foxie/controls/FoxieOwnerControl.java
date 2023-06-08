@@ -18,8 +18,16 @@ public class FoxieOwnerControl {
         this.foxie.setTame(false);
     }
 
-    public void isTame() {
-        this.foxie.isTame();
+    public boolean isTame() {
+        return this.foxie.isTame();
+    }
+
+    public boolean isTamable() {
+        if (!this.foxie.aiControl.isTamable()) return false;
+
+        // TODO: Test this. Foxie should drop less quality food for the taming food
+        var item = this.foxie.mouthControl.getItem();
+        return !this.foxie.hungerControl.isYummy(item);
     }
 
     public boolean isOwner(UUID uuid) {
@@ -45,19 +53,53 @@ public class FoxieOwnerControl {
 
     // TODO: Handle both client but server
     public boolean canInteract(Player player) {
-        if (!this.isOwner(player.getUUID())) return false;
-        if (this.foxie.aiControl.isSleeping()) return true;
+        if (this.isTame() && this.isOwner(player.getUUID()))
+            return this.canOwnerInteract();
+        else
+            return !this.canStrangerFeed(player) && !this.canStrangerTame(player);
+    }
+
+    public boolean canStrangerTame(Player player) {
+        if (this.isTame()) return false;
+        var item = player.getMainHandItem();
+        if (!this.foxie.hungerControl.isYummy(item)) return false;
+        if (!this.foxie.hungerControl.isHungry()) return false;
+        if (!this.foxie.aiControl.canEat()) return false;
+        return !this.isTamable();
+    }
+
+    public boolean canStrangerFeed(Player player) {
+        var item = player.getMainHandItem();
+        if (!this.foxie.hungerControl.isEdible(item)) return false;
+        if (!this.foxie.hungerControl.isHungry()) return false;
+        return this.foxie.aiControl.canEat();
+    }
+
+    public boolean canOwnerInteract() {
+        if (this.foxie.aiControl.canEat()) return true;
         return this.foxie.aiControl.canBeCommanded();
     }
 
-    public InteractionResult wakeUp() {
-        this.foxie.aiControl.setCommand(FoxieConstants.COMMAND_SIT);
-        return InteractionResult.SUCCESS;
+    private void strangerFeedInteract(Player player) {
+        var item = player.getMainHandItem();
+        this.foxie.mouthControl.takeItem(item);
     }
 
-    public InteractionResult interact() {
-        if (this.foxie.aiControl.isSleeping())
-            return this.wakeUp();
+    private InteractionResult ownerInteract(Player player) {
+        if (this.foxie.aiControl.isSleeping()) {
+            this.foxie.aiControl.setCommand(FoxieConstants.COMMAND_SIT);
+            return InteractionResult.SUCCESS;
+        }
+
+        var item = player.getMainHandItem();
+        if (this.foxie.hungerControl.isEdible(item)) {
+            if (this.foxie.hungerControl.isHungry()) {
+                this.foxie.hungerControl.eatItemFromHand(player);
+                return InteractionResult.CONSUME;
+            }
+
+            return InteractionResult.PASS;
+        }
 
         if (!this.foxie.aiControl.canBeCommanded())
             return InteractionResult.PASS;
@@ -67,6 +109,23 @@ public class FoxieOwnerControl {
         else
             this.foxie.aiControl.setCommand(FoxieConstants.COMMAND_NONE);
 
-        return InteractionResult.PASS;
+        return InteractionResult.SUCCESS;
+    }
+
+    public InteractionResult interact(Player player) {
+        if (this.isTame() && this.isOwner(player.getUUID()))
+            return this.ownerInteract(player);
+
+        if (this.canStrangerTame(player)) {
+            this.tryTame(player, player.getMainHandItem());
+            return InteractionResult.CONSUME;
+        }
+
+        if (this.canStrangerFeed(player)) {
+            this.strangerFeedInteract(player);
+            return InteractionResult.CONSUME;
+        }
+
+        return InteractionResult.FAIL;
     }
 }

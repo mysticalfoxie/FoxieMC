@@ -1,19 +1,17 @@
 package me.m1chelle99.foxiemc.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import me.m1chelle99.foxiemc.FoxieMCMod;
 import me.m1chelle99.foxiemc.client.models.FoxieModel;
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
-import me.m1chelle99.foxiemc.entity.foxie.controls.FoxieAIControl;
 import me.m1chelle99.foxiemc.entity.foxie.layers.FoxieHeldItemLayer;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("CommentedOutCode") // TODO: Remove before merge
 public class FoxieRenderer extends MobRenderer<Foxie, FoxieModel> {
     public static final ResourceLocation LAYER_RESOURCE = new ResourceLocation(FoxieMCMod.ID, "foxie");
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(LAYER_RESOURCE, "main");
@@ -28,16 +26,16 @@ public class FoxieRenderer extends MobRenderer<Foxie, FoxieModel> {
     @NotNull
     @Override
     public ResourceLocation getTextureLocation(Foxie foxie) {
-        if (foxie.getFlag(FoxieAIControl.SLEEPING)) return TEXTURE_SLEEP;
+        if (foxie.aiControl.isSleeping()) return TEXTURE_SLEEP;
         return TEXTURE;
     }
 
     @Override
     protected void setupRotations(@NotNull Foxie foxie, @NotNull PoseStack pose, float x, float y, float z) {
         super.setupRotations(foxie, pose, x, y, z);
-        if (foxie.getFlag(FoxieAIControl.POUNCING) || foxie.getFlag(FoxieAIControl.FACEPLANTED)) {
-            var rotation = -Mth.lerp(z, foxie.xRotO, foxie.getXRot());
-            pose.mulPose(Vector3f.XP.rotationDegrees(rotation));
-        }
+//        if (foxie. getFlag(FoxieAIControl.POUNCING) || foxie.getFlag(FoxieAIControl.FACEPLANTED)) {
+//            var rotation = -Mth.lerp(z, foxie.xRotO, foxie.getXRot());
+//            pose.mulPose(Vector3f.XP.rotationDegrees(rotation));
+//        }
     }
 }

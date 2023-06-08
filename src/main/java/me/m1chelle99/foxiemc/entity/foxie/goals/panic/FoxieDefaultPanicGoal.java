@@ -1,6 +1,7 @@
 package me.m1chelle99.foxiemc.entity.foxie.goals.panic;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
+import me.m1chelle99.foxiemc.helper.EntityHelper;
 
 public class FoxieDefaultPanicGoal extends FoxieAbstractPanicGoal {
 
@@ -15,6 +16,6 @@ public class FoxieDefaultPanicGoal extends FoxieAbstractPanicGoal {
 
     @Override
     public void setCooldown() {
-        this.cooldown = this.foxie.getRandomTicksWithin(3, 6);
+        this.cooldown = EntityHelper.getRandomTicksWithin(this.foxie, 3, 6);
     }
 }

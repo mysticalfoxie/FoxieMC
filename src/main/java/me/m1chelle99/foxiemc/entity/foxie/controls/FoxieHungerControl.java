@@ -4,7 +4,6 @@ import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -50,7 +49,7 @@ public class FoxieHungerControl {
         this.foxie.heal(nutrition);
     }
 
-    private void eatItemFromHand(Player player) {
+    public void eatItemFromHand(Player player) {
         var stack = player.getMainHandItem();
         var food = stack.getFoodProperties(this.foxie);
         assert food != null;
@@ -99,9 +98,10 @@ public class FoxieHungerControl {
             this.foxie.dataControl.setHungerStrength(2);
     }
 
-    public InteractionResult interact(@NotNull Player player) {
+    public void interact(@NotNull Player player) {
         this.eatItemFromHand(player);
-        return InteractionResult.CONSUME;
+        if (!this.foxie.ownerControl.isTame())
+            this.foxie.aiControl.trust(player.getUUID());
     }
 
     private void tryEat() {

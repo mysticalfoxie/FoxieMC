@@ -1,6 +1,7 @@
 package me.m1chelle99.foxiemc.entity.foxie.goals.panic;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
+import me.m1chelle99.foxiemc.helper.EntityHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.phys.Vec3;
@@ -24,7 +25,7 @@ public class FoxieFirePanicGoal extends FoxieAbstractPanicGoal {
 
     @Override
     public void setCooldown() {
-        this.cooldown = this.foxie.getRandomTicksWithin(3, 8);
+        this.cooldown = EntityHelper.getRandomTicksWithin(this.foxie, 3, 8);
     }
 
     public void setWaterAsTarget() {

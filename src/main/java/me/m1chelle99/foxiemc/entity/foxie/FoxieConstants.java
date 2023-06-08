@@ -1,5 +1,6 @@
 package me.m1chelle99.foxiemc.entity.foxie;
 
+@SuppressWarnings("unused") // TODO: Remove for release
 public final class FoxieConstants {
     // Attributes 
     public static final Double MOVEMENT_SPEED = 0.3D;

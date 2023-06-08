@@ -2,7 +2,9 @@ package me.m1chelle99.foxiemc.entity.foxie.controls;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
+import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieClimbSnowGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieFloatGoal;
+import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieSeekShelterGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.panic.FoxieAttackedPanicGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.panic.FoxieDefaultPanicGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.panic.FoxieFirePanicGoal;
@@ -41,19 +43,29 @@ public class FoxieAIControl {
         if (this._currentActivity != FoxieConstants.ACTIVITY_OBEY) return false;
         return this.foxie.dataControl.getCommand() != FoxieConstants.COMMAND_NONE;
     }
+    
+    public boolean isTamable() {
+        if (this._currentActivity == FoxieConstants.ACTIVITY_SLEEP) return false;
+        if (this._currentActivity == FoxieConstants.ACTIVITY_PANIC) return false;
+        if (this._currentActivity == FoxieConstants.ACTIVITY_HUNT) return false;
+        return this._currentActivity != FoxieConstants.ACTIVITY_SEEK_SHELTER;
+    }
 
     public void register() {
         this.foxie.goalSelector.addGoal(0, new FoxieFloatGoal(this.foxie));
+        this.foxie.goalSelector.addGoal(0, new FoxieClimbSnowGoal(this.foxie));
 
         this.foxie.goalSelector.addGoal(1, new FoxieFirePanicGoal(this.foxie));
         this.foxie.goalSelector.addGoal(1, new FoxieAttackedPanicGoal(this.foxie));
         this.foxie.goalSelector.addGoal(1, new FoxieDefaultPanicGoal(this.foxie));
 
+        this.foxie.goalSelector.addGoal(2, new FoxieSeekShelterGoal(this.foxie));
+
 
 //            this.foxie.goalSelector.addGoal(3, new FoxieObeyDownCommandGoal(this));
 //            this.foxie.goalSelector.addGoal(4, new FollowOwnerGoal(this, 1.0D, 15.0F, 1.0F, false));
 
-        // TODO: Custom breeding... Im not breedable like a casual animal... grrr! put that berries away! *grrr*
+        // TODO: Custom breeding... I'm not breedable like a casual animal... grrr! put that berries away! *grrr*
         // TODO: Foxie sits in "foxiemc:basket" goal
         // TODO: Foxie sits on bed goal
         // TODO: Foxie sits on block goal
@@ -69,7 +81,7 @@ public class FoxieAIControl {
 //            this.foxie.goalSelector.addGoal(9, new FoxieSeekShelterGoal(this, FoxieConstants.SEEK_SHELTER_MOVEMENT_SPEED_MULTIPLIER));
 
         // TODO: killing prey doesn't reset food bar
-        // To make it perfect: Prey is guaranteed to spawn it's drops, foxie holds it in her mouth and eats it after some time
+        // To make it perfect: Prey is guaranteed to spawn its drops, foxie holds it in her mouth and eats it after some time
 //            this.foxie.goalSelector.addGoal(10, new FoxieMeleeAttackGoal(this, FoxieConstants.ATTACK_MOVEMENT_SPEED_MULTIPLIER, FoxieConstants.FOLLOW_PREY_EVEN_IF_NOT_SEEN));
 
         // TODO: Foxie cant sleep at thunder
@@ -129,14 +141,6 @@ public class FoxieAIControl {
         return SoundEvents.FOX_AMBIENT;
     }
 
-    public void tick() {
-        // Hopefully I don't need this.
-    }
-
-    public void step() {
-        // Hopefully not needed.
-    }
-
     public void activate(Byte activity) {
         this._currentActivity = activity;
     }
@@ -157,5 +161,9 @@ public class FoxieAIControl {
 
     public boolean canLook() {
         return this._currentActivity != FoxieConstants.ACTIVITY_SLEEP;
+    }
+
+    public boolean isSitting() {
+        return this.foxie.dataControl.isSitting();
     }
 }

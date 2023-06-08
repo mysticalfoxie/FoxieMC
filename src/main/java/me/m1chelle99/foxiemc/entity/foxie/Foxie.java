@@ -34,7 +34,7 @@ public class Foxie extends TamableAnimal {
     public final FoxieMouthControl mouthControl;
     public final FoxieDataControl dataControl;
     public final FoxieHungerControl hungerControl;
-    private final FoxieOwnerControl ownerControl;
+    public final FoxieOwnerControl ownerControl;
 
     public Foxie(EntityType<? extends TamableAnimal> type, Level level) {
         super(type, level);
@@ -231,21 +231,19 @@ public class Foxie extends TamableAnimal {
 
     public void tick() {
         super.tick();
-        this.aiControl.tick();
         this.hungerControl.tick();
     }
 
     public @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand hand) {
-        if (this.hungerControl.canInteract(player)) return this.hungerControl.interact(player);
-        if (this.ownerControl.canInteract(player)) return this.ownerControl.interact();
+        if (this.hungerControl.canInteract(player)) {
+            this.hungerControl.interact(player);
+            return InteractionResult.CONSUME;
+        }
+
+        if (this.ownerControl.canInteract(player))
+            return this.ownerControl.interact(player);
 
         return InteractionResult.PASS;
-    }
-
-    public void aiStep() {
-        if (!this.isAlive()) return;
-        if (!this.isEffectiveAi()) return;
-        this.aiControl.step();
     }
 
     @Nullable

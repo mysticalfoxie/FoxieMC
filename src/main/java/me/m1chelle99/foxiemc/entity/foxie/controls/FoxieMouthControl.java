@@ -47,20 +47,29 @@ public class FoxieMouthControl {
         this.foxie.level.addFreshEntity(item);
     }
 
+    public void takeItem(@NotNull ItemStack stack) {
+        if (!this.foxie.canHoldItem(stack)) return;
+
+        this.spitOutItem(this.foxie.getItemBySlot(EquipmentSlot.MAINHAND));
+        this.foxie.setItemSlot(EquipmentSlot.MAINHAND, stack.split(1));
+        this.foxie.getHandDropChances()[EquipmentSlot.MAINHAND.getIndex()] = 1.0F;
+    }
+
     public void pickupItem(@NotNull ItemEntity item) {
         var stack = item.getItem();
-        if (this.foxie.canHoldItem(stack)) {
-            int i = stack.getCount();
-            if (i > 1)
-                this.dropItemStack(stack.split(i - 1));
+        if (!this.foxie.canHoldItem(stack))
+            return;
 
-            this.spitOutItem(this.foxie.getItemBySlot(EquipmentSlot.MAINHAND));
-            this.foxie.onItemPickup(item);
-            this.foxie.setItemSlot(EquipmentSlot.MAINHAND, stack.split(1));
-            this.foxie.getHandDropChances()[EquipmentSlot.MAINHAND.getIndex()] = 1.0F;
-            this.foxie.take(item, stack.getCount());
-            item.discard();
-        }
+        int count = stack.getCount();
+        if (count > 1)
+            this.dropItemStack(stack.split(count - 1));
+
+        this.spitOutItem(this.foxie.getItemBySlot(EquipmentSlot.MAINHAND));
+        this.foxie.onItemPickup(item);
+        this.foxie.setItemSlot(EquipmentSlot.MAINHAND, stack.split(1));
+        this.foxie.getHandDropChances()[EquipmentSlot.MAINHAND.getIndex()] = 1.0F;
+        this.foxie.take(item, stack.getCount());
+        item.discard();
     }
 
 //    public boolean canHoldItem(ItemStack stack) {
