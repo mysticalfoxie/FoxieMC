@@ -2,9 +2,14 @@ package me.m1chelle99.foxiemc.entity.foxie.goals;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
+import me.m1chelle99.foxiemc.helper.EntityHelper;
+import me.m1chelle99.foxiemc.helper.PerformanceAnalysis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.EnumSet;
 
 public class FoxieSeekShelterGoal extends Goal {
     private final Foxie foxie;
@@ -12,13 +17,24 @@ public class FoxieSeekShelterGoal extends Goal {
 
     public FoxieSeekShelterGoal(Foxie foxie) {
         this.foxie = foxie;
+        this.setFlags(EnumSet.of(Flag.MOVE));
     }
 
     @Override
     public boolean canUse() {
         if (!this.foxie.aiControl.canSeekShelter()) return false;
         if (!this.foxie.level.isRaining() && !this.foxie.level.isThundering()) return false;
-        return this.foxie.level.isRainingAt(this.foxie.blockPosition());
+        var position = EntityHelper.getRoundedBlockPos(this.foxie);
+        return this.foxie.level.canSeeSky(position);
+    }
+
+    @Override
+    public boolean canContinueToUse() {
+        return this.canUse();
+    }
+
+    public boolean requiresUpdateEveryTick() {
+        return true;
     }
 
     @Override
@@ -33,72 +49,38 @@ public class FoxieSeekShelterGoal extends Goal {
 
     @Override
     public void tick() {
-        if (this.target != null && this.foxie.getNavigation().isInProgress()) return;
-        if (this.target != null && !this.foxie.getNavigation().isStuck()) return;
-
-        this.target = this.findNewShelter();
-        var navigator = this.foxie.getNavigation();
-        navigator.moveTo(target.getX(), target.getY(), target.getZ(), 1.0F);
+        if (!this.foxie.getNavigation().isDone()) return;
+        this.setNewTargetPosition();
+        if (this.target != null) {
+            var vector = new Vec3(this.target.getX(), this.target.getY(), this.target.getZ());
+            this.foxie.runTo(vector, FoxieConstants.SEEK_SHELTER_MOVEMENT_SPEED_MULTIPLIER);
+        }
     }
 
-    @Override
-    public boolean canContinueToUse() {
-        var pos = this.foxie.blockPosition();
-        return this.foxie.level.isRainingAt(pos);
+    public void setNewTargetPosition() {
+        this.target = this.findNewShelter();
+        if (target != null) return;
+        this.target = EntityHelper.getRandomPositionInLookAngle(this.foxie, 10);
+        if (target != null) return;
+        var target = DefaultRandomPos.getPos(this.foxie, 10, 4);
+        if (target == null) return;
+        this.target = new BlockPos(target);
     }
 
     // TODO: WHITEBOX TESTING!!!! URGENTLY
     public BlockPos findNewShelter() {
-        var start = this.foxie.blockPosition();
-
-        for (int distance = 1; distance < 10; distance++) {
-
-            for (int t = 0; t < distance; t++) {
-                var x = start.getX();
-                var z = start.getZ() + t;
-                var y = this.foxie.level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
-                if (this.foxie.level.isRainingAt(new BlockPos(x, y, z))) continue;
-                if (this.isUnreachable(x, y, z)) continue;
-                return new BlockPos(x, y, z);
-            }
-
-            for (int r = 0; r < distance; r++) {
-                var x = start.getX() + r;
-                var z = start.getZ();
-                var y = this.foxie.level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
-                if (this.foxie.level.isRainingAt(new BlockPos(x, y, z))) continue;
-                if (this.isUnreachable(x, y, z)) continue;
-                return new BlockPos(x, y, z);
-            }
-
-            for (int b = 0; b < (distance / 2); b++) {
-                var x = start.getX();
-                var z = start.getZ() - b;
-                var y = this.foxie.level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
-                if (this.foxie.level.isRainingAt(new BlockPos(x, y, z))) continue;
-                if (this.isUnreachable(x, y, z)) continue;
-                return new BlockPos(x, y, z);
-            }
-
-            for (int l = 0; l < distance; l++) {
-                var x = start.getX() - l;
-                var z = start.getZ();
-                var y = this.foxie.level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
-                if (this.foxie.level.isRainingAt(new BlockPos(x, y, z))) continue;
-                if (this.isUnreachable(x, y, z)) continue;
-                return new BlockPos(x, y, z);
-            }
-
-            // No shelter found in current radius
+        var current = this.foxie.blockPosition();
+        var blocks = PerformanceAnalysis.execMonitored("getReachableBlocks", (foo) ->
+                EntityHelper.getReachableBlocks(this.foxie, 6));
+        BlockPos destination = null;
+        int destination_range = Integer.MAX_VALUE;
+        for (BlockPos block : blocks) {
+            var range = current.distManhattan(block);
+            if (destination != null && range > destination_range) continue;
+            destination = block;
+            destination_range = range;
         }
 
-        return null;
-    }
-
-    public boolean isUnreachable(int x, int y, int z) {
-        var pos = new BlockPos(x, y, z);
-        var path = this.foxie.getNavigation().createPath(pos, 10);
-        if (path == null) return true;
-        return !path.canReach();
+        return destination;
     }
 }

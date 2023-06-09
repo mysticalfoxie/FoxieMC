@@ -4,6 +4,7 @@ import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
 import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieClimbSnowGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieFloatGoal;
+import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieSeekShelterGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.panic.FoxieAttackedPanicGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.panic.FoxieDefaultPanicGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.panic.FoxieFirePanicGoal;
@@ -31,7 +32,7 @@ public class FoxieAIControl {
         foxie.goalSelector.addGoal(1, new FoxieAttackedPanicGoal(foxie));
         foxie.goalSelector.addGoal(1, new FoxieDefaultPanicGoal(foxie));
 
-//        foxie.goalSelector.addGoal(2, new FoxieSeekShelterGoal(foxie));
+        foxie.goalSelector.addGoal(2, new FoxieSeekShelterGoal(foxie));
 
 
 //            this.foxie.goalSelector.addGoal(3, new FoxieObeyDownCommandGoal(this));
