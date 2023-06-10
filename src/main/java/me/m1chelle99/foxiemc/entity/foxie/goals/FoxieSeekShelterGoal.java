@@ -23,10 +23,14 @@ public class FoxieSeekShelterGoal extends Goal {
 	@Override
 	public boolean canUse() {
 		if (!this.foxie.aiControl.canSeekShelter()) return false;
-		if (!this.foxie.level.isRaining()) return false;
-		if (!this.foxie.level.isThundering()) return false;
+		if (!this.isRainingOrThundering()) return false;
 		var position = EntityHelper.getRoundedBlockPos(this.foxie);
 		return this.foxie.level.canSeeSky(position);
+	}
+
+	private boolean isRainingOrThundering() {
+		return this.foxie.level.isRaining()
+			|| this.foxie.level.isThundering();
 	}
 
 	@Override

@@ -11,60 +11,69 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import java.util.ArrayList;
 
 public final class EntityHelper {
-    public static int getRandomTicksWithin(Mob mob, float min_seconds, float max_seconds) {
-        var min_ticks = Math.round(min_seconds * 20);
-        var max_ticks = Math.round(max_seconds * 20);
-        return mob.getRandom().nextInt(min_ticks, max_ticks);
-    }
+	public static int getRandomTicksWithin(Mob mob, float min, float max) {
+		var min_ticks = Math.round(min * 20);
+		var max_ticks = Math.round(max * 20);
+		return mob.getRandom().nextInt(min_ticks, max_ticks);
+	}
 
-    public static boolean playersInDistance(Mob mob, float distance) {
-        var area = mob.getBoundingBox().inflate(distance, distance / 2, distance);
-        var list = mob.level.getEntitiesOfClass(Player.class, area, EntitySelector.NO_SPECTATORS);
-        return !list.isEmpty();
-    }
+	public static boolean playersInDistance(Mob mob, float distance) {
+		var area = mob
+			.getBoundingBox()
+			.inflate(distance, distance / 2, distance);
 
-    public static BlockPos getRandomPositionInLookAngle(Mob entity, float distance) {
-        var float_x = entity.getRandom().nextFloat(distance / -2F, distance / 2F);
-        var float_z = Math.sqrt(Math.pow(distance, 2) - Math.pow(float_x, 2));
-        var int_x = Math.round(float_x);
-        var int_z = (int) Math.round(float_z);
-        var int_y = entity.level.getHeight(Heightmap.Types.WORLD_SURFACE, int_x, int_z);
-        var pos = new BlockPos(int_x, int_y, int_z);
-        var path = entity.getNavigation().createPath(pos, (int) distance + 1);
-        if (path == null) return null;
-        if (path.canReach()) return null;
-        return pos;
-    }
+		var selector = EntitySelector.NO_SPECTATORS;
+		var list = mob.level.getEntitiesOfClass(Player.class, area, selector);
 
-    public static BlockPos getRoundedBlockPos(Entity entity) {
-        var x = Math.round(entity.getX());
-        var y = Math.round(entity.getY());
-        var z = Math.round(entity.getZ());
-        return new BlockPos(x, y, z);
-    }
+		return !list.isEmpty();
+	}
 
-    public static ArrayList<BlockPos> getReachableBlocks(Mob entity, int range) {
-        var navigation = entity.getNavigation();
-        var node_evaluator = navigation.getNodeEvaluator();
-        var destinations = new ArrayList<BlockPos>();
+	public static BlockPos getRandomPositionInLookAngle(Mob mob, float range) {
+		var fX = mob.getRandom().nextFloat(range / -2F, range / 2F);
+		var fZ = Math.sqrt(Math.pow(range, 2) - Math.pow(fX, 2));
+		var iX = Math.round(fX);
+		var iZ = (int) Math.round(fZ);
+		var iY = mob.level.getHeight(Heightmap.Types.WORLD_SURFACE, iX, iZ);
+		var pos = new BlockPos(iX, iY, iZ);
+		var path = mob.getNavigation().createPath(pos, (int) range + 1);
+		if (path == null) return null;
+		if (path.canReach()) return null;
+		return pos;
+	}
 
-        var entity_x = Math.round(entity.getX());
-        var entity_y = Math.round(entity.getY());
-        var entity_z = Math.round(entity.getZ());
+	public static BlockPos getRoundedBlockPos(Entity entity) {
+		var x = Math.round(entity.getX());
+		var y = Math.round(entity.getY());
+		var z = Math.round(entity.getZ());
+		return new BlockPos(x, y, z);
+	}
 
-        for (var x = entity_x - range; x < entity_x + range; x++)
-            for (var y = entity_y - range; y < entity_y + range; y++)
-                for (var z = entity_z - range; z < entity_z + range; z++) {
-                    var position = new BlockPos(x, y, z);
+	// TODO: To improve performance merge that search with the pathfinder
+	// If the navigable pos is farer away then the already found, closer
+	// point we don't need to look it up even more. Would save memory and perf. 
+	public static ArrayList<BlockPos> getReachableBlocks(Mob mob, int range) {
+		var navigation = mob.getNavigation();
+		var node_evaluator = navigation.getNodeEvaluator();
+		var destinations = new ArrayList<BlockPos>();
 
-                    if (entity.level.canSeeSky(position)) continue;
-                    if (!navigation.isStableDestination(position)) continue;
-                    var type = node_evaluator.getBlockPathType(entity.level, (int) x, (int) y, (int) z);
-                    if (entity.getPathfindingMalus(type) < 0) continue;
+		var entity_x = Math.round(mob.getX());
+		var entity_y = Math.round(mob.getY());
+		var entity_z = Math.round(mob.getZ());
 
-                    destinations.add(position);
-                }
+		for (var x = entity_x - range; x < entity_x + range; x++)
+			for (var y = entity_y - range; y < entity_y + range; y++)
+				for (var z = entity_z - range; z < entity_z + range; z++) {
+					var position = new BlockPos(x, y, z);
 
-        return destinations;
-    }
+					if (mob.level.canSeeSky(position)) continue;
+					if (!navigation.isStableDestination(position)) continue;
+					var type = node_evaluator
+						.getBlockPathType(mob.level, (int) x, (int) y, (int) z);
+					if (mob.getPathfindingMalus(type) < 0) continue;
+
+					destinations.add(position);
+				}
+
+		return destinations;
+	}
 }

@@ -11,115 +11,80 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class FoxieDataControl {
-    private static final EntityDataAccessor<Boolean> SITTING = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> INTERESTED = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> POUNCING = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> SLEEPING = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Optional<UUID>> TRUSTING = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.OPTIONAL_UUID);
-    private static final EntityDataAccessor<Integer> HUNGER_STRENGTH = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Byte> COMMAND = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BYTE);
-    private static final EntityDataAccessor<Byte> ACTIVITY = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BYTE);
+	private static final EntityDataAccessor<Optional<UUID>> TRUSTING
+		= SynchedEntityData.defineId(Foxie.class,
+		EntityDataSerializers.OPTIONAL_UUID);
+	private static final EntityDataAccessor<Integer> HUNGER_STRENGTH
+		= SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Byte> COMMAND
+		= SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BYTE);
+	private static final EntityDataAccessor<Byte> ACTIVITY
+		= SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BYTE);
 
-    private final Foxie foxie;
+	private final Foxie foxie;
 
-    public FoxieDataControl(Foxie foxie) {
-        this.foxie = foxie;
-    }
+	public FoxieDataControl(Foxie foxie) {
+		this.foxie = foxie;
+	}
 
-    public static void defineStates(Foxie foxie) {
-        foxie.getEntityData().define(ACTIVITY, FoxieConstants.ACTIVITY_NONE);
-        foxie.getEntityData().define(SITTING, false);
-        foxie.getEntityData().define(INTERESTED, false);
-        foxie.getEntityData().define(POUNCING, false);
-        foxie.getEntityData().define(SLEEPING, false);
-        foxie.getEntityData().define(TRUSTING, Optional.empty());
-        foxie.getEntityData().define(COMMAND, FoxieConstants.COMMAND_NONE);
-        foxie.getEntityData().define(HUNGER_STRENGTH, FoxieConstants.HUNGER_NONE);
-    }
+	public static void defineStates(Foxie foxie) {
+		var data = foxie.getEntityData();
+		data.define(ACTIVITY, FoxieConstants.ACTIVITY_NONE);
+		data.define(TRUSTING, Optional.empty());
+		data.define(COMMAND, FoxieConstants.COMMAND_NONE);
+		data.define(HUNGER_STRENGTH, FoxieConstants.HUNGER_NONE);
+	}
 
-    public boolean isSitting() {
-        return this.foxie.getEntityData().get(SITTING);
-    }
+	public byte getCommand() {
+		return this.foxie.getEntityData().get(COMMAND);
+	}
 
-    private void setSitting(boolean value) {
-        this.foxie.getEntityData().set(SITTING, value);
-    }
+	public void setCommand(byte command) {
+		this.foxie.getEntityData().set(COMMAND, command);
+	}
 
-    public boolean isInterested() {
-        return this.foxie.getEntityData().get(INTERESTED);
-    }
+	public int getHungerStrength() {
+		return this.foxie.getEntityData().get(HUNGER_STRENGTH);
+	}
 
-    private void setInterested(boolean value) {
-        this.foxie.getEntityData().set(INTERESTED, value);
-    }
+	public void setHungerStrength(int value) {
+		this.foxie.getEntityData().set(HUNGER_STRENGTH, value);
+	}
 
-    public boolean isPouncing() {
-        return this.foxie.getEntityData().get(POUNCING);
-    }
+	public Optional<UUID> getTrusted() {
+		return this.foxie.getEntityData().get(TRUSTING);
+	}
 
-    private void setPouncing(boolean value) {
-        this.foxie.getEntityData().set(POUNCING, value);
-    }
+	public void setTrusted(UUID value) {
+		this.foxie.getEntityData().set(TRUSTING, Optional.of(value));
+	}
 
-    public boolean isSleeping() {
-        return this.foxie.getEntityData().get(SLEEPING);
-    }
+	public byte getActivity() {
+		return this.foxie.getEntityData().get(ACTIVITY);
+	}
 
-    private void setSleeping(boolean value) {
-        this.foxie.getEntityData().set(SLEEPING, value);
-    }
+	public void setActivity(byte value) {
+		this.foxie.getEntityData().set(ACTIVITY, value);
+	}
 
-    public byte getCommand() {
-        return this.foxie.getEntityData().get(COMMAND);
-    }
+	public void readSaveData(CompoundTag compound) {
+		this.setActivity(compound.getByte("Activity"));
+		this.setCommand(compound.getByte("Command"));
+		if (compound.getBoolean("Trusting"))
+			this.setTrusted(compound.getUUID("Trusted"));
 
-    public void setCommand(byte command) {
-        this.foxie.getEntityData().set(COMMAND, command);
-    }
+		var lastEaten = compound.getInt("TicksSinceLastEaten");
+		this.foxie.hungerControl.setTicksSinceLastFood(lastEaten);
+	}
 
-    public int getHungerStrength() {
-        return this.foxie.getEntityData().get(HUNGER_STRENGTH);
-    }
+	public void writeSaveData(CompoundTag compound) {
+		compound.putByte("Activity", this.getActivity());
+		compound.putByte("Command", this.getCommand());
 
-    public void setHungerStrength(int value) {
-        this.foxie.getEntityData().set(HUNGER_STRENGTH, value);
-    }
+		this.getTrusted()
+			.ifPresent(uuid -> compound.putUUID("Trusted", uuid));
 
-    public Optional<UUID> getTrusted() {
-        return this.foxie.getEntityData().get(TRUSTING);
-    }
-
-    public void setTrusted(UUID value) {
-        this.foxie.getEntityData().set(TRUSTING, Optional.of(value));
-    }
-    
-    public byte getActivity() {
-        return this.foxie.getEntityData().get(ACTIVITY);
-    }
-
-    public void setActivity(byte value) {
-        this.foxie.getEntityData().set(ACTIVITY, value);
-    }
-
-    public void readSaveData(CompoundTag compound) {
-        this.setSitting(compound.getBoolean("Sitting"));
-        this.setInterested(compound.getBoolean("Interested"));
-        this.setPouncing(compound.getBoolean("Pouncing"));
-        this.setSleeping(compound.getBoolean("Sleeping"));
-        this.setCommand(compound.getByte("Command"));
-        if (compound.getBoolean("Trusting"))
-            this.setTrusted(compound.getUUID("Trusted"));
-
-        this.foxie.hungerControl.setTicksSinceLastFood(compound.getInt("TicksSinceLastEaten"));
-    }
-
-    public void writeSaveData(CompoundTag compound) {
-        compound.putBoolean("Sitting", this.isSitting());
-        compound.putBoolean("Interested", this.isInterested());
-        compound.putBoolean("Pouncing", this.isPouncing());
-        compound.putBoolean("Sleeping", this.isSleeping());
-        compound.putByte("Command", this.getCommand());
-        this.getTrusted().ifPresent(uuid -> compound.putUUID("Trusted", uuid));
-        compound.putInt("TicksSinceLastEaten", this.foxie.hungerControl.getTicksSinceLastEaten());
-    }
+		var lastEaten = this.foxie.hungerControl.getTicksSinceLastEaten();
+		compound.putInt("TicksSinceLastEaten", lastEaten);
+	}
 }
