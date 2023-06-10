@@ -14,10 +14,12 @@ public class AbstractSleepGoal extends Goal {
 
 	@Override
 	public boolean canUse() {
-		return !this.foxie.aiControl.canSleep();
+		if (this.foxie.aiControl.isSleeping()) return false;
+		return this.foxie.aiControl.canSleep();
 	}
 
 	public boolean canContinueToUse() {
+		if (!this.foxie.aiControl.isSleeping()) return false;
 		return this.foxie.aiControl.canSleep();
 	}
 

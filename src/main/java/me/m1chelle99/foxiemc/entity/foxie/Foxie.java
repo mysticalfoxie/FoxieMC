@@ -2,6 +2,7 @@ package me.m1chelle99.foxiemc.entity.foxie;
 
 import me.m1chelle99.foxiemc.entity.foxie.controls.*;
 import me.m1chelle99.foxiemc.init.EntityInit;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -27,97 +28,112 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("CommentedOutCode") // TODO: Remove before merge
 public class Foxie extends TamableAnimal {
-    public static final String ID = "foxie";
-    public final FoxieAIControl aiControl;
-    public final FoxieMouthControl mouthControl;
-    public final FoxieDataControl dataControl;
-    public final FoxieHungerControl hungerControl;
-    public final FoxieOwnerControl ownerControl;
+	public static final String ID = "foxie";
+	public final FoxieAIControl aiControl;
+	public final FoxieMouthControl mouthControl;
+	public final FoxieDataControl dataControl;
+	public final FoxieHungerControl hungerControl;
+	public final FoxieOwnerControl ownerControl;
 
-    public Foxie(EntityType<? extends TamableAnimal> type, Level level) {
-        super(type, level);
+	public Foxie(EntityType<? extends TamableAnimal> type, Level level) {
+		super(type, level);
 
-        this.moveControl = new FoxieMoveControl(this);
-        this.lookControl = new FoxieLookControl(this);
-        this.dataControl = new FoxieDataControl(this);
-        this.aiControl = new FoxieAIControl(this);
-        this.mouthControl = new FoxieMouthControl(this);
-        this.hungerControl = new FoxieHungerControl(this);
-        this.ownerControl = new FoxieOwnerControl(this);
+		this.moveControl = new FoxieMoveControl(this);
+		this.lookControl = new FoxieLookControl(this);
+		this.dataControl = new FoxieDataControl(this);
+		this.aiControl = new FoxieAIControl(this);
+		this.mouthControl = new FoxieMouthControl(this);
+		this.hungerControl = new FoxieHungerControl(this);
+		this.ownerControl = new FoxieOwnerControl(this);
 
-        this.setPathfindingMalus(BlockPathTypes.DANGER_OTHER, 0.0F);
-        this.setPathfindingMalus(BlockPathTypes.DAMAGE_OTHER, 0.0F);
+		this.setPathfindingMalus(BlockPathTypes.DANGER_OTHER, 0.0F);
+		this.setPathfindingMalus(BlockPathTypes.DAMAGE_OTHER, 0.0F);
 
-        this.setCanPickUpLoot(true);
-    }
+		this.setCanPickUpLoot(true);
+	}
 
-    public static AttributeSupplier.Builder getFoxieAttributes() {
-        return LivingEntity.createLivingAttributes()
-                .add(Attributes.MOVEMENT_SPEED, FoxieConstants.MOVEMENT_SPEED)
-                .add(Attributes.MAX_HEALTH, FoxieConstants.MAX_HEALTH)
-                .add(Attributes.FOLLOW_RANGE, FoxieConstants.FOLLOW_RANGE)
-                .add(Attributes.ATTACK_DAMAGE, FoxieConstants.ATTACK_DAMAGE)
-                .add(Attributes.ATTACK_KNOCKBACK);
-    }
+	public static AttributeSupplier.Builder getFoxieAttributes() {
+		return LivingEntity.createLivingAttributes()
+			.add(Attributes.MOVEMENT_SPEED, FoxieConstants.MOVEMENT_SPEED)
+			.add(Attributes.MAX_HEALTH, FoxieConstants.MAX_HEALTH)
+			.add(Attributes.FOLLOW_RANGE, FoxieConstants.FOLLOW_RANGE)
+			.add(Attributes.ATTACK_DAMAGE, FoxieConstants.ATTACK_DAMAGE)
+			.add(Attributes.ATTACK_KNOCKBACK);
+	}
 
-    @Override
-    public @NotNull EntityDimensions getDimensions(@NotNull Pose pose) {
-        return EntityDimensions.scalable(.65F, .65F);
-    }
+	@Override
+	public @NotNull EntityDimensions getDimensions(@NotNull Pose pose) {
+		return EntityDimensions.scalable(.65F, .65F);
+	}
 
-    protected int calculateFallDamage(float distance, float dmg_multiplier) {
-        return Mth.ceil((distance - 5.0F) * dmg_multiplier);
-    }
+	protected int calculateFallDamage(float distance, float dmg_multiplier) {
+		return Mth.ceil((distance - 5.0F) * dmg_multiplier);
+	}
 
-    public void playAmbientSound() {
-        var event = this.getAmbientSound();
-        if (event == SoundEvents.FOX_SCREECH)
-            this.playSound(event, 2.0F, this.getVoicePitch());
-        else super.playAmbientSound();
-    }
+	public void playAmbientSound() {
+		var event = this.getAmbientSound();
+		if (event == SoundEvents.FOX_SCREECH)
+			this.playSound(event, 2.0F, this.getVoicePitch());
+		else super.playAmbientSound();
+	}
 
-    protected void populateDefaultEquipmentSlots(@NotNull DifficultyInstance difficulty) {
-        this.mouthControl.setDefaultEquipment();
-    }
+	protected void populateDefaultEquipmentSlots(
+		@NotNull DifficultyInstance difficulty) {
+		this.mouthControl.setDefaultEquipment();
+	}
 
-    public void runTo(@NotNull Vec3 position, double multiplier) {
-        this.getNavigation().moveTo(position.x, position.y, position.z, multiplier);
-    }
+	public void runTo(@NotNull Vec3 position, double speed_modifier) {
+		var blockpos = new BlockPos(position.x, position.y, position.z);
+		this.runTo(blockpos, speed_modifier);
+	}
 
-    public Vec3 getRandomTargetWithin(int distance) {
-        return DefaultRandomPos.getPos(this, distance, 4);
-    }
+	public void runTo(@NotNull BlockPos position, double speed_modifier) {
+		var navigator = this.getNavigation();
+		var path = navigator.createPath(position, 0);
+		navigator.moveTo(path, speed_modifier);
+	}
 
-    protected SoundEvent getAmbientSound() {
-        return this.aiControl.getAmbientSound();
-    }
+	public boolean isInFluid() {
+		var position = this.blockPosition();
+		var fluid = this.level.getFluidState(position);
+		var fluidBelow = level.getFluidState(position.below());
+		return !fluid.isEmpty() || !fluidBelow.isEmpty();
+	}
 
-    protected void pickUpItem(@NotNull ItemEntity item) {
-        this.mouthControl.pickupItem(item);
-    }
+	public Vec3 getRandomTargetWithin(int distance) {
+		return DefaultRandomPos.getPos(this, distance, 4);
+	}
 
-    // TODO: Doesn't directly have something todo with the leash offset, but to write that idea down:
-    // Foxie should run almost aside of you when on leash. You don't allow foxie too much freedom with this.
-    public @NotNull Vec3 getLeashOffset() {
-        return new Vec3(0.0D, 0.55F * this.getEyeHeight(), this.getBbWidth() * 0.4F);
-    }
+	protected SoundEvent getAmbientSound() {
+		return this.aiControl.getAmbientSound();
+	}
 
-    protected void dropEquipment() { // Forge: move extra drops to dropEquipment to allow them to be captured by LivingDropsEvent
-        super.dropEquipment();
-        this.mouthControl.drop();
-    }
+	protected void pickUpItem(@NotNull ItemEntity item) {
+		this.mouthControl.pickupItem(item);
+	}
 
-    protected void dropAllDeathLoot(@NotNull DamageSource source) {
-        super.dropAllDeathLoot(source);
-    }
+	// TODO: Doesn't directly have something todo with the leash offset, but to write that idea down:
+	// Foxie should run almost aside of you when on leash. You don't allow foxie too much freedom with this.
+	public @NotNull Vec3 getLeashOffset() {
+		return new Vec3(0.0D, 0.55F * this.getEyeHeight(), this.getBbWidth() * 0.4F);
+	}
 
-    protected SoundEvent getHurtSound(@NotNull DamageSource source) {
-        return SoundEvents.FOX_HURT;
-    }
+	protected void dropEquipment() { // Forge: move extra drops to dropEquipment to allow them to be captured by LivingDropsEvent
+		super.dropEquipment();
+		this.mouthControl.drop();
+	}
 
-    protected SoundEvent getDeathSound() {
-        return SoundEvents.FOX_DEATH;
-    }
+	protected void dropAllDeathLoot(@NotNull DamageSource source) {
+		super.dropAllDeathLoot(source);
+	}
+
+	protected SoundEvent getHurtSound(@NotNull DamageSource source) {
+		return SoundEvents.FOX_HURT;
+	}
+
+	protected SoundEvent getDeathSound() {
+		return SoundEvents.FOX_DEATH;
+	}
 
 //      TODO: Outsource, figure out where this is used
 //    public boolean isPathClearTo(LivingEntity prey) {
@@ -170,81 +186,81 @@ public class Foxie extends TamableAnimal {
 //    }
 
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        FoxieDataControl.defineStates(this);
-    }
+	protected void defineSynchedData() {
+		super.defineSynchedData();
+		FoxieDataControl.defineStates(this);
+	}
 
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.dataControl.readSaveData(compound);
-    }
+	public void readAdditionalSaveData(@NotNull CompoundTag compound) {
+		super.readAdditionalSaveData(compound);
+		this.dataControl.readSaveData(compound);
+	}
 
-    public boolean canTakeItem(@NotNull ItemStack stack) {
-        return this.mouthControl.canTakeItem(stack) && super.canTakeItem(stack);
-    }
+	public boolean canTakeItem(@NotNull ItemStack stack) {
+		return this.mouthControl.canTakeItem(stack) && super.canTakeItem(stack);
+	}
 
-    protected void onOffspringSpawnedFromEgg(Player player, @NotNull Mob mob) {
-        var foxie = (Foxie) mob;
-        foxie.aiControl.trust(player.getUUID());
-    }
+	protected void onOffspringSpawnedFromEgg(Player player, @NotNull Mob mob) {
+		var foxie = (Foxie) mob;
+		foxie.aiControl.trust(player.getUUID());
+	}
 
-    public boolean canHoldItem(@NotNull ItemStack stack) {
-        return this.mouthControl.canTakeItem(stack) && super.canHoldItem(stack);
-    }
+	public boolean canHoldItem(@NotNull ItemStack stack) {
+		return this.mouthControl.canTakeItem(stack) && super.canHoldItem(stack);
+	}
 
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        this.dataControl.writeSaveData(compound);
-    }
+	public void addAdditionalSaveData(@NotNull CompoundTag compound) {
+		super.addAdditionalSaveData(compound);
+		this.dataControl.writeSaveData(compound);
+	}
 
-    public SpawnGroupData finalizeSpawn(
-            @NotNull ServerLevelAccessor level,
-            @NotNull DifficultyInstance difficulty,
-            @NotNull MobSpawnType mobSpawnType,
-            @Nullable SpawnGroupData spawnGroupData,
-            @Nullable CompoundTag tag) {
-        this.populateDefaultEquipmentSlots(difficulty);
-        return super.finalizeSpawn(level, difficulty, mobSpawnType, null, tag);
-    }
+	public SpawnGroupData finalizeSpawn(
+		@NotNull ServerLevelAccessor level,
+		@NotNull DifficultyInstance difficulty,
+		@NotNull MobSpawnType mobSpawnType,
+		@Nullable SpawnGroupData spawnGroupData,
+		@Nullable CompoundTag tag) {
+		this.populateDefaultEquipmentSlots(difficulty);
+		return super.finalizeSpawn(level, difficulty, mobSpawnType, null, tag);
+	}
 
-    protected void usePlayerItem(
-            @NotNull Player player,
-            @NotNull InteractionHand hand,
-            @NotNull ItemStack stack
-    ) {
-        super.usePlayerItem(player, hand, stack);
-    }
+	protected void usePlayerItem(
+		@NotNull Player player,
+		@NotNull InteractionHand hand,
+		@NotNull ItemStack stack
+	) {
+		super.usePlayerItem(player, hand, stack);
+	}
 
-    @Override
-    protected void registerGoals() {
-        FoxieAIControl.register(this);
-    }
+	@Override
+	protected void registerGoals() {
+		FoxieAIControl.register(this);
+	}
 
-    public void tick() {
-        super.tick();
-        this.hungerControl.tick();
-    }
+	public void tick() {
+		super.tick();
+		this.hungerControl.tick();
+	}
 
-    public @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand hand) {
-        if (this.hungerControl.canInteract(player)) {
-            this.hungerControl.interact(player);
-            return InteractionResult.CONSUME;
-        }
+	public @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand hand) {
+		if (this.hungerControl.canInteract(player)) {
+			this.hungerControl.interact(player);
+			return InteractionResult.CONSUME;
+		}
 
-        if (this.ownerControl.canInteract(player))
-            return this.ownerControl.interact(player);
+		if (this.ownerControl.canInteract(player))
+			return this.ownerControl.interact(player);
 
-        return InteractionResult.PASS;
-    }
+		return InteractionResult.PASS;
+	}
 
-    @Nullable
-    @Override
-    public AgeableMob getBreedOffspring(@NotNull ServerLevel world, @NotNull AgeableMob foxie) {
-        return EntityInit.FOXIE.get().create(world);
-    }
+	@Nullable
+	@Override
+	public AgeableMob getBreedOffspring(@NotNull ServerLevel world, @NotNull AgeableMob foxie) {
+		return EntityInit.FOXIE.get().create(world);
+	}
 
-    public float[] getHandDropChances() {
-        return this.handDropChances;
-    }
+	public float[] getHandDropChances() {
+		return this.handDropChances;
+	}
 }

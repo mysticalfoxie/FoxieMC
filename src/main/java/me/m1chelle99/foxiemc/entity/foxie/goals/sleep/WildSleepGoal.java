@@ -14,8 +14,14 @@ public class WildSleepGoal extends AbstractSleepGoal {
 		return this.canSleepAtTimeOfDay();
 	}
 
+	@Override
+	public boolean canContinueToUse() {
+		if (!super.canContinueToUse()) return false;
+		return this.canSleepAtTimeOfDay();
+	}
+
 	private boolean canSleepAtTimeOfDay() {
-		var time = this.foxie.level.getTimeOfDay(0);
+		var time = this.foxie.level.getDayTime();
 		if (time > 22_000) return false;
 		if (time > 15_000) return true;
 		if (time > 8_000) return false;
