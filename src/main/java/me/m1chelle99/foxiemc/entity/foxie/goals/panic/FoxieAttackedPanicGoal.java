@@ -2,8 +2,9 @@ package me.m1chelle99.foxiemc.entity.foxie.goals.panic;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import me.m1chelle99.foxiemc.helper.EntityHelper;
+import me.m1chelle99.foxiemc.helper.Pathfinder;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.util.DefaultRandomPos;
+import net.minecraft.world.phys.Vec3;
 
 public class FoxieAttackedPanicGoal extends FoxieAbstractPanicGoal {
 	private LivingEntity attacker;
@@ -31,7 +32,14 @@ public class FoxieAttackedPanicGoal extends FoxieAbstractPanicGoal {
 
 	@Override
 	public void setNewTarget() {
-		this.target = DefaultRandomPos.getPosAway(this.foxie, 6, 7, this.attacker.position());
+		var position = Pathfinder.getRandomPositionAway(
+			this.foxie,
+			this.attacker,
+			6, 7, 5);
+		if (position == null)
+			return;
+
+		this.target = Vec3.atCenterOf(position);
 	}
 
 	@Override

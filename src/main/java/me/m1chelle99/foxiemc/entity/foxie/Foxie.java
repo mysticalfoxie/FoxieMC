@@ -112,13 +112,20 @@ public class Foxie extends TamableAnimal {
 		this.mouthControl.pickupItem(item);
 	}
 
-	// TODO: Doesn't directly have something todo with the leash offset, but to write that idea down:
-	// Foxie should run almost aside of you when on leash. You don't allow foxie too much freedom with this.
+	// TODO: Doesn't directly have something todo with the 
+	//  leash offset, but to write that idea down:
+
+	// Foxie should run almost aside of you when on leash. 
+	// You don't allow foxie too much freedom with this.
 	public @NotNull Vec3 getLeashOffset() {
-		return new Vec3(0.0D, 0.55F * this.getEyeHeight(), this.getBbWidth() * 0.4F);
+		return new Vec3(
+			0.0D, 0.55F * this.getEyeHeight(),
+			this.getBbWidth() * 0.4F);
 	}
 
-	protected void dropEquipment() { // Forge: move extra drops to dropEquipment to allow them to be captured by LivingDropsEvent
+	// Forge: move extra drops to dropEquipment to 
+	// allow them to be captured by LivingDropsEvent
+	protected void dropEquipment() {
 		super.dropEquipment();
 		this.mouthControl.drop();
 	}
@@ -242,7 +249,8 @@ public class Foxie extends TamableAnimal {
 		this.hungerControl.tick();
 	}
 
-	public @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand hand) {
+	public @NotNull InteractionResult mobInteract(
+		@NotNull Player player, @NotNull InteractionHand hand) {
 		if (this.hungerControl.canInteract(player)) {
 			this.hungerControl.interact(player);
 			return InteractionResult.CONSUME;

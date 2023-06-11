@@ -29,17 +29,16 @@ public class FoxieAIControl {
 	public static void register(Foxie foxie) {
 		foxie.goalSelector.addGoal(0, new FoxieFloatGoal(foxie));
 		foxie.goalSelector.addGoal(0, new FoxieClimbSnowGoal(foxie));
+		foxie.goalSelector.addGoal(0, new AvoidFluidGoal(foxie));
 
 		foxie.goalSelector.addGoal(1, new FoxieFirePanicGoal(foxie));
 		foxie.goalSelector.addGoal(1, new FoxieAttackedPanicGoal(foxie));
 		foxie.goalSelector.addGoal(1, new FoxieDefaultPanicGoal(foxie));
 
-		foxie.goalSelector.addGoal(2, new AvoidFluidGoal(foxie));
+		foxie.goalSelector.addGoal(2, new FoxieSeekShelterGoal(foxie));
 
-		foxie.goalSelector.addGoal(3, new FoxieSeekShelterGoal(foxie));
-
-		foxie.goalSelector.addGoal(4, new WildSleepGoal(foxie));
-		foxie.goalSelector.addGoal(4, new TamedSleepGoal(foxie));
+		foxie.goalSelector.addGoal(3, new WildSleepGoal(foxie));
+		foxie.goalSelector.addGoal(3, new TamedSleepGoal(foxie));
 /*
 this.foxie.goalSelector.addGoal(3, new FoxieObeyDownCommandGoal(this));
 this.foxie.goalSelector.addGoal(4, new FollowOwnerGoal(this, 1.0D, 15.0F, 1.0F, false));
@@ -198,14 +197,12 @@ this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractF
 	}
 
 	public boolean canSleep() {
-		if (!this.foxie.getNavigation().isDone()) return false;
 		var activity = this.foxie.dataControl.getActivity();
 		if (activity == FoxieConstants.ACTIVITY_PANIC) return false;
 		if (this.foxie.isInFluid()) return false;
 		if (activity == FoxieConstants.ACTIVITY_SEEK_SHELTER) return false;
 		if (this.foxie.hungerControl.isHeavilyHungry()) return false;
-		if (activity == FoxieConstants.ACTIVITY_HUNT) return false;
-		return activity != FoxieConstants.ACTIVITY_OBEY;
+		return activity != FoxieConstants.ACTIVITY_HUNT;
 	}
 
 	public boolean canAvoidWater() {

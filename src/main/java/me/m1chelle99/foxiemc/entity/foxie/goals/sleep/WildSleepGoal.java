@@ -39,6 +39,9 @@ public class WildSleepGoal extends AbstractSleepGoal {
 		if (this.foxie.isSleeping())
 			this.foxie.stopSleeping();
 
+		if (!this.foxie.getNavigation().isDone())
+			this.foxie.getNavigation().stop();
+
 		if (this.foxie.aiControl.hasActivity(FoxieConstants.ACTIVITY_SLEEP))
 			this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
 

@@ -2,16 +2,19 @@ package me.m1chelle99.foxiemc.helper;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.ai.util.RandomPos;
-import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
 
 public final class Pathfinder {
 	public static BlockPos getClosestPathWhere(
-		Mob entity,
+		@NotNull Mob entity,
 		int xzRange,
 		int yRange,
 		Predicate<BlockPos> predicate
@@ -54,7 +57,7 @@ public final class Pathfinder {
 	}
 
 	public static BlockPos getPathInLookDirection(
-		Mob entity,
+		@NotNull Mob entity,
 		int xzRange,
 		int yRange,
 		int randomModifier
@@ -78,13 +81,46 @@ public final class Pathfinder {
 	}
 
 	public static BlockPos getRandomPositionWithin(
-		Animal entity,
+		@NotNull PathfinderMob entity,
 		int xzRange,
 		int yRange,
-		int maxTries
+		int retries
 	) {
-		for (int i = 0; i < maxTries; i++) {
+		for (int i = 0; i < retries; i++) {
 			var target = DefaultRandomPos.getPos(entity, xzRange, yRange);
+			if (target != null)
+				return new BlockPos(target);
+		}
+
+		return null;
+	}
+
+	public static BlockPos getRandomPositionAway(
+		@NotNull PathfinderMob mob,
+		@NotNull LivingEntity attacker,
+		int xzRange,
+		int yRange,
+		int retries
+	) {
+		return Pathfinder.getRandomPositionAway(
+			mob,
+			attacker.blockPosition(),
+			xzRange,
+			yRange,
+			retries
+		);
+	}
+
+	public static BlockPos getRandomPositionAway(
+		@NotNull PathfinderMob mob,
+		@NotNull BlockPos pos,
+		int xzRange,
+		int yRange,
+		int retries
+	) {
+		var vec = Vec3.atBottomCenterOf(pos);
+		for (int i = 0; i < retries; i++) {
+			var target = DefaultRandomPos.getPosAway(mob, xzRange, yRange, vec);
 			if (target != null)
 				return new BlockPos(target);
 		}
