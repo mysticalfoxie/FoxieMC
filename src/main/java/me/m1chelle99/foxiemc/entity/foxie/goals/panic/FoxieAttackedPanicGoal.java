@@ -6,36 +6,36 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 
 public class FoxieAttackedPanicGoal extends FoxieAbstractPanicGoal {
-    private LivingEntity attacker;
+	private LivingEntity attacker;
 
-    public FoxieAttackedPanicGoal(Foxie foxie) {
-        super(foxie);
-    }
+	public FoxieAttackedPanicGoal(Foxie foxie) {
+		super(foxie);
+	}
 
-    @Override
-    public boolean canUse() {
-        return super.canUse() && this.foxie.getLastHurtByMob() != null;
-    }
+	@Override
+	public boolean canUse() {
+		return super.canUse() && this.foxie.getLastHurtByMob() != null;
+	}
 
-    @Override
-    public void start() {
-        this.attacker = this.foxie.getLastHurtByMob();
-        super.start();
-    }
+	@Override
+	public void start() {
+		this.attacker = this.foxie.getLastHurtByMob();
+		super.start();
+	}
 
-    @Override
-    public void stop() {
-        this.attacker = null;
-        super.stop();
-    }
+	@Override
+	public void stop() {
+		this.attacker = null;
+		super.stop();
+	}
 
-    @Override
-    public void setNewTarget() {
-        this.target = DefaultRandomPos.getPosAway(this.foxie, 6, 7, this.attacker.position());
-    }
+	@Override
+	public void setNewTarget() {
+		this.target = DefaultRandomPos.getPosAway(this.foxie, 6, 7, this.attacker.position());
+	}
 
-    @Override
-    public void setCooldown() {
-        this.cooldown = EntityHelper.getRandomTicksWithin(this.foxie, 6, 15);
-    }
+	@Override
+	public void setCooldown() {
+		this.cooldown = EntityHelper.getRandomTicksWithin(this.foxie, 10, 25);
+	}
 }

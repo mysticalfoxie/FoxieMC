@@ -12,7 +12,7 @@ import net.minecraft.world.level.material.Fluids;
 public class AvoidFluidGoal extends Goal {
 
 	private final Foxie foxie;
-	private final boolean shouldPanic = false;
+	private boolean shouldPanic = false;
 	private byte lastActivity = FoxieConstants.ACTIVITY_NONE;
 
 	public AvoidFluidGoal(Foxie foxie) {
@@ -36,7 +36,7 @@ public class AvoidFluidGoal extends Goal {
 
 	@Override
 	public boolean canContinueToUse() {
-		return this.canUse();
+		return this.canUse() && !this.foxie.getNavigation().isDone();
 	}
 
 	@Override
@@ -48,6 +48,13 @@ public class AvoidFluidGoal extends Goal {
 	public void start() {
 		this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_AVOID_FLUID);
 		this.lastActivity = this.foxie.aiControl.getActivity();
+
+		var level = this.foxie.level;
+		var position = this.foxie.blockPosition();
+		var fluid = level.getFluidState(position);
+		var fluidBelow = level.getFluidState(position.below());
+		this.shouldPanic = fluid.is(Fluids.LAVA)
+			|| fluidBelow.is(Fluids.FLOWING_LAVA);
 
 		var target = this.getTarget();
 		if (target == null)
@@ -73,7 +80,7 @@ public class AvoidFluidGoal extends Goal {
 		if (target != null)
 			return target;
 
-		target = Pathfinder.getPathInLookDirection(this.foxie, 7, 2);
+		target = Pathfinder.getPathInLookDirection(this.foxie, 7, 2, 3);
 
 		if (target != null)
 			return target;

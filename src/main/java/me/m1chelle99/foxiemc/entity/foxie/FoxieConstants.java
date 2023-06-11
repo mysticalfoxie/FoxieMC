@@ -13,7 +13,8 @@ public final class FoxieConstants {
 	public static final Double EAT_BERRIES_SPEED_MULTIPLIER = 1.15D;
 	public static final int BERRIES_SEARCH_RANGE = 20;
 	public static final Double SEEK_SHELTER_MOVEMENT_SPEED_MULTIPLIER = 1.3D;
-	public static final Double AVOID_FLUID_MOVEMENT_SPEED_MULTIPLIER = 1.3D;
+	public static final Double SEARCH_SLEEP_MOVEMENT_SPEED_MULTIPLIER = .85D;
+	public static final Double AVOID_FLUID_MOVEMENT_SPEED_MULTIPLIER = 1.8D;
 	public static final boolean FOLLOW_PREY_EVEN_IF_NOT_SEEN = true;
 	public static final Double ATTACK_MOVEMENT_SPEED_MULTIPLIER = 1.25D;
 	public static final int WAIT_TIME_BEFORE_SLEEP = 140;
@@ -40,8 +41,9 @@ public final class FoxieConstants {
 	public static final Byte ACTIVITY_PANIC = 1;
 	public static final Byte ACTIVITY_AVOID_FLUID = 2;
 	public static final Byte ACTIVITY_SEEK_SHELTER = 3;
-	public static final Byte ACTIVITY_SLEEP = 4;
-	public static final Byte ACTIVITY_OBEY = 5;
-	public static final Byte ACTIVITY_HUNT = 6;
-	public static final Byte ACTIVITY_STRAY = 7;
+	public static final Byte ACTIVITY_SEARCH_FOR_SLEEP = 4;
+	public static final Byte ACTIVITY_SLEEP = 5;
+	public static final Byte ACTIVITY_OBEY = 6;
+	public static final Byte ACTIVITY_HUNT = 7;
+	public static final Byte ACTIVITY_STRAY = 8;
 }

@@ -5,7 +5,6 @@ import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
 import me.m1chelle99.foxiemc.helper.Pathfinder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 
 import java.util.EnumSet;
 
@@ -74,12 +73,13 @@ public class FoxieSeekShelterGoal extends Goal {
 		if (target != null)
 			return;
 
-		this.target = Pathfinder.getPathInLookDirection(this.foxie, range, 5);
+		this.target = Pathfinder
+			.getPathInLookDirection(this.foxie, range, 4, 2);
 
 		if (target != null)
 			return;
 
-		var target = DefaultRandomPos.getPos(this.foxie, range, 4);
+		var target = Pathfinder.getRandomPositionWithin(this.foxie, range, 4, 10);
 
 		if (target == null)
 			return;

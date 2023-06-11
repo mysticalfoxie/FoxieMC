@@ -3,7 +3,9 @@ package me.m1chelle99.foxiemc.helper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.ai.util.RandomPos;
+import net.minecraft.world.entity.animal.Animal;
 
 import java.util.function.Predicate;
 
@@ -54,13 +56,39 @@ public final class Pathfinder {
 	public static BlockPos getPathInLookDirection(
 		Mob entity,
 		int xzRange,
-		int yRange
+		int yRange,
+		int randomModifier
 	) {
-		return RandomPos.generateRandomDirectionWithinRadians(
+		var position = RandomPos.generateRandomDirectionWithinRadians(
 			entity.getRandom(),
 			xzRange, yRange, 0,
 			entity.getRotationVector().x,
 			entity.getRotationVector().y,
 			Mth.HALF_PI);
+
+		if (position == null)
+			return null;
+
+		var min = randomModifier * -1;
+		var random = entity.getRandom();
+		var x = position.getX() + random.nextInt(min, randomModifier);
+		var z = position.getZ() + random.nextInt(min, randomModifier);
+
+		return new BlockPos(x, position.getY(), z);
+	}
+
+	public static BlockPos getRandomPositionWithin(
+		Animal entity,
+		int xzRange,
+		int yRange,
+		int maxTries
+	) {
+		for (int i = 0; i < maxTries; i++) {
+			var target = DefaultRandomPos.getPos(entity, xzRange, yRange);
+			if (target != null)
+				return new BlockPos(target);
+		}
+
+		return null;
 	}
 }

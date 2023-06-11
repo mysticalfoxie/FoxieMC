@@ -23,12 +23,14 @@ public class AbstractSleepGoal extends Goal {
 		return this.foxie.aiControl.canSleep();
 	}
 
+	@Override
 	public void start() {
 		this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_SLEEP);
 		var position = this.foxie.blockPosition();
 		this.foxie.startSleeping(position);
 	}
 
+	@Override
 	public void stop() {
 		this.foxie.stopSleeping();
 		if (this.foxie.aiControl.hasActivity(FoxieConstants.ACTIVITY_SLEEP))
