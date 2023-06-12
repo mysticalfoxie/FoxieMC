@@ -94,12 +94,12 @@ public class WildSleepGoal extends AbstractSleepGoal {
         if (this.isDesiredPosition(position)) {
             this.foxie.startSleeping(position);
             this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_SLEEP);
-            this.cooldown = this.foxie.getRandom().nextInt(40, 140);
+            this.cooldown = this.foxie.getRandom().nextInt(20, 100);
             return;
         }
 
         this.setNewTargetPosition();
-        this.cooldown = this.foxie.getRandom().nextInt(40, 140);
+        this.cooldown = this.foxie.getRandom().nextInt(20, 100);
         if (this.target != null) {
             var mod = FoxieConstants.SEARCH_SLEEP_MOVEMENT_SPEED_MULTIPLIER;
             this.foxie.runTo(this.target, mod);
@@ -124,7 +124,7 @@ public class WildSleepGoal extends AbstractSleepGoal {
             return;
 
         var target = Pathfinder
-            .getRandomPositionWithin(this.foxie, 20, 4, 10);
+            .getPathInLookDirection(this.foxie, 20, 4, 10);
         if (target == null)
             return;
 

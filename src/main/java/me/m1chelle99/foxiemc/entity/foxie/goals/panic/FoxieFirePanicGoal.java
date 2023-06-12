@@ -2,6 +2,7 @@ package me.m1chelle99.foxiemc.entity.foxie.goals.panic;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import me.m1chelle99.foxiemc.helper.EntityHelper;
+import me.m1chelle99.foxiemc.helper.Pathfinder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.phys.Vec3;
@@ -13,15 +14,24 @@ public class FoxieFirePanicGoal extends FoxieAbstractPanicGoal {
 
     @Override
     public boolean canUse() {
-        return super.canUse() 
+        return super.canUse()
             && this.foxie.isOnFire();
     }
 
     @Override
     public void setNewTarget() {
         this.setWaterAsTarget();
-        if (this.target == null)
-            this.target = this.foxie.getRandomTargetWithin(5);
+
+        if (this.target != null)
+            return;
+
+        var target = Pathfinder
+            .getPathInLookDirection(this.foxie, 20, 4, 10);
+        
+        if (target == null)
+            return;
+
+        this.target = Vec3.atCenterOf(target);
     }
 
     @Override
@@ -37,13 +47,13 @@ public class FoxieFirePanicGoal extends FoxieAbstractPanicGoal {
         if (!collision.isEmpty())
             return;
 
-        var match = BlockPos.findClosestMatch(position, 10, 3, 
+        var match = BlockPos.findClosestMatch(position, 10, 3,
             x -> this.foxie.level.getFluidState(x).is(FluidTags.WATER));
         if (match.isEmpty()) return;
 
         this.target = new Vec3(
-            match.get().getX(), 
-            match.get().getY(), 
+            match.get().getX(),
+            match.get().getY(),
             match.get().getZ()
         );
     }
