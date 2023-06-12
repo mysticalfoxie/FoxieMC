@@ -10,6 +10,7 @@ import java.util.EnumSet;
 
 public class FoxieSeekShelterGoal extends Goal {
     private final Foxie foxie;
+    
     private BlockPos target;
 
     public FoxieSeekShelterGoal(Foxie foxie) {
@@ -80,7 +81,7 @@ public class FoxieSeekShelterGoal extends Goal {
             return;
 
         var target = Pathfinder
-			.getRandomPositionWithin(this.foxie, range, 4, 10);
+            .getRandomPositionWithin(this.foxie, range, 4, 10);
 
         if (target == null)
             return;
