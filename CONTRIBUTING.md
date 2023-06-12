@@ -18,6 +18,13 @@ If not, I will explain detailed why this idea is not fitting for the mod.
   
 * **Disadvantage:** You need to describe the feature at first... (and I know how annoying documentation is under devs 😉)
 
+### Codacy Integration
+
+To ensure a high code quality I added the Codacy integration. 
+It would be too sad if this force of a strict style is stopping you from contributing. 
+To avoid that I will rewrite your code to this projects coding standards. 
+With that I hope you do not feel hesitant to add your ideas to the project.
+
 ### Some final words
 I hope this little barrier doesnt stop you from contributing. 💖
 
