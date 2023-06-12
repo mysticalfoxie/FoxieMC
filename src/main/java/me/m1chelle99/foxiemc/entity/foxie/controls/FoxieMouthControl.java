@@ -26,7 +26,12 @@ public class FoxieMouthControl {
     private void spitOutItem(ItemStack stack) {
         if (stack.isEmpty() || this.foxie.level.isClientSide) return;
 
-        var pos = new Vec3(this.foxie.getX() + this.foxie.getLookAngle().x, this.foxie.getY() + 1.0D, this.foxie.getZ() + this.foxie.getLookAngle().z);
+        var pos = new Vec3(
+            this.foxie.getX() + this.foxie.getLookAngle().x, 
+            this.foxie.getY() + 1.0D, 
+            this.foxie.getZ() + this.foxie.getLookAngle().z
+        );
+        
         var item = new ItemEntity(this.foxie.level, pos.x, pos.y, pos.z, stack);
         item.setThrower(this.foxie.getUUID());
         item.setPickUpDelay(FoxieConstants.PICKUP_DELAY);
@@ -43,7 +48,14 @@ public class FoxieMouthControl {
     }
 
     public void dropItemStack(ItemStack stack) {
-        var item = new ItemEntity(this.foxie.level, this.foxie.getX(), this.foxie.getY(), this.foxie.getZ(), stack);
+        var item = new ItemEntity(
+            this.foxie.level, 
+            this.foxie.getX(), 
+            this.foxie.getY(), 
+            this.foxie.getZ(), 
+            stack
+        );
+        
         this.foxie.level.addFreshEntity(item);
     }
 
@@ -52,7 +64,8 @@ public class FoxieMouthControl {
 
         this.spitOutItem(this.foxie.getItemBySlot(EquipmentSlot.MAINHAND));
         this.foxie.setItemSlot(EquipmentSlot.MAINHAND, stack.split(1));
-        this.foxie.getHandDropChances()[EquipmentSlot.MAINHAND.getIndex()] = 1.0F;
+        var chances = this.foxie.getHandDropChances();
+        chances[EquipmentSlot.MAINHAND.getIndex()] = 1.0F;
     }
 
     public void pickupItem(@NotNull ItemEntity item) {
@@ -65,17 +78,11 @@ public class FoxieMouthControl {
         this.spitOutItem(this.foxie.getItemBySlot(EquipmentSlot.MAINHAND));
         this.foxie.onItemPickup(item);
         this.foxie.setItemSlot(EquipmentSlot.MAINHAND, stack.split(1));
-        this.foxie.getHandDropChances()[EquipmentSlot.MAINHAND.getIndex()] = 1.0F;
+        var chances = this.foxie.getHandDropChances();
+        chances[EquipmentSlot.MAINHAND.getIndex()] = 1.0F;
         this.foxie.take(item, stack.getCount());
         item.discard();
     }
-
-//    public boolean canHoldItem(ItemStack stack) {
-//        if (this.foxie.hungerControl.isHungry() && this.foxie.hungerControl.isEdible(stack)) return true;
-//        if (this.foxie.hungerControl.isHeavilyHungry()) return false;
-//
-//        return !this.hasItem();
-//    }
 
     public boolean canTakeItem(ItemStack stack) {
         var slot = Mob.getEquipmentSlotForItem(stack);
@@ -107,25 +114,51 @@ public class FoxieMouthControl {
         if (stack.isEmpty()) return;
 
         for (int i = 0; i < 8; ++i) {
-            var vec = new Vec3(((double) this.foxie.getRandom().nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
-            var vec2 = vec.xRot(-this.foxie.getXRot() * ((float) Math.PI / 180F)).yRot(-this.foxie.getYRot() * ((float) Math.PI / 180F));
+            var random_x = (double) this.foxie.getRandom().nextFloat();
+            
+            var foxieX = this.foxie.getX();
+            var foxieY = this.foxie.getY();
+            var foxieZ = this.foxie.getZ();
+            var angle = this.foxie.getLookAngle();
+            
+            var x = (random_x - 0.5D) * 0.1D;
+            var y = Math.random() * 0.1D + 0.1D;
+            
+            var origin = new Vec3(x, y, 0.0D);
+            var destination = origin
+                .xRot(-this.foxie.getXRot() * ((float) Math.PI / 180F))
+                .yRot(-this.foxie.getYRot() * ((float) Math.PI / 180F));
+            
             var particle = new ItemParticleOption(ParticleTypes.ITEM, stack);
-            var x = this.foxie.getX() + this.foxie.getLookAngle().x / 2.0D;
-            var z = this.foxie.getZ() + this.foxie.getLookAngle().z / 2.0D;
-            this.foxie.level.addParticle(particle, x, this.foxie.getY(), z, vec2.x, vec2.y + 0.05D, vec2.z);
+            
+            var instanceX = foxieX + angle.x / 2.0D;
+            var instanceZ = foxieZ + angle.z / 2.0D;
+            
+            this.foxie.level.addParticle(
+                particle, 
+                instanceX, 
+                foxieY, 
+                instanceZ,
+                destination.x, 
+                destination.y + 0.05D, 
+                destination.z
+            );
         }
     }
 
-    // TODO: Idk what to do with that yet... (maybe do something with that difficultly idk) 
+    // TODO: Idk what to do with that yet... 
+    //  (maybe do something with that difficultly idk) 
     public void setDefaultEquipment() {
-        if (!(this.foxie.getRandom().nextFloat() < 0.2F)) return;
+        if (this.foxie.getRandom().nextFloat() >= 0.2F) return;
 
         float random = this.foxie.getRandom().nextFloat();
+        
         ItemStack stack;
         if (random < 0.05F) stack = new ItemStack(Items.EMERALD);
         else if (random < 0.2F) stack = new ItemStack(Items.EGG);
-        else if (random < 0.4F)
-            stack = this.foxie.getRandom().nextBoolean() ? new ItemStack(Items.RABBIT_FOOT) : new ItemStack(Items.RABBIT_HIDE);
+        else if (random < 0.4F) stack = this.foxie.getRandom().nextBoolean() 
+            ? new ItemStack(Items.RABBIT_FOOT) 
+            : new ItemStack(Items.RABBIT_HIDE);
         else if (random < 0.6F) stack = new ItemStack(Items.WHEAT);
         else if (random < 0.8F) stack = new ItemStack(Items.LEATHER);
         else stack = new ItemStack(Items.FEATHER);

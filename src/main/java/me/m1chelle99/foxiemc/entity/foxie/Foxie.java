@@ -1,6 +1,12 @@
 package me.m1chelle99.foxiemc.entity.foxie;
 
-import me.m1chelle99.foxiemc.entity.foxie.controls.*;
+import me.m1chelle99.foxiemc.entity.foxie.controls.FoxieAIControl;
+import me.m1chelle99.foxiemc.entity.foxie.controls.FoxieDataControl;
+import me.m1chelle99.foxiemc.entity.foxie.controls.FoxieHungerControl;
+import me.m1chelle99.foxiemc.entity.foxie.controls.FoxieLookControl;
+import me.m1chelle99.foxiemc.entity.foxie.controls.FoxieMouthControl;
+import me.m1chelle99.foxiemc.entity.foxie.controls.FoxieMoveControl;
+import me.m1chelle99.foxiemc.entity.foxie.controls.FoxieOwnerControl;
 import me.m1chelle99.foxiemc.init.EntityInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -12,7 +18,15 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
@@ -26,7 +40,6 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings("CommentedOutCode") // TODO: Remove before merge
 public class Foxie extends TamableAnimal {
     public static final String ID = "foxie";
     public final FoxieAIControl aiControl;
@@ -142,57 +155,6 @@ public class Foxie extends TamableAnimal {
         return SoundEvents.FOX_DEATH;
     }
 
-//      TODO: Outsource, figure out where this is used
-//    public boolean isPathClearTo(LivingEntity prey) {
-//        double d0 = prey.getZ() - this.getZ();
-//        double d1 = prey.getX() - this.getX();
-//        double d2 = d0 / d1;
-//
-//        for (int j = 0; j < 6; ++j) {
-//            double d3 = d2 == 0.0D ? 0.0D : d0 * (double) ((float) j / 6.0F);
-//            double d4 = d2 == 0.0D ? d1 * (double) ((float) j / 6.0F) : d3 / d2;
-//
-//            for (int k = 1; k < 4; ++k) {
-//                var block = new BlockPos(this.getX() + d4, this.getY() + (double) k, this.getZ() + d3);
-//                if (!this.level.getBlockState(block).getMaterial().isReplaceable())
-//                    return false;
-//            }
-//        }
-//
-//        return true;
-//    }
-
-//    public boolean canPickupItem(ItemEntity item) {
-//        return !item.hasPickUpDelay() && item.isAlive();
-//    }
-//
-//    public boolean isScaryHuman(LivingEntity human) {
-//        var isHumanAGodOrSpectator = EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(human);
-//        var isHumanAGhost = EntitySelector.NO_SPECTATORS.test(human);
-//        var isHumanAGod = !isHumanAGhost && isHumanAGodOrSpectator;
-//        var isHumanTrusted = this.trusts(human.getUUID());
-//        if (isHumanAGod) return false; // God's are ok. 
-//        if (isHumanAGhost) return true; // Ghosts... brr.. scary
-//        if (isHumanTrusted) return false; // I like that guy :)
-//        return !human.isDiscrete(); // this stranger comes really close...
-//    }
-//
-//    public boolean isThreatening(LivingEntity entity) {
-//        return entity instanceof PolarBear
-//                || entity instanceof Wolf
-//                || entity instanceof Goat
-//                || entity instanceof Cow
-//                || entity instanceof IronGolem;
-//    }
-//
-//    public boolean isAlerting(LivingEntity entity) {
-//        if (this.mouthControl.isPrey(entity)) return true;
-//        if (entity instanceof Monster) return true;
-//        if (this.isThreatening(entity)) return true;
-//        return this.isScaryHuman(entity);
-//    }
-
-
     protected void defineSynchedData() {
         super.defineSynchedData();
         FoxieDataControl.defineStates(this);
@@ -264,7 +226,10 @@ public class Foxie extends TamableAnimal {
 
     @Nullable
     @Override
-    public AgeableMob getBreedOffspring(@NotNull ServerLevel world, @NotNull AgeableMob foxie) {
+    public AgeableMob getBreedOffspring(
+        @NotNull ServerLevel world, 
+        @NotNull AgeableMob foxie
+    ) {
         return EntityInit.FOXIE.get().create(world);
     }
 
