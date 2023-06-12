@@ -11,6 +11,6 @@ import net.minecraftforge.registries.RegistryObject;
 public class EntityInit {
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, FoxieMCMod.ID);
     public static final RegistryObject<EntityType<Foxie>> FOXIE = ENTITIES.register(Foxie.ID, () -> EntityType.Builder
-            .of(Foxie::new, MobCategory.AMBIENT)
-            .build(FoxieMCMod.ID + ":foxie"));
+        .of(Foxie::new, MobCategory.AMBIENT)
+        .build(FoxieMCMod.ID + ":foxie"));
 }

@@ -13,7 +13,8 @@ public class FoxieFirePanicGoal extends FoxieAbstractPanicGoal {
 
     @Override
     public boolean canUse() {
-        return super.canUse() && this.foxie.isOnFire();
+        return super.canUse() 
+            && this.foxie.isOnFire();
     }
 
     @Override
@@ -30,14 +31,20 @@ public class FoxieFirePanicGoal extends FoxieAbstractPanicGoal {
 
     public void setWaterAsTarget() {
         var position = this.foxie.blockPosition();
-        var current_block = this.foxie.level.getBlockState(position);
-        var collision = current_block.getCollisionShape(this.foxie.level, position);
+        var level = this.foxie.level;
+        var current_block = level.getBlockState(position);
+        var collision = current_block.getCollisionShape(level, position);
         if (!collision.isEmpty())
             return;
 
-        var match = BlockPos.findClosestMatch(position, 10, 3, x -> this.foxie.level.getFluidState(x).is(FluidTags.WATER));
+        var match = BlockPos.findClosestMatch(position, 10, 3, 
+            x -> this.foxie.level.getFluidState(x).is(FluidTags.WATER));
         if (match.isEmpty()) return;
 
-        this.target = new Vec3(match.get().getX(), match.get().getY(), match.get().getZ());
+        this.target = new Vec3(
+            match.get().getX(), 
+            match.get().getY(), 
+            match.get().getZ()
+        );
     }
 }

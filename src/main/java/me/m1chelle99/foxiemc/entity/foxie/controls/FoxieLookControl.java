@@ -13,7 +13,7 @@ public class FoxieLookControl extends LookControl {
 
     public void tick() {
         if (!this.foxie.aiControl.canLook()) return;
-        
+
         super.tick();
     }
 }

@@ -20,13 +20,40 @@ public class FoxieHeldItemLayer extends RenderLayer<Foxie, FoxieModel> {
     }
 
     @Override
-    public void render(@NotNull PoseStack pose, @NotNull MultiBufferSource bufferIn, int packedLightIn, Foxie foxie, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(
+        @NotNull PoseStack pose, 
+        @NotNull MultiBufferSource bufferIn, 
+        int packedLightIn, Foxie foxie, 
+        float limbSwing, 
+        float limbSwingAmount, 
+        float partialTicks, 
+        float ageInTicks, 
+        float netHeadYaw, 
+        float headPitch
+    ) {
         if (!foxie.mouthControl.hasItem()) return;
 
         foxie.isSleeping();
         pose.pushPose();
 
-        pose.translate(((this.getParentModel()).head.x + (this.getParentModel()).neck.x + (this.getParentModel()).body.x) / 16.0F, ((this.getParentModel()).head.y + (this.getParentModel()).neck.y + (this.getParentModel()).body.y) / 16.0F, ((this.getParentModel()).head.z + (this.getParentModel()).neck.z + (this.getParentModel()).body.z) / 16.0F);
+        var x_translate = this.getParentModel().head.x;
+        x_translate += this.getParentModel().neck.x;
+        x_translate += this.getParentModel().body.x;
+        x_translate /= 16.0F;
+
+        var y_translate = this.getParentModel().head.y;
+        y_translate += this.getParentModel().neck.y;
+        y_translate += this.getParentModel().body.y;
+        y_translate /= 16.0F;
+
+        var z_translate = this.getParentModel().head.z;
+        z_translate += this.getParentModel().neck.z;
+        z_translate += this.getParentModel().body.z;
+        z_translate /= 16.0F;
+        
+        
+        pose.translate(x_translate, y_translate, z_translate);
+        
         pose.mulPose(Vector3f.ZP.rotation(this.getParentModel().head.zRot));
         pose.mulPose(Vector3f.YP.rotation(this.getParentModel().head.yRot));
         pose.mulPose(Vector3f.XP.rotation(this.getParentModel().head.xRot));
@@ -41,7 +68,15 @@ public class FoxieHeldItemLayer extends RenderLayer<Foxie, FoxieModel> {
 
         var renderer = Minecraft.getInstance().getItemInHandRenderer();
         var item = foxie.mouthControl.getItem();
-        renderer.renderItem(foxie, item, ItemTransforms.TransformType.GROUND, false, pose, bufferIn, packedLightIn);
+        renderer.renderItem(
+            foxie, 
+            item, 
+            ItemTransforms.TransformType.GROUND, 
+            false, 
+            pose, 
+            bufferIn, 
+            packedLightIn
+        );
 
         pose.popPose();
     }

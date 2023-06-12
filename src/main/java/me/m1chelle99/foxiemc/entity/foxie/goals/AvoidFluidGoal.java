@@ -11,85 +11,85 @@ import net.minecraft.world.level.material.Fluids;
 
 public class AvoidFluidGoal extends Goal {
 
-	private final Foxie foxie;
-	private boolean shouldPanic = false;
-	private byte lastActivity = FoxieConstants.ACTIVITY_NONE;
+    private final Foxie foxie;
+    private boolean shouldPanic = false;
+    private byte lastActivity = FoxieConstants.ACTIVITY_NONE;
 
-	public AvoidFluidGoal(Foxie foxie) {
-		this.foxie = foxie;
-	}
+    public AvoidFluidGoal(Foxie foxie) {
+        this.foxie = foxie;
+    }
 
-	@Override
-	public boolean canUse() {
-		var position = this.foxie.blockPosition();
-		var level = this.foxie.level;
-		var fluid = level.getFluidState(position);
-		var fluidBelow = level.getFluidState(position.below());
-		if (fluid.isEmpty() || fluidBelow.isEmpty())
-			return false;
+    @Override
+    public boolean canUse() {
+        var position = this.foxie.blockPosition();
+        var level = this.foxie.level;
+        var fluid = level.getFluidState(position);
+        var fluidBelow = level.getFluidState(position.below());
+        if (fluid.isEmpty() || fluidBelow.isEmpty())
+            return false;
 
-		if (fluid.is(Fluids.LAVA) || fluid.is(Fluids.FLOWING_LAVA))
-			return true;
+        if (fluid.is(Fluids.LAVA) || fluid.is(Fluids.FLOWING_LAVA))
+            return true;
 
-		return this.foxie.aiControl.canAvoidWater(); // Or custom fluids
-	}
+        return this.foxie.aiControl.canAvoidWater(); // Or custom fluids
+    }
 
-	@Override
-	public boolean canContinueToUse() {
-		return this.canUse() && !this.foxie.getNavigation().isDone();
-	}
+    @Override
+    public boolean canContinueToUse() {
+        return this.canUse() && !this.foxie.getNavigation().isDone();
+    }
 
-	@Override
-	public boolean requiresUpdateEveryTick() {
-		return true;
-	}
+    @Override
+    public boolean requiresUpdateEveryTick() {
+        return true;
+    }
 
-	@Override
-	public void start() {
-		this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_AVOID_FLUID);
-		this.lastActivity = this.foxie.aiControl.getActivity();
+    @Override
+    public void start() {
+        this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_AVOID_FLUID);
+        this.lastActivity = this.foxie.aiControl.getActivity();
 
-		var level = this.foxie.level;
-		var position = this.foxie.blockPosition();
-		var fluid = level.getFluidState(position);
-		var fluidBelow = level.getFluidState(position.below());
-		this.shouldPanic = fluid.is(Fluids.LAVA)
-			|| fluidBelow.is(Fluids.FLOWING_LAVA);
+        var level = this.foxie.level;
+        var position = this.foxie.blockPosition();
+        var fluid = level.getFluidState(position);
+        var fluidBelow = level.getFluidState(position.below());
+        this.shouldPanic = fluid.is(Fluids.LAVA)
+            || fluidBelow.is(Fluids.FLOWING_LAVA);
 
-		var target = this.getTarget();
-		if (target == null)
-			return;
+        var target = this.getTarget();
+        if (target == null)
+            return;
 
-		var mod = FoxieConstants.AVOID_FLUID_MOVEMENT_SPEED_MULTIPLIER;
-		this.foxie.runTo(target, mod);
-	}
+        var mod = FoxieConstants.AVOID_FLUID_MOVEMENT_SPEED_MULTIPLIER;
+        this.foxie.runTo(target, mod);
+    }
 
-	@Override
-	public void stop() {
-		var activity = this.shouldPanic
-			? FoxieConstants.ACTIVITY_PANIC
-			: this.lastActivity;
+    @Override
+    public void stop() {
+        var activity = this.shouldPanic
+            ? FoxieConstants.ACTIVITY_PANIC
+            : this.lastActivity;
 
-		this.foxie.aiControl.startActivity(activity);
-	}
+        this.foxie.aiControl.startActivity(activity);
+    }
 
-	private BlockPos getTarget() {
-		var target = Pathfinder.getClosestPathWhere(this.foxie, 7, 2, block ->
-			this.foxie.level.isFluidAtPosition(block, FluidState::isEmpty));
+    private BlockPos getTarget() {
+        var target = Pathfinder.getClosestPathWhere(this.foxie, 7, 2, block ->
+            this.foxie.level.isFluidAtPosition(block, FluidState::isEmpty));
 
-		if (target != null)
-			return target;
+        if (target != null)
+            return target;
 
-		target = Pathfinder.getPathInLookDirection(this.foxie, 7, 2, 3);
+        target = Pathfinder.getPathInLookDirection(this.foxie, 7, 2, 3);
 
-		if (target != null)
-			return target;
+        if (target != null)
+            return target;
 
-		var vector = DefaultRandomPos.getPos(this.foxie, 7, 2);
+        var vector = DefaultRandomPos.getPos(this.foxie, 7, 2);
 
-		if (vector != null)
-			target = new BlockPos(vector);
+        if (vector != null)
+            target = new BlockPos(vector);
 
-		return target;
-	}
+        return target;
+    }
 }

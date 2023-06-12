@@ -7,43 +7,43 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
 public class FoxieAttackedPanicGoal extends FoxieAbstractPanicGoal {
-	private LivingEntity attacker;
+    private LivingEntity attacker;
 
-	public FoxieAttackedPanicGoal(Foxie foxie) {
-		super(foxie);
-	}
+    public FoxieAttackedPanicGoal(Foxie foxie) {
+        super(foxie);
+    }
 
-	@Override
-	public boolean canUse() {
-		return super.canUse() && this.foxie.getLastHurtByMob() != null;
-	}
+    @Override
+    public boolean canUse() {
+        return super.canUse() && this.foxie.getLastHurtByMob() != null;
+    }
 
-	@Override
-	public void start() {
-		this.attacker = this.foxie.getLastHurtByMob();
-		super.start();
-	}
+    @Override
+    public void start() {
+        this.attacker = this.foxie.getLastHurtByMob();
+        super.start();
+    }
 
-	@Override
-	public void stop() {
-		this.attacker = null;
-		super.stop();
-	}
+    @Override
+    public void stop() {
+        this.attacker = null;
+        super.stop();
+    }
 
-	@Override
-	public void setNewTarget() {
-		var position = Pathfinder.getRandomPositionAway(
-			this.foxie,
-			this.attacker,
-			6, 7, 5);
-		if (position == null)
-			return;
+    @Override
+    public void setNewTarget() {
+        var position = Pathfinder.getRandomPositionAway(
+            this.foxie,
+            this.attacker,
+            6, 7, 5);
+        if (position == null)
+            return;
 
-		this.target = Vec3.atCenterOf(position);
-	}
+        this.target = Vec3.atCenterOf(position);
+    }
 
-	@Override
-	public void setCooldown() {
-		this.cooldown = EntityHelper.getRandomTicksWithin(this.foxie, 10, 25);
-	}
+    @Override
+    public void setCooldown() {
+        this.cooldown = EntityHelper.getRandomTicksWithin(this.foxie, 10, 25);
+    }
 }

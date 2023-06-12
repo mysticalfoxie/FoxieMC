@@ -26,5 +26,5 @@ public class ItemInit {
 
 
     public static final RegistryObject<ForgeSpawnEggItem> FOXIE_SPAWN_EGG = ITEMS.register("foxie_spawn_egg",
-            () -> new ForgeSpawnEggItem(EntityInit.FOXIE, 0x0, 0xffffff, props().stacksTo(16)));
+        () -> new ForgeSpawnEggItem(EntityInit.FOXIE, 0x0, 0xffffff, props().stacksTo(16)));
 }

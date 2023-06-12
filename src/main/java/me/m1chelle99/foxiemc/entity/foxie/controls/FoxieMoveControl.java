@@ -13,7 +13,7 @@ public class FoxieMoveControl extends MoveControl {
 
     public void tick() {
         if (!foxie.aiControl.canMove()) return;
-        
+
         super.tick();
     }
 }

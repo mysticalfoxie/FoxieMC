@@ -11,15 +11,15 @@ import org.slf4j.Logger;
 
 @Mod(FoxieMCMod.ID)
 public class FoxieMCMod {
-	public static final String ID = "foxiemc";
-	public static final Logger LOGGER = LogUtils.getLogger();
+    public static final String ID = "foxiemc";
+    public static final Logger LOGGER = LogUtils.getLogger();
 
-	public FoxieMCMod() {
-		var bus = FMLJavaModLoadingContext.get().getModEventBus();
+    public FoxieMCMod() {
+        var bus = FMLJavaModLoadingContext.get().getModEventBus();
 
-		EntityInit.ENTITIES.register(bus);
-		ItemInit.ITEMS.register(bus);
+        EntityInit.ENTITIES.register(bus);
+        ItemInit.ITEMS.register(bus);
 
-		MinecraftForge.EVENT_BUS.register(ForgeServerEvents.class);
-	}
+        MinecraftForge.EVENT_BUS.register(ForgeServerEvents.class);
+    }
 }

@@ -57,12 +57,10 @@ public class FoxieMouthControl {
 
     public void pickupItem(@NotNull ItemEntity item) {
         var stack = item.getItem();
-        if (!this.foxie.canHoldItem(stack))
-            return;
+        if (!this.foxie.canHoldItem(stack)) return;
 
         int count = stack.getCount();
-        if (count > 1)
-            this.dropItemStack(stack.split(count - 1));
+        if (count > 1) this.dropItemStack(stack.split(count - 1));
 
         this.spitOutItem(this.foxie.getItemBySlot(EquipmentSlot.MAINHAND));
         this.foxie.onItemPickup(item);
@@ -81,8 +79,7 @@ public class FoxieMouthControl {
 
     public boolean canTakeItem(ItemStack stack) {
         var slot = Mob.getEquipmentSlotForItem(stack);
-        if (!this.foxie.getItemBySlot(slot).isEmpty())
-            return false;
+        if (!this.foxie.getItemBySlot(slot).isEmpty()) return false;
 
         return slot == EquipmentSlot.MAINHAND;
     }
@@ -102,8 +99,7 @@ public class FoxieMouthControl {
     public void eatItem() {
         var item = this.getItem();
         item = item.finishUsingItem(this.foxie.level, this.foxie);
-        if (!item.isEmpty())
-            this.setItem(item);
+        if (!item.isEmpty()) this.setItem(item);
     }
 
     public void summonFoodParticles() {
@@ -126,18 +122,13 @@ public class FoxieMouthControl {
 
         float random = this.foxie.getRandom().nextFloat();
         ItemStack stack;
-        if (random < 0.05F)
-            stack = new ItemStack(Items.EMERALD);
-        else if (random < 0.2F)
-            stack = new ItemStack(Items.EGG);
+        if (random < 0.05F) stack = new ItemStack(Items.EMERALD);
+        else if (random < 0.2F) stack = new ItemStack(Items.EGG);
         else if (random < 0.4F)
             stack = this.foxie.getRandom().nextBoolean() ? new ItemStack(Items.RABBIT_FOOT) : new ItemStack(Items.RABBIT_HIDE);
-        else if (random < 0.6F)
-            stack = new ItemStack(Items.WHEAT);
-        else if (random < 0.8F)
-            stack = new ItemStack(Items.LEATHER);
-        else
-            stack = new ItemStack(Items.FEATHER);
+        else if (random < 0.6F) stack = new ItemStack(Items.WHEAT);
+        else if (random < 0.8F) stack = new ItemStack(Items.LEATHER);
+        else stack = new ItemStack(Items.FEATHER);
 
         this.foxie.setItemSlot(EquipmentSlot.MAINHAND, stack);
     }
