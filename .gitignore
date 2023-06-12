@@ -15,3 +15,6 @@ run
 
 # Files from Forge MDK
 forge*changelog.txt
+
+# generated files
+src/generated
