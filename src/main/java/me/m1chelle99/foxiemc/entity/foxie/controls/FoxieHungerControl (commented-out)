@@ -1,0 +1,5 @@
+public boolean isPrey(LivingEntity entity) {
+return entity instanceof Chicken
+    || entity instanceof Rabbit
+    || entity instanceof Sheep;
+}

@@ -66,15 +66,10 @@ public class FoxieHungerControl {
         this.foxie.playSound(SoundEvents.FOX_EAT, 1.0F, 1.0F);
         this.foxie.mouthControl.summonFoodParticles();
         this.foxie.level.broadcastEntityEvent(this.foxie, EntityEvent.FOX_EAT);
-        this.foxie.gameEvent(GameEvent.MOB_INTERACT, this.foxie.eyeBlockPosition());
+        var eyeBlockPosition = this.foxie.eyeBlockPosition();
+        this.foxie.gameEvent(GameEvent.MOB_INTERACT, eyeBlockPosition);
         this.foxie.heal(nutrition);
     }
-
-//    public boolean isPrey(LivingEntity entity) {
-//        return entity instanceof Chicken
-//                || entity instanceof Rabbit
-//                || entity instanceof Sheep;
-//    }
 
     public boolean canInteract(@NotNull Player player) {
         if (!this.foxie.aiControl.canEat()) return false;

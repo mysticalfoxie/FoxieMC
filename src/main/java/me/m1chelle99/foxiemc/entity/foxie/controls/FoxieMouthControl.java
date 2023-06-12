@@ -64,8 +64,8 @@ public class FoxieMouthControl {
 
         this.spitOutItem(this.foxie.getItemBySlot(EquipmentSlot.MAINHAND));
         this.foxie.setItemSlot(EquipmentSlot.MAINHAND, stack.split(1));
-        var chances = this.foxie.getHandDropChances();
-        chances[EquipmentSlot.MAINHAND.getIndex()] = 1.0F;
+        this.foxie
+            .getHandDropChances()[EquipmentSlot.MAINHAND.getIndex()] = 1.0F;
     }
 
     public void pickupItem(@NotNull ItemEntity item) {
@@ -78,8 +78,8 @@ public class FoxieMouthControl {
         this.spitOutItem(this.foxie.getItemBySlot(EquipmentSlot.MAINHAND));
         this.foxie.onItemPickup(item);
         this.foxie.setItemSlot(EquipmentSlot.MAINHAND, stack.split(1));
-        var chances = this.foxie.getHandDropChances();
-        chances[EquipmentSlot.MAINHAND.getIndex()] = 1.0F;
+        this.foxie
+            .getHandDropChances()[EquipmentSlot.MAINHAND.getIndex()] = 1.0F;
         this.foxie.take(item, stack.getCount());
         item.discard();
     }

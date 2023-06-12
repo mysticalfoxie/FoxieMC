@@ -25,7 +25,7 @@ public class FoxieOwnerControl {
     public boolean isTamable() {
         if (!this.foxie.aiControl.isTamable()) return false;
 
-        // TODO: Test this. Foxie should drop less quality food for the taming food
+        // TODO: Test: Foxie should drop less quality food for the taming food
         var item = this.foxie.mouthControl.getItem();
         return !this.foxie.hungerControl.isYummy(item);
     }
@@ -40,7 +40,11 @@ public class FoxieOwnerControl {
 
         var success = this.foxie.getRandom().nextInt(5) == 0;
         if (!success || ForgeEventFactory.onAnimalTame(this.foxie, player)) {
-            this.foxie.level.broadcastEntityEvent(this.foxie, EntityEvent.TAMING_FAILED);
+            this.foxie.level.broadcastEntityEvent(
+                this.foxie, 
+                EntityEvent.TAMING_FAILED
+            );
+            
             return;
         }
 
@@ -48,7 +52,10 @@ public class FoxieOwnerControl {
         this.foxie.getNavigation().stop();
         this.foxie.setTarget(null);
         this.foxie.setOrderedToSit(true);
-        this.foxie.level.broadcastEntityEvent(this.foxie, EntityEvent.TAMING_SUCCEEDED);
+        this.foxie.level.broadcastEntityEvent(
+            this.foxie, 
+            EntityEvent.TAMING_SUCCEEDED
+        );
     }
 
     // TODO: Handle both client but server
@@ -56,7 +63,8 @@ public class FoxieOwnerControl {
         if (this.isTame() && this.isOwner(player.getUUID()))
             return this.canOwnerInteract();
         else
-            return !this.canStrangerFeed(player) && !this.canStrangerTame(player);
+            return !this.canStrangerFeed(player) 
+                && !this.canStrangerTame(player);
     }
 
     public boolean canStrangerTame(Player player) {

@@ -24,7 +24,7 @@ public class TamedSleepGoal extends AbstractSleepGoal {
         if (this._randomSleepCooldown > 0) return false;
         if (!owner.isAlive()) return false;
         if (owner.getLastDamageSource() != null) return false;
-        return !(owner.moveDist > 0);
+        return owner.moveDist <= 0;
     }
 
     public void start() {
