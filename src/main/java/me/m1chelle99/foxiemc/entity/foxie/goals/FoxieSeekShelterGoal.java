@@ -9,26 +9,26 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import java.util.EnumSet;
 
 public class FoxieSeekShelterGoal extends Goal {
-    private final Foxie foxie;
-    
-    private BlockPos target;
+    private final Foxie _foxie;
+
+    private BlockPos _target;
 
     public FoxieSeekShelterGoal(Foxie foxie) {
-        this.foxie = foxie;
+        this._foxie = foxie;
         this.setFlags(EnumSet.of(Flag.MOVE));
     }
 
     @Override
     public boolean canUse() {
-        if (!this.foxie.aiControl.canSeekShelter()) return false;
+        if (!this._foxie.aiControl.canSeekShelter()) return false;
         if (!this.isRainingOrThundering()) return false;
-        var position = this.foxie.blockPosition();
-        return this.foxie.level.canSeeSky(position);
+        var position = this._foxie.blockPosition();
+        return this._foxie.level.canSeeSky(position);
     }
 
     private boolean isRainingOrThundering() {
-        return this.foxie.level.isRaining()
-            || this.foxie.level.isThundering();
+        return this._foxie.level.isRaining()
+                || this._foxie.level.isThundering();
     }
 
     @Override
@@ -43,49 +43,50 @@ public class FoxieSeekShelterGoal extends Goal {
     @Override
     public void start() {
         var activity = FoxieConstants.ACTIVITY_SEEK_SHELTER;
-        this.foxie.aiControl.startActivity(activity);
+        this._foxie.aiControl.startActivity(activity);
     }
 
     @Override
     public void stop() {
         var seekShelter = FoxieConstants.ACTIVITY_SEEK_SHELTER;
-        this.foxie.getNavigation().stop();
-        if (this.foxie.aiControl.hasActivity(seekShelter))
-            this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
-        this.target = null;
+        this._foxie.getNavigation().stop();
+        if (this._foxie.aiControl.hasActivity(seekShelter))
+            this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
+        this._target = null;
     }
 
     @Override
     public void tick() {
-        if (!this.foxie.getNavigation().isDone()) return;
+        if (!this._foxie.getNavigation().isDone()) return;
         this.setNewTargetPosition();
-        if (this.target != null) {
+        if (this._target != null) {
             var mod = FoxieConstants.SEEK_SHELTER_MOVEMENT_SPEED_MULTIPLIER;
-            this.foxie.runTo(this.target, mod);
+            this._foxie.runTo(this._target, mod);
         }
     }
 
     public void setNewTargetPosition() {
         var range = 25;
 
-        this.target = Pathfinder.getClosestPathWhere(this.foxie, range, 5, b ->
-            !this.foxie.level.canSeeSky(b));
+        this._target = Pathfinder
+                .getClosestPathWhere(this._foxie, range, 5, b ->
+                        !this._foxie.level.canSeeSky(b));
 
-        if (target != null)
+        if (_target != null)
             return;
 
-        this.target = Pathfinder
-            .getPathInLookDirection(this.foxie, range, 4, 2);
+        this._target = Pathfinder
+                .getPathInLookDirection(this._foxie, range, 4, 2);
 
-        if (target != null)
+        if (_target != null)
             return;
 
         var target = Pathfinder
-            .getRandomPositionWithin(this.foxie, range, 4, 10);
+                .getRandomPositionWithin(this._foxie, range, 4, 10);
 
         if (target == null)
             return;
 
-        this.target = new BlockPos(target);
+        this._target = new BlockPos(target);
     }
 }

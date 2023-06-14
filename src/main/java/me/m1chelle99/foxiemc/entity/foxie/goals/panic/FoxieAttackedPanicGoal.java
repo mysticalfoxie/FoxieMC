@@ -15,12 +15,12 @@ public class FoxieAttackedPanicGoal extends FoxieAbstractPanicGoal {
 
     @Override
     public boolean canUse() {
-        return super.canUse() && this.foxie.getLastHurtByMob() != null;
+        return super.canUse() && this._foxie.getLastHurtByMob() != null;
     }
 
     @Override
     public void start() {
-        this.attacker = this.foxie.getLastHurtByMob();
+        this.attacker = this._foxie.getLastHurtByMob();
         super.start();
     }
 
@@ -33,17 +33,17 @@ public class FoxieAttackedPanicGoal extends FoxieAbstractPanicGoal {
     @Override
     public void setNewTarget() {
         var position = Pathfinder.getRandomPositionAway(
-            this.foxie,
-            this.attacker,
-            6, 7, 5);
+                this._foxie,
+                this.attacker,
+                6, 7, 5);
         if (position == null)
             return;
 
-        this.target = Vec3.atCenterOf(position);
+        this._target = Vec3.atCenterOf(position);
     }
 
     @Override
     public void setCooldown() {
-        this.cooldown = EntityHelper.getRandomTicksWithin(this.foxie, 10, 25);
+        this._cooldown = EntityHelper.getRandomTicksWithin(this._foxie, 10, 25);
     }
 }

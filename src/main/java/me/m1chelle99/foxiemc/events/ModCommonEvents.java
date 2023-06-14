@@ -10,10 +10,10 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
 @Mod.EventBusSubscriber(
-    modid = FoxieMCMod.ID,
-    bus = Mod.EventBusSubscriber.Bus.MOD
+        modid = FoxieMCMod.ID,
+        bus = Mod.EventBusSubscriber.Bus.MOD
 )
-public class ModCommonEvents {
+public final class ModCommonEvents {
     @SubscribeEvent
     public static void entityAttributes(EntityAttributeCreationEvent event) {
         var foxie = EntityInit.FOXIE.get();

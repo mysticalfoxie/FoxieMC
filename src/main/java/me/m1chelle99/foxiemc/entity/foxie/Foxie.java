@@ -1,12 +1,6 @@
 package me.m1chelle99.foxiemc.entity.foxie;
 
-import me.m1chelle99.foxiemc.entity.foxie.controls.FoxieAIControl;
-import me.m1chelle99.foxiemc.entity.foxie.controls.FoxieDataControl;
-import me.m1chelle99.foxiemc.entity.foxie.controls.FoxieHungerControl;
-import me.m1chelle99.foxiemc.entity.foxie.controls.FoxieLookControl;
-import me.m1chelle99.foxiemc.entity.foxie.controls.FoxieMouthControl;
-import me.m1chelle99.foxiemc.entity.foxie.controls.FoxieMoveControl;
-import me.m1chelle99.foxiemc.entity.foxie.controls.FoxieOwnerControl;
+import me.m1chelle99.foxiemc.entity.foxie.controls.*;
 import me.m1chelle99.foxiemc.init.EntityInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -18,15 +12,7 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.Pose;
-import net.minecraft.world.entity.SpawnGroupData;
-import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
@@ -42,11 +28,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class Foxie extends TamableAnimal {
     public static final String ID = "foxie";
-    public final FoxieAIControl aiControl;
-    public final FoxieMouthControl mouthControl;
-    public final FoxieDataControl dataControl;
-    public final FoxieHungerControl hungerControl;
-    public final FoxieOwnerControl ownerControl;
 
     public Foxie(EntityType<? extends TamableAnimal> type, Level level) {
         super(type, level);
@@ -64,36 +45,12 @@ public class Foxie extends TamableAnimal {
 
         this.setCanPickUpLoot(true);
     }
-
-    public static AttributeSupplier.Builder getFoxieAttributes() {
-        return LivingEntity.createLivingAttributes()
-            .add(Attributes.MOVEMENT_SPEED, FoxieConstants.MOVEMENT_SPEED)
-            .add(Attributes.MAX_HEALTH, FoxieConstants.MAX_HEALTH)
-            .add(Attributes.FOLLOW_RANGE, FoxieConstants.FOLLOW_RANGE)
-            .add(Attributes.ATTACK_DAMAGE, FoxieConstants.ATTACK_DAMAGE)
-            .add(Attributes.ATTACK_KNOCKBACK);
-    }
-
-    @Override
-    public @NotNull EntityDimensions getDimensions(@NotNull Pose pose) {
-        return EntityDimensions.scalable(.65F, .65F);
-    }
-
-    protected int calculateFallDamage(float distance, float dmg_multiplier) {
-        return Mth.ceil((distance - 5.0F) * dmg_multiplier);
-    }
-
-    public void playAmbientSound() {
-        var event = this.getAmbientSound();
-        if (event == SoundEvents.FOX_SCREECH)
-            this.playSound(event, 2.0F, this.getVoicePitch());
-        else super.playAmbientSound();
-    }
-
-    protected void populateDefaultEquipmentSlots(
-        @NotNull DifficultyInstance difficulty) {
-        this.mouthControl.setDefaultEquipment();
-    }
+    
+    public final FoxieAIControl aiControl;
+    public final FoxieMouthControl mouthControl;
+    public final FoxieDataControl dataControl;
+    public final FoxieHungerControl hungerControl;
+    public final FoxieOwnerControl ownerControl;
 
     public void runTo(@NotNull Vec3 position, double speed_modifier) {
         var blockpos = new BlockPos(position.x, position.y, position.z);
@@ -117,17 +74,6 @@ public class Foxie extends TamableAnimal {
         return DefaultRandomPos.getPos(this, distance, 4);
     }
 
-    protected SoundEvent getAmbientSound() {
-        return this.aiControl.getAmbientSound();
-    }
-
-    protected void pickUpItem(@NotNull ItemEntity item) {
-        this.mouthControl.pickupItem(item);
-    }
-
-    // TODO: Doesn't directly have something todo with the 
-    //  leash offset, but to write that idea down:
-
     // Foxie should run almost aside of you when on leash. 
     // You don't allow foxie too much freedom with this.
     public @NotNull Vec3 getLeashOffset() {
@@ -136,15 +82,15 @@ public class Foxie extends TamableAnimal {
             this.getBbWidth() * 0.4F);
     }
 
+    protected void dropAllDeathLoot(@NotNull DamageSource source) {
+        super.dropAllDeathLoot(source);
+    }
+
     // Forge: move extra drops to dropEquipment to 
     // allow them to be captured by LivingDropsEvent
     protected void dropEquipment() {
         super.dropEquipment();
         this.mouthControl.drop();
-    }
-
-    protected void dropAllDeathLoot(@NotNull DamageSource source) {
-        super.dropAllDeathLoot(source);
     }
 
     protected SoundEvent getHurtSound(@NotNull DamageSource source) {
@@ -155,32 +101,31 @@ public class Foxie extends TamableAnimal {
         return SoundEvents.FOX_DEATH;
     }
 
+    protected int calculateFallDamage(float distance, float dmg_multiplier) {
+        return Mth.ceil((distance - 5.0F) * dmg_multiplier);
+    }
+
+    @Override
+    public @NotNull EntityDimensions getDimensions(@NotNull Pose pose) {
+        return EntityDimensions.scalable(.65F, .65F);
+    }
+
+    // TODO: Doesn't directly have something todo with the 
+    //  leash offset, but to write that idea down:
+
     protected void defineSynchedData() {
         super.defineSynchedData();
         FoxieDataControl.defineStates(this);
     }
 
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.dataControl.readSaveData(compound);
-    }
-
-    public boolean canTakeItem(@NotNull ItemStack stack) {
-        return this.mouthControl.canTakeItem(stack) && super.canTakeItem(stack);
-    }
-
-    protected void onOffspringSpawnedFromEgg(Player player, @NotNull Mob mob) {
-        var foxie = (Foxie) mob;
-        foxie.aiControl.trust(player.getUUID());
-    }
-
-    public boolean canHoldItem(@NotNull ItemStack stack) {
-        return this.mouthControl.canTakeItem(stack) && super.canHoldItem(stack);
-    }
-
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         this.dataControl.writeSaveData(compound);
+    }
+
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        this.dataControl.readSaveData(compound);
     }
 
     public SpawnGroupData finalizeSpawn(
@@ -193,12 +138,13 @@ public class Foxie extends TamableAnimal {
         return super.finalizeSpawn(level, difficulty, mobSpawnType, null, tag);
     }
 
-    protected void usePlayerItem(
-        @NotNull Player player,
-        @NotNull InteractionHand hand,
-        @NotNull ItemStack stack
+    @Nullable
+    @Override
+    public AgeableMob getBreedOffspring(
+        @NotNull ServerLevel world,
+        @NotNull AgeableMob foxie
     ) {
-        super.usePlayerItem(player, hand, stack);
+        return EntityInit.FOXIE.get().create(world);
     }
 
     @Override
@@ -206,9 +152,42 @@ public class Foxie extends TamableAnimal {
         FoxieAIControl.register(this);
     }
 
+    public void playAmbientSound() {
+        var event = this.getAmbientSound();
+        if (event == SoundEvents.FOX_SCREECH)
+            this.playSound(event, 2.0F, this.getVoicePitch());
+        else super.playAmbientSound();
+    }
+
     public void tick() {
         super.tick();
         this.hungerControl.tick();
+    }
+
+    protected SoundEvent getAmbientSound() {
+        return this.aiControl.getAmbientSound();
+    }
+
+    protected void pickUpItem(@NotNull ItemEntity item) {
+        this.mouthControl.pickupItem(item);
+    }
+
+    public boolean canHoldItem(@NotNull ItemStack stack) {
+        return this.mouthControl.canTakeItem(stack) && super.canHoldItem(stack);
+    }
+
+    protected void populateDefaultEquipmentSlots(
+        @NotNull DifficultyInstance difficulty) {
+        this.mouthControl.setDefaultEquipment();
+    }
+
+    public boolean canTakeItem(@NotNull ItemStack stack) {
+        return this.mouthControl.canTakeItem(stack) && super.canTakeItem(stack);
+    }
+
+    protected void onOffspringSpawnedFromEgg(Player player, @NotNull Mob mob) {
+        var foxie = (Foxie) mob;
+        foxie.aiControl.trust(player.getUUID());
     }
 
     public @NotNull InteractionResult mobInteract(
@@ -224,16 +203,24 @@ public class Foxie extends TamableAnimal {
         return InteractionResult.PASS;
     }
 
-    @Nullable
-    @Override
-    public AgeableMob getBreedOffspring(
-        @NotNull ServerLevel world, 
-        @NotNull AgeableMob foxie
+    protected void usePlayerItem(
+        @NotNull Player player,
+        @NotNull InteractionHand hand,
+        @NotNull ItemStack stack
     ) {
-        return EntityInit.FOXIE.get().create(world);
+        super.usePlayerItem(player, hand, stack);
     }
 
     public float[] getHandDropChances() {
         return this.handDropChances;
+    }
+
+    public static AttributeSupplier.Builder getFoxieAttributes() {
+        return LivingEntity.createLivingAttributes()
+            .add(Attributes.MOVEMENT_SPEED, FoxieConstants.MOVEMENT_SPEED)
+            .add(Attributes.MAX_HEALTH, FoxieConstants.MAX_HEALTH)
+            .add(Attributes.FOLLOW_RANGE, FoxieConstants.FOLLOW_RANGE)
+            .add(Attributes.ATTACK_DAMAGE, FoxieConstants.ATTACK_DAMAGE)
+            .add(Attributes.ATTACK_KNOCKBACK);
     }
 }

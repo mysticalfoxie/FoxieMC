@@ -14,22 +14,22 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
-public class FoxieHeldItemLayer extends RenderLayer<Foxie, FoxieModel> {
+public final class FoxieHeldItemLayer extends RenderLayer<Foxie, FoxieModel> {
     public FoxieHeldItemLayer(RenderLayerParent<Foxie, FoxieModel> parent) {
         super(parent);
     }
 
     @Override
     public void render(
-        @NotNull PoseStack pose, 
-        @NotNull MultiBufferSource bufferIn, 
-        int packedLightIn, Foxie foxie, 
-        float limbSwing, 
-        float limbSwingAmount, 
-        float partialTicks, 
-        float ageInTicks, 
-        float netHeadYaw, 
-        float headPitch
+            @NotNull PoseStack pose,
+            @NotNull MultiBufferSource bufferIn,
+            int packedLightIn, Foxie foxie,
+            float limbSwing,
+            float limbSwingAmount,
+            float partialTicks,
+            float ageInTicks,
+            float netHeadYaw,
+            float headPitch
     ) {
         if (!foxie.mouthControl.hasItem()) return;
 
@@ -50,10 +50,10 @@ public class FoxieHeldItemLayer extends RenderLayer<Foxie, FoxieModel> {
         z_translate += this.getParentModel().neck.z;
         z_translate += this.getParentModel().body.z;
         z_translate /= 16.0F;
-        
-        
+
+
         pose.translate(x_translate, y_translate, z_translate);
-        
+
         pose.mulPose(Vector3f.ZP.rotation(this.getParentModel().head.zRot));
         pose.mulPose(Vector3f.YP.rotation(this.getParentModel().head.yRot));
         pose.mulPose(Vector3f.XP.rotation(this.getParentModel().head.xRot));
@@ -69,13 +69,13 @@ public class FoxieHeldItemLayer extends RenderLayer<Foxie, FoxieModel> {
         var renderer = Minecraft.getInstance().getItemInHandRenderer();
         var item = foxie.mouthControl.getItem();
         renderer.renderItem(
-            foxie, 
-            item, 
-            ItemTransforms.TransformType.GROUND, 
-            false, 
-            pose, 
-            bufferIn, 
-            packedLightIn
+                foxie,
+                item,
+                ItemTransforms.TransformType.GROUND,
+                false,
+                pose,
+                bufferIn,
+                packedLightIn
         );
 
         pose.popPose();

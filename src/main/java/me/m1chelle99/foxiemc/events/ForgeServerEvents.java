@@ -8,11 +8,11 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(
-    modid = FoxieMCMod.ID,
-    bus = Mod.EventBusSubscriber.Bus.FORGE,
-    value = Dist.DEDICATED_SERVER
+        modid = FoxieMCMod.ID,
+        bus = Mod.EventBusSubscriber.Bus.FORGE,
+        value = Dist.DEDICATED_SERVER
 )
-public class ForgeServerEvents {
+public final class ForgeServerEvents {
     @SubscribeEvent
     public static void onEntityHurt(LivingHurtEvent event) {
         if (event.getEntity() instanceof Foxie foxie)

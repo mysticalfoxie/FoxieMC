@@ -10,18 +10,18 @@ public class FoxieDefaultPanicGoal extends FoxieAbstractPanicGoal {
     }
 
     public boolean canUse() {
-        return super.canUse() 
-            && !this.foxie.isOnFire() 
-            && this.foxie.getLastHurtByMob() == null;
+        return super.canUse()
+                && !this._foxie.isOnFire()
+                && this._foxie.getLastHurtByMob() == null;
     }
 
     @Override
     public void setNewTarget() {
-        this.target = this.foxie.getRandomTargetWithin(3);
+        this._target = this._foxie.getRandomTargetWithin(3);
     }
 
     @Override
     public void setCooldown() {
-        this.cooldown = EntityHelper.getRandomTicksWithin(this.foxie, 3, 6);
+        this._cooldown = EntityHelper.getRandomTicksWithin(this._foxie, 3, 6);
     }
 }

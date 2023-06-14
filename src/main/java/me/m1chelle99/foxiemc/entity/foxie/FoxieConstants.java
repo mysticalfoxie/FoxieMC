@@ -36,6 +36,10 @@ public final class FoxieConstants {
     public static final Byte COMMAND_NONE = 0;
     public static final Byte COMMAND_SIT = 1;
 
+    // Behavior towards players
+    public static final int STALK_PLAYER_DISTANCE = 25;
+    public static final int AVOID_PLAYER_DISTANCE = 13;
+
     // Activities
     public static final Byte ACTIVITY_NONE = 0;
     public static final Byte ACTIVITY_PANIC = 1;

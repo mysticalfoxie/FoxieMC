@@ -11,11 +11,11 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class EntityTypeTagsProvider extends TagsProvider<EntityType<?>> {
+public final class EntityTypeTagsProvider extends TagsProvider<EntityType<?>> {
     public static final String NAME = "foxiemc_entity_type_tags";
 
     public EntityTypeTagsProvider(
-        DataGenerator generator, 
+        DataGenerator generator,
         @Nullable ExistingFileHelper helper
     ) {
         //noinspection deprecation
@@ -26,7 +26,7 @@ public class EntityTypeTagsProvider extends TagsProvider<EntityType<?>> {
         this
             .tag(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS)
             .add(EntityInit.FOXIE.get());
-        
+
         this
             .tag(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES)
             .add(EntityInit.FOXIE.get());

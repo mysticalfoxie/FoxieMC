@@ -15,46 +15,46 @@ public class FoxieFirePanicGoal extends FoxieAbstractPanicGoal {
     @Override
     public boolean canUse() {
         return super.canUse()
-            && this.foxie.isOnFire();
+                && this._foxie.isOnFire();
     }
 
     @Override
     public void setNewTarget() {
         this.setWaterAsTarget();
 
-        if (this.target != null)
+        if (this._target != null)
             return;
 
         var target = Pathfinder
-            .getPathInLookDirection(this.foxie, 20, 4, 10);
-        
+                .getPathInLookDirection(this._foxie, 20, 4, 10);
+
         if (target == null)
             return;
 
-        this.target = Vec3.atCenterOf(target);
+        this._target = Vec3.atCenterOf(target);
     }
 
     @Override
     public void setCooldown() {
-        this.cooldown = EntityHelper.getRandomTicksWithin(this.foxie, 3, 8);
+        this._cooldown = EntityHelper.getRandomTicksWithin(this._foxie, 3, 8);
     }
 
     public void setWaterAsTarget() {
-        var position = this.foxie.blockPosition();
-        var level = this.foxie.level;
+        var position = this._foxie.blockPosition();
+        var level = this._foxie.level;
         var current_block = level.getBlockState(position);
         var collision = current_block.getCollisionShape(level, position);
         if (!collision.isEmpty())
             return;
 
         var match = BlockPos.findClosestMatch(position, 10, 3,
-            x -> this.foxie.level.getFluidState(x).is(FluidTags.WATER));
+                x -> this._foxie.level.getFluidState(x).is(FluidTags.WATER));
         if (match.isEmpty()) return;
 
-        this.target = new Vec3(
-            match.get().getX(),
-            match.get().getY(),
-            match.get().getZ()
+        this._target = new Vec3(
+                match.get().getX(),
+                match.get().getY(),
+                match.get().getZ()
         );
     }
 }

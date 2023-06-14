@@ -12,12 +12,12 @@ public class TamedSleepGoal extends AbstractSleepGoal {
 
     public boolean canUse() {
         if (!super.canUse()) return false;
-        if (!this.foxie.ownerControl.isTame()) return false;
-        var owner = this.foxie.getOwner();
+        if (!this._foxie.ownerControl.isTame()) return false;
+        var owner = this._foxie.getOwner();
         if (!this.canUseWithOwner(owner)) return false;
-        return this.foxie.getRandom().nextBoolean();
+        return this._foxie.getRandom().nextBoolean();
     }
-    
+
     private boolean canUseWithOwner(LivingEntity owner) {
         if (owner == null) return false;
         if (owner.isSleeping()) return true;

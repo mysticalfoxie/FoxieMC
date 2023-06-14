@@ -10,14 +10,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.gameevent.GameEvent;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("CommentedOutCode") // TODO: Remove before merge
-public class FoxieHungerControl {
-    private final Foxie foxie;
+public final class FoxieHungerControl {
+    private final Foxie _foxie;
     private int _ticksSinceLastEaten = 0;
-
     public FoxieHungerControl(Foxie foxie) {
 
-        this.foxie = foxie;
+        this._foxie = foxie;
     }
 
     public boolean isYummy(ItemStack stack) {
@@ -35,25 +33,25 @@ public class FoxieHungerControl {
     }
 
     private void eatItemInMouth() {
-        var item = this.foxie.mouthControl.getItem();
-        var food = item.getFoodProperties(this.foxie);
+        var item = this._foxie.mouthControl.getItem();
+        var food = item.getFoodProperties(this._foxie);
         assert food != null;
 
         var nutrition = (float) food.getNutrition();
 
-        this.foxie.mouthControl.eatItem();
+        this._foxie.mouthControl.eatItem();
         this._ticksSinceLastEaten = 0;
 
         // TODO: Implement over a span of ticks! UwU #tomakeitperfect
-        this.foxie.playSound(SoundEvents.FOX_EAT, 1.0F, 1.0F);
-        this.foxie.mouthControl.summonFoodParticles();
-        this.foxie.level.broadcastEntityEvent(this.foxie, EntityEvent.FOX_EAT);
-        this.foxie.heal(nutrition);
+        this._foxie.playSound(SoundEvents.FOX_EAT, 1.0F, 1.0F);
+        this._foxie.mouthControl.summonFoodParticles();
+        this._foxie.level.broadcastEntityEvent(this._foxie, EntityEvent.FOX_EAT);
+        this._foxie.heal(nutrition);
     }
 
     public void eatItemFromHand(Player player) {
         var stack = player.getMainHandItem();
-        var food = stack.getFoodProperties(this.foxie);
+        var food = stack.getFoodProperties(this._foxie);
         assert food != null;
 
         var nutrition = (float) food.getNutrition();
@@ -63,16 +61,16 @@ public class FoxieHungerControl {
 
         if (!player.isCreative()) stack.shrink(-1);
         this._ticksSinceLastEaten = 0;
-        this.foxie.playSound(SoundEvents.FOX_EAT, 1.0F, 1.0F);
-        this.foxie.mouthControl.summonFoodParticles();
-        this.foxie.level.broadcastEntityEvent(this.foxie, EntityEvent.FOX_EAT);
-        var eyeBlockPosition = this.foxie.eyeBlockPosition();
-        this.foxie.gameEvent(GameEvent.MOB_INTERACT, eyeBlockPosition);
-        this.foxie.heal(nutrition);
+        this._foxie.playSound(SoundEvents.FOX_EAT, 1.0F, 1.0F);
+        this._foxie.mouthControl.summonFoodParticles();
+        this._foxie.level.broadcastEntityEvent(this._foxie, EntityEvent.FOX_EAT);
+        var eyeBlockPosition = this._foxie.eyeBlockPosition();
+        this._foxie.gameEvent(GameEvent.MOB_INTERACT, eyeBlockPosition);
+        this._foxie.heal(nutrition);
     }
 
     public boolean canInteract(@NotNull Player player) {
-        if (!this.foxie.aiControl.canEat()) return false;
+        if (!this._foxie.aiControl.canEat()) return false;
         var item = player.getMainHandItem();
         if (item.isEmpty()) return false;
         if (!this.isHungry()) return false;
@@ -90,24 +88,24 @@ public class FoxieHungerControl {
 
     private void calculateHungerStrength() {
         if (_ticksSinceLastEaten < FoxieConstants.TICKS_UNTIL_SLIGHT_HUNGER)
-            this.foxie.dataControl.setHungerStrength(0);
+            this._foxie.dataControl.setHungerStrength(0);
         else if (_ticksSinceLastEaten < FoxieConstants.TICKS_UNTIL_HEAVY_HUNGER)
-            this.foxie.dataControl.setHungerStrength(1);
-        else this.foxie.dataControl.setHungerStrength(2);
+            this._foxie.dataControl.setHungerStrength(1);
+        else this._foxie.dataControl.setHungerStrength(2);
     }
 
     public void interact(@NotNull Player player) {
         this.eatItemFromHand(player);
-        if (!this.foxie.ownerControl.isTame())
-            this.foxie.aiControl.trust(player.getUUID());
+        if (!this._foxie.ownerControl.isTame())
+            this._foxie.aiControl.trust(player.getUUID());
     }
 
     private void tryEat() {
         if (!this.isHungry()) return;
-        if (!this.foxie.aiControl.canEat()) return;
-        if (!this.foxie.mouthControl.hasItem()) return;
+        if (!this._foxie.aiControl.canEat()) return;
+        if (!this._foxie.mouthControl.hasItem()) return;
 
-        var item = this.foxie.mouthControl.getItem();
+        var item = this._foxie.mouthControl.getItem();
 
         if (!this.isEdible(item)) return;
 
@@ -126,17 +124,17 @@ public class FoxieHungerControl {
     }
 
     public boolean isSlightlyHungry() {
-        return this.foxie.dataControl.getHungerStrength() == 1;
+        return this._foxie.dataControl.getHungerStrength() == 1;
     }
 
     public boolean isHeavilyHungry() {
-        return this.foxie.dataControl.getHungerStrength() >= 2;
+        return this._foxie.dataControl.getHungerStrength() >= 2;
     }
 
     public void tick() {
-        if (this.foxie.level.isClientSide) return;
-        if (!this.foxie.isAlive()) return;
-        if (!this.foxie.isEffectiveAi()) return;
+        if (this._foxie.level.isClientSide) return;
+        if (!this._foxie.isAlive()) return;
+        if (!this._foxie.isEffectiveAi()) return;
 
         ++_ticksSinceLastEaten;
 

@@ -10,28 +10,28 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(
-    modid = FoxieMCMod.ID,
-    bus = Mod.EventBusSubscriber.Bus.MOD,
-    value = Dist.CLIENT
+        modid = FoxieMCMod.ID,
+        bus = Mod.EventBusSubscriber.Bus.MOD,
+        value = Dist.CLIENT
 )
-public class ModClientEvents {
+public final class ModClientEvents {
     @SubscribeEvent
     public static void entityRenderers(
-        EntityRenderersEvent.RegisterRenderers event
+            EntityRenderersEvent.RegisterRenderers event
     ) {
         event.registerEntityRenderer(
-            EntityInit.FOXIE.get(),
-            FoxieRenderer::new
+                EntityInit.FOXIE.get(),
+                FoxieRenderer::new
         );
     }
 
     @SubscribeEvent
     public static void registerLayerDefinitions(
-        EntityRenderersEvent.RegisterLayerDefinitions event
+            EntityRenderersEvent.RegisterLayerDefinitions event
     ) {
         event.registerLayerDefinition(
-            FoxieRenderer.LAYER_LOCATION,
-            FoxieModel::createBodyLayer
+                FoxieRenderer.LAYER_LOCATION,
+                FoxieModel::createBodyLayer
         );
     }
 }

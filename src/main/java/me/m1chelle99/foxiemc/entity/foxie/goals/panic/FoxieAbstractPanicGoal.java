@@ -8,32 +8,32 @@ import net.minecraft.world.phys.Vec3;
 import java.util.EnumSet;
 
 public abstract class FoxieAbstractPanicGoal extends Goal {
-    protected final Foxie foxie;
-    protected Vec3 target;
-    protected int cooldown;
+    protected final Foxie _foxie;
+    protected Vec3 _target;
+    protected int _cooldown;
 
     public FoxieAbstractPanicGoal(Foxie foxie) {
-        this.foxie = foxie;
+        this._foxie = foxie;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE));
     }
 
     public boolean canUse() {
-        if (this.foxie.isDeadOrDying()) return false;
-        return this.foxie.aiControl.isPanic();
+        if (this._foxie.isDeadOrDying()) return false;
+        return this._foxie.aiControl.isPanic();
     }
 
     public void start() {
         this.setCooldown();
         this.setNewTarget();
-        if (this.target != null)
-            this.foxie.runTo(this.target, FoxieConstants.MS_PANIC_MULTIPLIER);
+        if (this._target != null)
+            this._foxie.runTo(this._target, FoxieConstants.MS_PANIC_MULTIPLIER);
     }
 
     public void stop() {
-        this.target = null;
-        this.cooldown = 0;
-        if (this.foxie.aiControl.hasActivity(FoxieConstants.ACTIVITY_PANIC))
-            this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
+        this._target = null;
+        this._cooldown = 0;
+        if (this._foxie.aiControl.hasActivity(FoxieConstants.ACTIVITY_PANIC))
+            this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
     }
 
     public abstract void setNewTarget();
@@ -45,17 +45,17 @@ public abstract class FoxieAbstractPanicGoal extends Goal {
     }
 
     public boolean canContinueToUse() {
-        return this.cooldown > 0 || this.foxie.isDeadOrDying();
+        return this._cooldown > 0 || this._foxie.isDeadOrDying();
     }
 
     public void tick() {
-        if (this.foxie.level.isClientSide) return;
-        if (this.cooldown <= 0) return;
-        this.cooldown--;
+        if (this._foxie.level.isClientSide) return;
+        if (this._cooldown <= 0) return;
+        this._cooldown--;
 
-        if (!this.foxie.getNavigation().isDone()) return;
+        if (!this._foxie.getNavigation().isDone()) return;
         this.setNewTarget();
-        if (this.target != null)
-            this.foxie.runTo(this.target, FoxieConstants.MS_PANIC_MULTIPLIER);
+        if (this._target != null)
+            this._foxie.runTo(this._target, FoxieConstants.MS_PANIC_MULTIPLIER);
     }
 }

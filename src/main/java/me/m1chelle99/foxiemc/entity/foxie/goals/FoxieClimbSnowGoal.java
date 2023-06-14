@@ -5,15 +5,15 @@ import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
 import net.minecraft.world.entity.ai.goal.ClimbOnTopOfPowderSnowGoal;
 
 public class FoxieClimbSnowGoal extends ClimbOnTopOfPowderSnowGoal {
-    private final Foxie foxie;
+    private final Foxie _foxie;
 
     public FoxieClimbSnowGoal(Foxie foxie) {
         super(foxie, foxie.level);
-        this.foxie = foxie;
+        this._foxie = foxie;
     }
 
     @Override
     public void start() {
-        this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
+        this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
     }
 }

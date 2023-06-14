@@ -5,15 +5,15 @@ import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 
 public class FoxieFloatGoal extends FloatGoal {
-    private final Foxie foxie;
+    private final Foxie _foxie;
 
     public FoxieFloatGoal(Foxie foxie) {
         super(foxie);
-        this.foxie = foxie;
+        this._foxie = foxie;
     }
 
     @Override
     public void start() {
-        this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
+        this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
     }
 }

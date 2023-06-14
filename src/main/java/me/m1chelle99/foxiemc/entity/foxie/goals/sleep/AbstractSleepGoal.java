@@ -6,33 +6,33 @@ import net.minecraft.world.entity.ai.goal.Goal;
 
 // More than this dev sleeps on a normal work day uwu
 public class AbstractSleepGoal extends Goal {
-    protected final Foxie foxie;
+    protected final Foxie _foxie;
 
     public AbstractSleepGoal(Foxie foxie) {
-        this.foxie = foxie;
+        this._foxie = foxie;
     }
 
     @Override
     public boolean canUse() {
-        if (this.foxie.aiControl.isSleeping()) return false;
-        return this.foxie.aiControl.canSleep();
+        if (this._foxie.aiControl.isSleeping()) return false;
+        return this._foxie.aiControl.canSleep();
     }
 
     public boolean canContinueToUse() {
-        return this.foxie.aiControl.canSleep();
+        return this._foxie.aiControl.canSleep();
     }
 
     @Override
     public void start() {
-        this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_SLEEP);
-        var position = this.foxie.blockPosition();
-        this.foxie.startSleeping(position);
+        this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_SLEEP);
+        var position = this._foxie.blockPosition();
+        this._foxie.startSleeping(position);
     }
 
     @Override
     public void stop() {
-        this.foxie.stopSleeping();
-        if (this.foxie.aiControl.hasActivity(FoxieConstants.ACTIVITY_SLEEP))
-            this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
+        this._foxie.stopSleeping();
+        if (this._foxie.aiControl.hasActivity(FoxieConstants.ACTIVITY_SLEEP))
+            this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
     }
 }

@@ -8,8 +8,8 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 
 public class WildSleepGoal extends AbstractSleepGoal {
-    private BlockPos target;
-    private int cooldown;
+    private BlockPos _target;
+    private int _cooldown;
 
     public WildSleepGoal(Foxie foxie) {
         super(foxie);
@@ -18,7 +18,7 @@ public class WildSleepGoal extends AbstractSleepGoal {
     @Override
     public boolean canUse() {
         if (!super.canUse()) return false;
-        if (this.foxie.ownerControl.isTame()) return false;
+        if (this._foxie.ownerControl.isTame()) return false;
         return this.canSleepAtTimeOfDay();
     }
 
@@ -31,27 +31,27 @@ public class WildSleepGoal extends AbstractSleepGoal {
     @Override
     public void start() {
         var activity = FoxieConstants.ACTIVITY_SEARCH_FOR_SLEEP;
-        this.foxie.aiControl.startActivity(activity);
+        this._foxie.aiControl.startActivity(activity);
     }
 
     @Override
     public void stop() {
-        if (this.foxie.isSleeping())
-            this.foxie.stopSleeping();
+        if (this._foxie.isSleeping())
+            this._foxie.stopSleeping();
 
-        if (!this.foxie.getNavigation().isDone())
-            this.foxie.getNavigation().stop();
+        if (!this._foxie.getNavigation().isDone())
+            this._foxie.getNavigation().stop();
 
-        if (this.foxie.aiControl.hasActivity(FoxieConstants.ACTIVITY_SLEEP))
-            this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
+        if (this._foxie.aiControl.hasActivity(FoxieConstants.ACTIVITY_SLEEP))
+            this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
 
         var stillOnSearch = FoxieConstants.ACTIVITY_SEARCH_FOR_SLEEP;
-        if (this.foxie.aiControl.hasActivity(stillOnSearch))
-            this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
+        if (this._foxie.aiControl.hasActivity(stillOnSearch))
+            this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
     }
 
     private boolean canSleepAtTimeOfDay() {
-        var time = this.foxie.level.getDayTime();
+        var time = this._foxie.level.getDayTime();
         if (time > 22_000) return false;
         if (time > 15_000) return true;
         if (time > 8_000) return false;
@@ -59,9 +59,9 @@ public class WildSleepGoal extends AbstractSleepGoal {
     }
 
     private boolean areThreadsNearby() {
-        var boundary = this.foxie.getBoundingBox().inflate(10, 6, 10);
-        var level = this.foxie.level;
-        var threads = level.getEntities(this.foxie, boundary, entity -> {
+        var boundary = this._foxie.getBoundingBox().inflate(10, 6, 10);
+        var level = this._foxie.level;
+        var threads = level.getEntities(this._foxie, boundary, entity -> {
             if (entity.isSprinting()) return true;
             if (entity instanceof Monster) return true;
             if (!(entity instanceof Player player)) return false;
@@ -73,42 +73,42 @@ public class WildSleepGoal extends AbstractSleepGoal {
 
     @Override
     public void tick() {
-        if (!this.foxie.getNavigation().isDone())
+        if (!this._foxie.getNavigation().isDone())
             return;
 
-        if (this.foxie.aiControl.hasActivity(FoxieConstants.ACTIVITY_SLEEP)) {
+        if (this._foxie.aiControl.hasActivity(FoxieConstants.ACTIVITY_SLEEP)) {
             if (!this.areThreadsNearby()) return;
-            this.foxie.stopSleeping();
+            this._foxie.stopSleeping();
             var activity = FoxieConstants.ACTIVITY_SEARCH_FOR_SLEEP;
-            this.foxie.aiControl.startActivity(activity);
-            this.cooldown = 0;
+            this._foxie.aiControl.startActivity(activity);
+            this._cooldown = 0;
         }
 
-        if (this.cooldown > 0) {
+        if (this._cooldown > 0) {
             // To make it perfect look around here a bit.
-            this.cooldown--;
+            this._cooldown--;
             return;
         }
 
-        var position = this.foxie.blockPosition();
+        var position = this._foxie.blockPosition();
         if (this.isDesiredPosition(position)) {
-            this.foxie.startSleeping(position);
-            this.foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_SLEEP);
-            this.cooldown = this.foxie.getRandom().nextInt(20, 100);
+            this._foxie.startSleeping(position);
+            this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_SLEEP);
+            this._cooldown = this._foxie.getRandom().nextInt(20, 100);
             return;
         }
 
         this.setNewTargetPosition();
-        this.cooldown = this.foxie.getRandom().nextInt(20, 100);
-        if (this.target != null) {
+        this._cooldown = this._foxie.getRandom().nextInt(20, 100);
+        if (this._target != null) {
             var mod = FoxieConstants.SEARCH_SLEEP_MOVEMENT_SPEED_MULTIPLIER;
-            this.foxie.runTo(this.target, mod);
+            this._foxie.runTo(this._target, mod);
         }
     }
 
     private boolean isDesiredPosition(BlockPos pos) {
-        if (this.foxie.level.canSeeSky(pos)) return false;
-        var engine = this.foxie.level.getLightEngine();
+        if (this._foxie.level.canSeeSky(pos)) return false;
+        var engine = this._foxie.level.getLightEngine();
         var light = engine.getRawBrightness(pos, 0);
         if (light > 12) return false;
         if (light <= 8) return false;
@@ -116,18 +116,18 @@ public class WildSleepGoal extends AbstractSleepGoal {
     }
 
     private void setNewTargetPosition() {
-        this.target = Pathfinder.getClosestPathWhere(
-            this.foxie, 15, 3,
-            this::isDesiredPosition);
+        this._target = Pathfinder.getClosestPathWhere(
+                this._foxie, 15, 3,
+                this::isDesiredPosition);
 
-        if (target != null)
+        if (_target != null)
             return;
 
         var target = Pathfinder
-            .getPathInLookDirection(this.foxie, 20, 4, 10);
+                .getPathInLookDirection(this._foxie, 20, 4, 10);
         if (target == null)
             return;
 
-        this.target = new BlockPos(target);
+        this._target = new BlockPos(target);
     }
 }

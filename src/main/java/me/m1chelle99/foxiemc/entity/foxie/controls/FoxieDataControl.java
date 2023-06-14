@@ -10,21 +10,20 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import java.util.Optional;
 import java.util.UUID;
 
-public class FoxieDataControl {
+public final class FoxieDataControl {
     private static final EntityDataAccessor<Optional<UUID>> TRUSTING
-        = SynchedEntityData.defineId(Foxie.class,
-        EntityDataSerializers.OPTIONAL_UUID);
+            = SynchedEntityData.defineId(Foxie.class,
+            EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Integer> HUNGER_STRENGTH
-        = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.INT);
+            = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Byte> COMMAND
-        = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BYTE);
+            = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Byte> ACTIVITY
-        = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BYTE);
-
-    private final Foxie foxie;
+            = SynchedEntityData.defineId(Foxie.class, EntityDataSerializers.BYTE);
+    private final Foxie _foxie;
 
     public FoxieDataControl(Foxie foxie) {
-        this.foxie = foxie;
+        this._foxie = foxie;
     }
 
     public static void defineStates(Foxie foxie) {
@@ -36,35 +35,35 @@ public class FoxieDataControl {
     }
 
     public byte getCommand() {
-        return this.foxie.getEntityData().get(COMMAND);
+        return this._foxie.getEntityData().get(COMMAND);
     }
 
     public void setCommand(byte command) {
-        this.foxie.getEntityData().set(COMMAND, command);
+        this._foxie.getEntityData().set(COMMAND, command);
     }
 
     public int getHungerStrength() {
-        return this.foxie.getEntityData().get(HUNGER_STRENGTH);
+        return this._foxie.getEntityData().get(HUNGER_STRENGTH);
     }
 
     public void setHungerStrength(int value) {
-        this.foxie.getEntityData().set(HUNGER_STRENGTH, value);
+        this._foxie.getEntityData().set(HUNGER_STRENGTH, value);
     }
 
     public Optional<UUID> getTrusted() {
-        return this.foxie.getEntityData().get(TRUSTING);
+        return this._foxie.getEntityData().get(TRUSTING);
     }
 
     public void setTrusted(UUID value) {
-        this.foxie.getEntityData().set(TRUSTING, Optional.of(value));
+        this._foxie.getEntityData().set(TRUSTING, Optional.of(value));
     }
 
     public byte getActivity() {
-        return this.foxie.getEntityData().get(ACTIVITY);
+        return this._foxie.getEntityData().get(ACTIVITY);
     }
 
     public void setActivity(byte value) {
-        this.foxie.getEntityData().set(ACTIVITY, value);
+        this._foxie.getEntityData().set(ACTIVITY, value);
     }
 
     public void readSaveData(CompoundTag compound) {
@@ -74,7 +73,7 @@ public class FoxieDataControl {
             this.setTrusted(compound.getUUID("Trusted"));
 
         var lastEaten = compound.getInt("TicksSinceLastEaten");
-        this.foxie.hungerControl.setTicksSinceLastFood(lastEaten);
+        this._foxie.hungerControl.setTicksSinceLastFood(lastEaten);
     }
 
     public void writeSaveData(CompoundTag compound) {
@@ -82,9 +81,9 @@ public class FoxieDataControl {
         compound.putByte("Command", this.getCommand());
 
         this.getTrusted()
-            .ifPresent(uuid -> compound.putUUID("Trusted", uuid));
+                .ifPresent(uuid -> compound.putUUID("Trusted", uuid));
 
-        var lastEaten = this.foxie.hungerControl.getTicksSinceLastEaten();
+        var lastEaten = this._foxie.hungerControl.getTicksSinceLastEaten();
         compound.putInt("TicksSinceLastEaten", lastEaten);
     }
 }

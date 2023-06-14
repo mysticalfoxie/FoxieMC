@@ -10,7 +10,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
 @Mod(FoxieMCMod.ID)
-public class FoxieMCMod {
+public final class FoxieMCMod {
     public static final String ID = "foxiemc";
     public static final Logger LOGGER = LogUtils.getLogger();
 
