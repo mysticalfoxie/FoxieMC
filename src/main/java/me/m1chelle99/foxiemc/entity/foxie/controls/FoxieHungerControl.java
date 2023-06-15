@@ -3,24 +3,25 @@ package me.m1chelle99.foxiemc.entity.foxie.controls;
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EntityEvent;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.gameevent.GameEvent;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.item.Items;
 
 public final class FoxieHungerControl {
     private final Foxie _foxie;
-    private int _ticksSinceLastEaten = 0;
+
     public FoxieHungerControl(Foxie foxie) {
 
         this._foxie = foxie;
     }
 
+    private int _eatDelay = 80;
+    private int _ticksSinceLastEaten = 0;
+
     public boolean isYummy(ItemStack stack) {
         // Todo: Implement more c: foxie likes a lot of food
-        return stack.is(ItemTags.FOX_FOOD);
+        return stack.is(Items.CHICKEN)
+            || stack.is(Items.COOKED_CHICKEN);
     }
 
     // TODO: This has to be more precise. 
@@ -33,6 +34,16 @@ public final class FoxieHungerControl {
     }
 
     private void eatItemInMouth() {
+        if (this._eatDelay > 0) {
+            this._eatDelay--;
+            if (this._eatDelay % 10 == 0 &&
+                this._foxie.getRandom().nextBoolean())
+                this.startFoodEffects();
+            return;
+        }
+
+        this._eatDelay = this._foxie.getRandom().nextInt(40, 90);
+
         var item = this._foxie.mouthControl.getItem();
         var food = item.getFoodProperties(this._foxie);
         assert food != null;
@@ -42,39 +53,15 @@ public final class FoxieHungerControl {
         this._foxie.mouthControl.eatItem();
         this._ticksSinceLastEaten = 0;
 
-        // TODO: Implement over a span of ticks! UwU #tomakeitperfect
-        this._foxie.playSound(SoundEvents.FOX_EAT, 1.0F, 1.0F);
-        this._foxie.mouthControl.summonFoodParticles();
-        this._foxie.level.broadcastEntityEvent(this._foxie, EntityEvent.FOX_EAT);
+        this.startFoodEffects();
+        this._foxie.level
+            .broadcastEntityEvent(this._foxie, EntityEvent.FOX_EAT);
         this._foxie.heal(nutrition);
     }
 
-    public void eatItemFromHand(Player player) {
-        var stack = player.getMainHandItem();
-        var food = stack.getFoodProperties(this._foxie);
-        assert food != null;
-
-        var nutrition = (float) food.getNutrition();
-
-        // TODO: To make it perfect: First in mouth, 
-        //  then eating animation, then next one.
-
-        if (!player.isCreative()) stack.shrink(-1);
-        this._ticksSinceLastEaten = 0;
-        this._foxie.playSound(SoundEvents.FOX_EAT, 1.0F, 1.0F);
+    public void startFoodEffects() {
+        this._foxie.playSound(SoundEvents.FOX_EAT, .5F, 1F);
         this._foxie.mouthControl.summonFoodParticles();
-        this._foxie.level.broadcastEntityEvent(this._foxie, EntityEvent.FOX_EAT);
-        var eyeBlockPosition = this._foxie.eyeBlockPosition();
-        this._foxie.gameEvent(GameEvent.MOB_INTERACT, eyeBlockPosition);
-        this._foxie.heal(nutrition);
-    }
-
-    public boolean canInteract(@NotNull Player player) {
-        if (!this._foxie.aiControl.canEat()) return false;
-        var item = player.getMainHandItem();
-        if (item.isEmpty()) return false;
-        if (!this.isHungry()) return false;
-        return this.isEdible(item);
     }
 
     public int getTicksSinceLastEaten() {
@@ -94,12 +81,6 @@ public final class FoxieHungerControl {
         else this._foxie.dataControl.setHungerStrength(2);
     }
 
-    public void interact(@NotNull Player player) {
-        this.eatItemFromHand(player);
-        if (!this._foxie.ownerControl.isTame())
-            this._foxie.aiControl.trust(player.getUUID());
-    }
-
     private void tryEat() {
         if (!this.isHungry()) return;
         if (!this._foxie.aiControl.canEat()) return;
@@ -108,13 +89,6 @@ public final class FoxieHungerControl {
         var item = this._foxie.mouthControl.getItem();
 
         if (!this.isEdible(item)) return;
-
-        if (this.isYummy(item)) {
-            this.eatItemInMouth();
-            return;
-        }
-
-        if (!this.isHeavilyHungry()) return;
 
         this.eatItemInMouth();
     }
@@ -138,6 +112,7 @@ public final class FoxieHungerControl {
 
         ++_ticksSinceLastEaten;
 
+        this.calculateHungerStrength();
         this.tryEat();
     }
 }

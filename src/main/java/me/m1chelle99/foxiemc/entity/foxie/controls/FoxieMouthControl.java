@@ -6,7 +6,6 @@ import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -26,17 +25,16 @@ public final class FoxieMouthControl {
         if (stack.isEmpty() || this._foxie.level.isClientSide) return;
 
         var pos = new Vec3(
-                this._foxie.getX() + this._foxie.getLookAngle().x,
-                this._foxie.getY() + 1.0D,
-                this._foxie.getZ() + this._foxie.getLookAngle().z
-        );
+            this._foxie.getX() + this._foxie.getLookAngle().x,
+            this._foxie.getY() + 1.0D,
+            this._foxie.getZ() + this._foxie.getLookAngle().z);
 
         var item = new ItemEntity(
-                this._foxie.level,
-                pos.x,
-                pos.y,
-                pos.z,
-                stack
+            this._foxie.level,
+            pos.x,
+            pos.y,
+            pos.z,
+            stack
         );
 
         item.setThrower(this._foxie.getUUID());
@@ -55,11 +53,11 @@ public final class FoxieMouthControl {
 
     public void dropItemStack(ItemStack stack) {
         var item = new ItemEntity(
-                this._foxie.level,
-                this._foxie.getX(),
-                this._foxie.getY(),
-                this._foxie.getZ(),
-                stack
+            this._foxie.level,
+            this._foxie.getX(),
+            this._foxie.getY(),
+            this._foxie.getZ(),
+            stack
         );
 
         this._foxie.level.addFreshEntity(item);
@@ -71,7 +69,7 @@ public final class FoxieMouthControl {
         this.spitOutItem(this._foxie.getItemBySlot(EquipmentSlot.MAINHAND));
         this._foxie.setItemSlot(EquipmentSlot.MAINHAND, stack.split(1));
         this._foxie
-                .getHandDropChances()[EquipmentSlot.MAINHAND.getIndex()] = 1.0F;
+            .getHandDropChances()[EquipmentSlot.MAINHAND.getIndex()] = 1.0F;
     }
 
     public void pickupItem(@NotNull ItemEntity item) {
@@ -85,16 +83,15 @@ public final class FoxieMouthControl {
         this._foxie.onItemPickup(item);
         this._foxie.setItemSlot(EquipmentSlot.MAINHAND, stack.split(1));
         this._foxie
-                .getHandDropChances()[EquipmentSlot.MAINHAND.getIndex()] = 1.0F;
+            .getHandDropChances()[EquipmentSlot.MAINHAND.getIndex()] = 1.0F;
         this._foxie.take(item, stack.getCount());
         item.discard();
     }
 
     public boolean canTakeItem(ItemStack stack) {
-        var slot = Mob.getEquipmentSlotForItem(stack);
-        if (!this._foxie.getItemBySlot(slot).isEmpty()) return false;
-
-        return slot == EquipmentSlot.MAINHAND;
+        var current = this.getItem();
+        if (current.isEmpty()) return true;
+        return this._foxie.hungerControl.isEdible(stack);
     }
 
     public boolean hasItem() {
@@ -132,8 +129,8 @@ public final class FoxieMouthControl {
 
             var origin = new Vec3(x, y, 0.0D);
             var destination = origin
-                    .xRot(-this._foxie.getXRot() * ((float) Math.PI / 180F))
-                    .yRot(-this._foxie.getYRot() * ((float) Math.PI / 180F));
+                .xRot(-this._foxie.getXRot() * ((float) Math.PI / 180F))
+                .yRot(-this._foxie.getYRot() * ((float) Math.PI / 180F));
 
             var particle = new ItemParticleOption(ParticleTypes.ITEM, stack);
 
@@ -141,13 +138,13 @@ public final class FoxieMouthControl {
             var instanceZ = foxieZ + angle.z / 2.0D;
 
             this._foxie.level.addParticle(
-                    particle,
-                    instanceX,
-                    foxieY,
-                    instanceZ,
-                    destination.x,
-                    destination.y + 0.05D,
-                    destination.z
+                particle,
+                instanceX,
+                foxieY,
+                instanceZ,
+                destination.x,
+                destination.y + 0.05D,
+                destination.z
             );
         }
     }
@@ -162,7 +159,8 @@ public final class FoxieMouthControl {
         ItemStack stack;
         if (random < 0.05F) stack = new ItemStack(Items.EMERALD);
         else if (random < 0.2F) stack = new ItemStack(Items.EGG);
-        else if (random < 0.4F) stack = this._foxie.getRandom().nextBoolean()
+        else if (random < 0.4F)
+            stack = this._foxie.getRandom().nextBoolean()
                 ? new ItemStack(Items.RABBIT_FOOT)
                 : new ItemStack(Items.RABBIT_HIDE);
         else if (random < 0.6F) stack = new ItemStack(Items.WHEAT);

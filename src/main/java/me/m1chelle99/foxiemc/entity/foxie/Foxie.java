@@ -189,10 +189,8 @@ public class Foxie extends TamableAnimal {
 
     public @NotNull InteractionResult mobInteract(
         @NotNull Player player, @NotNull InteractionHand hand) {
-        if (this.hungerControl.canInteract(player)) {
-            this.hungerControl.interact(player);
-            return InteractionResult.CONSUME;
-        }
+        if (this.level.isClientSide)
+            return InteractionResult.PASS;
 
         if (this.ownerControl.canInteract(player))
             return this.ownerControl.interact(player);

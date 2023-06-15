@@ -6,7 +6,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.ForgeEventFactory;
 
 import java.util.UUID;
 
@@ -24,8 +23,8 @@ public final class FoxieOwnerControl {
 
     public boolean isTamable() {
         if (!this._foxie.aiControl.isTamable()) return false;
+        if (!this._foxie.mouthControl.hasItem()) return true;
 
-        // TODO: Test: Foxie should drop less quality food for the taming food
         var item = this._foxie.mouthControl.getItem();
         return !this._foxie.hungerControl.isYummy(item);
     }
@@ -35,14 +34,13 @@ public final class FoxieOwnerControl {
     }
 
     public void tryTame(Player player, ItemStack stack) {
-        if (!player.getAbilities().instabuild)
-            stack.shrink(1);
+        this._foxie.mouthControl.takeItem(stack);
 
         var success = this._foxie.getRandom().nextInt(5) == 0;
-        if (!success || ForgeEventFactory.onAnimalTame(this._foxie, player)) {
+        if (!success) {
             this._foxie.level.broadcastEntityEvent(
-                    this._foxie,
-                    EntityEvent.TAMING_FAILED
+                this._foxie,
+                EntityEvent.TAMING_FAILED
             );
 
             return;
@@ -50,11 +48,10 @@ public final class FoxieOwnerControl {
 
         this._foxie.tame(player);
         this._foxie.getNavigation().stop();
-        this._foxie.setTarget(null);
-        this._foxie.setOrderedToSit(true);
+        this._foxie.aiControl.setCommand(FoxieConstants.COMMAND_SIT);
         this._foxie.level.broadcastEntityEvent(
-                this._foxie,
-                EntityEvent.TAMING_SUCCEEDED
+            this._foxie,
+            EntityEvent.TAMING_SUCCEEDED
         );
     }
 
@@ -62,35 +59,21 @@ public final class FoxieOwnerControl {
     public boolean canInteract(Player player) {
         if (this.isTame() && this.isOwner(player.getUUID()))
             return this.canOwnerInteract();
-        else
-            return !this.canStrangerFeed(player)
-                    && !this.canStrangerTame(player);
+
+        return this.canStrangerTame(player);
     }
 
     public boolean canStrangerTame(Player player) {
         if (this.isTame()) return false;
         var item = player.getMainHandItem();
         if (!this._foxie.hungerControl.isYummy(item)) return false;
-        if (!this._foxie.hungerControl.isHungry()) return false;
         if (!this._foxie.aiControl.canEat()) return false;
-        return !this.isTamable();
-    }
-
-    public boolean canStrangerFeed(Player player) {
-        var item = player.getMainHandItem();
-        if (!this._foxie.hungerControl.isEdible(item)) return false;
-        if (!this._foxie.hungerControl.isHungry()) return false;
-        return this._foxie.aiControl.canEat();
+        return this.isTamable();
     }
 
     public boolean canOwnerInteract() {
         if (this._foxie.aiControl.canEat()) return true;
         return this._foxie.aiControl.canBeCommanded();
-    }
-
-    private void strangerFeedInteract(Player player) {
-        var item = player.getMainHandItem();
-        this._foxie.mouthControl.takeItem(item);
     }
 
     private InteractionResult ownerInteract(Player player) {
@@ -100,24 +83,21 @@ public final class FoxieOwnerControl {
         }
 
         var item = player.getMainHandItem();
-        if (this._foxie.hungerControl.isEdible(item)) {
-            if (this._foxie.hungerControl.isHungry()) {
-                this._foxie.hungerControl.eatItemFromHand(player);
-                return InteractionResult.CONSUME;
-            }
-
-            return InteractionResult.PASS;
+        if (this._foxie.hungerControl.isEdible(item)
+            && this._foxie.hungerControl.isHungry()) {
+            this._foxie.mouthControl.takeItem(item);
+            return InteractionResult.SUCCESS;
         }
 
         if (!this._foxie.aiControl.canBeCommanded())
-            return InteractionResult.PASS;
+            return InteractionResult.SUCCESS;
 
         if (!this._foxie.aiControl.isCommanded())
             this._foxie.aiControl.setCommand(FoxieConstants.COMMAND_SIT);
         else
             this._foxie.aiControl.setCommand(FoxieConstants.COMMAND_NONE);
 
-        return InteractionResult.SUCCESS;
+        return InteractionResult.PASS;
     }
 
     public InteractionResult interact(Player player) {
@@ -126,14 +106,9 @@ public final class FoxieOwnerControl {
 
         if (this.canStrangerTame(player)) {
             this.tryTame(player, player.getMainHandItem());
-            return InteractionResult.CONSUME;
+            return InteractionResult.SUCCESS;
         }
 
-        if (this.canStrangerFeed(player)) {
-            this.strangerFeedInteract(player);
-            return InteractionResult.CONSUME;
-        }
-
-        return InteractionResult.FAIL;
+        return InteractionResult.SUCCESS;
     }
 }
