@@ -1,19 +1,34 @@
 package me.m1chelle99.foxiemc.entity.foxie.goals;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
-import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.world.entity.ai.goal.Goal;
 
-public class FoxieFloatGoal extends FloatGoal {
+import java.util.EnumSet;
+
+public class FoxieFloatGoal extends Goal {
     private final Foxie _foxie;
 
     public FoxieFloatGoal(Foxie foxie) {
-        super(foxie);
         this._foxie = foxie;
+        this.setFlags(EnumSet.of(Goal.Flag.JUMP));
+        foxie.getNavigation().setCanFloat(true);
     }
 
     @Override
-    public void start() {
-        this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
+    public boolean canUse() {
+        if (!this._foxie.isInFluid()) return false;
+        var fluid_height = this._foxie.getFluidHeight(FluidTags.WATER);
+        return fluid_height > 0.25;
+    }
+
+    @Override
+    public boolean requiresUpdateEveryTick() {
+        return true;
+    }
+
+    @Override
+    public void tick() {
+        this._foxie.getJumpControl().jump();
     }
 }
