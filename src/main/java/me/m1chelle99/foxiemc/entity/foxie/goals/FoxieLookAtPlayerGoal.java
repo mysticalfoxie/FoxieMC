@@ -28,8 +28,10 @@ public class FoxieLookAtPlayerGoal extends Goal {
             return false;
 
         this.findPlayer();
+        if (this.player == null)
+            return false;
 
-        return this.player != null;
+        return this._foxie.getRandom().nextFloat() <= 0.05F;
     }
 
     public boolean canContinueToUse() {
@@ -39,39 +41,35 @@ public class FoxieLookAtPlayerGoal extends Goal {
         if (this.player == null)
             return false;
 
-        if (!this.player.isAlive()) return false;
-        return !this.player.isSpectator();
+        if (!this.player.isAlive())
+            return false;
+
+        if (this.player.isSpectator())
+            return false;
+
+        if (this.duration <= 0)
+            return false;
+
+        var distance = this._foxie.distanceTo(player);
+        return distance <= FoxieConstants.STALK_PLAYER_DISTANCE;
     }
 
     public void start() {
         var random = this._foxie.getRandom();
-        this.duration = random.nextInt(20, 120);
+        this.duration = random.nextInt(40, 100);
     }
 
     public void stop() {
-        this.duration = 0;
-        this.cooldown = 0;
         this.player = null;
     }
 
     public void tick() {
-        if (this.cooldown > 0 && this.duration <= 0) {
-            this.cooldown--;
-            return;
-        }
-
-        if (this.duration <= 0) {
-            this.cooldown = this._foxie.getRandom().nextInt(50, 120);
-            this.duration = this._foxie.getRandom().nextInt(20, 100);
-            return;
-        }
-
-        this.duration--;
-
         var player_eyes = this.player.getEyePosition();
         this._foxie
             .getLookControl()
             .setLookAt(player_eyes.x, player_eyes.y, player_eyes.z);
+
+        this.duration--;
     }
 
     private boolean canLookAtPlayer(LivingEntity entity) {
@@ -79,7 +77,7 @@ public class FoxieLookAtPlayerGoal extends Goal {
         if (entity.isSleeping()) return false;
         if (entity.isSpectator()) return false;
         var distance = this._foxie.distanceTo(entity);
-        return !entity.isCrouching() || !(distance > 12.5);
+        return distance < FoxieConstants.STALK_PLAYER_DISTANCE;
     }
 
     private void findPlayer() {
