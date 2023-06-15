@@ -159,6 +159,7 @@ public class Foxie extends TamableAnimal {
     public void tick() {
         super.tick();
         this.hungerControl.tick();
+        this.ownerControl.tick();
     }
 
     protected SoundEvent getAmbientSound() {
@@ -190,7 +191,7 @@ public class Foxie extends TamableAnimal {
     public @NotNull InteractionResult mobInteract(
         @NotNull Player player, @NotNull InteractionHand hand) {
         if (this.level.isClientSide)
-            return InteractionResult.PASS;
+            return InteractionResult.SUCCESS;
 
         if (this.ownerControl.canInteract(player))
             return this.ownerControl.interact(player);

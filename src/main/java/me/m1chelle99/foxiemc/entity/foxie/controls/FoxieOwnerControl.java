@@ -4,9 +4,11 @@ import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityEvent;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public final class FoxieOwnerControl {
@@ -16,6 +18,8 @@ public final class FoxieOwnerControl {
         this._foxie = foxie;
         this._foxie.setTame(false);
     }
+
+    private int _cooldown;
 
     public boolean isTame() {
         return this._foxie.isTame();
@@ -30,7 +34,7 @@ public final class FoxieOwnerControl {
     }
 
     public boolean isOwner(UUID uuid) {
-        return this._foxie.getOwnerUUID() == uuid;
+        return Objects.equals(this._foxie.getOwnerUUID(), uuid);
     }
 
     public void tryTame(Player player, ItemStack stack) {
@@ -101,6 +105,9 @@ public final class FoxieOwnerControl {
     }
 
     public InteractionResult interact(Player player) {
+        if (this._cooldown > 0) return InteractionResult.SUCCESS;
+        this._cooldown = 1;
+
         if (this.isTame() && this.isOwner(player.getUUID()))
             return this.ownerInteract(player);
 
@@ -110,5 +117,42 @@ public final class FoxieOwnerControl {
         }
 
         return InteractionResult.SUCCESS;
+    }
+
+    public void tick() {
+        if (this._cooldown > 0)
+            this._cooldown--;
+    }
+
+    public boolean canBeTamedByItemPickup(ItemEntity entity) {
+        if (!this._foxie.hungerControl.isYummy(entity.getItem()))
+            return false;
+
+        if (this._foxie.ownerControl.isTame())
+            return false;
+
+        if (entity.getThrower() == null)
+            return false;
+
+        var uuid = entity.getThrower();
+        var player = this._foxie.level.getPlayerByUUID(uuid);
+
+        if (player == null)
+            return false;
+
+        var max_range = FoxieConstants.STALK_PLAYER_DISTANCE;
+        return !(this._foxie.distanceTo(player) > max_range);
+    }
+
+    public void onItemPickup(ItemEntity entity) {
+        if (!this._foxie.hungerControl.isYummy(entity.getItem())) return;
+        if (this._foxie.ownerControl.isTame()) return;
+        if (entity.getThrower() == null) return;
+        var uuid = entity.getThrower();
+        var player = this._foxie.level.getPlayerByUUID(uuid);
+        if (player == null) return;
+        var max_range = FoxieConstants.STALK_PLAYER_DISTANCE;
+        if (this._foxie.distanceTo(player) > max_range) return;
+        this.tryTame(player, entity.getItem());
     }
 }

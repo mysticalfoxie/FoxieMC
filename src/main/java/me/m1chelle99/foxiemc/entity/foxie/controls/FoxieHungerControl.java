@@ -115,4 +115,5 @@ public final class FoxieHungerControl {
         this.calculateHungerStrength();
         this.tryEat();
     }
+
 }

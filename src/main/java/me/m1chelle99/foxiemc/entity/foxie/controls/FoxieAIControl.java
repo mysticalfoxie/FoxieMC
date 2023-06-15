@@ -38,7 +38,7 @@ public final class FoxieAIControl {
     }
 
     public boolean isCommanded() {
-        return this.hasCommand(FoxieConstants.COMMAND_NONE);
+        return !this.hasCommand(FoxieConstants.COMMAND_NONE);
     }
 
     public boolean canEat() {
@@ -130,6 +130,7 @@ public final class FoxieAIControl {
     public void setCommand(Byte command) {
         if (Objects.equals(command, FoxieConstants.COMMAND_NONE)) {
             this.startActivity(FoxieConstants.ACTIVITY_NONE);
+            this._foxie.dataControl.setCommand(FoxieConstants.COMMAND_NONE);
             return;
         }
 

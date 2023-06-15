@@ -1,7 +1,6 @@
 package me.m1chelle99.foxiemc.entity.foxie.controls;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
-import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -20,6 +19,8 @@ public final class FoxieMouthControl {
         this._foxie = foxie;
     }
 
+    private ItemEntity _spitItem;
+
     // todo: doesn't spit out item except for hunger c;
     private void spitOutItem(ItemStack stack) {
         if (stack.isEmpty() || this._foxie.level.isClientSide) return;
@@ -29,7 +30,7 @@ public final class FoxieMouthControl {
             this._foxie.getY() + 1.0D,
             this._foxie.getZ() + this._foxie.getLookAngle().z);
 
-        var item = new ItemEntity(
+        _spitItem = new ItemEntity(
             this._foxie.level,
             pos.x,
             pos.y,
@@ -37,11 +38,11 @@ public final class FoxieMouthControl {
             stack
         );
 
-        item.setThrower(this._foxie.getUUID());
-        item.setPickUpDelay(FoxieConstants.PICKUP_DELAY);
+        _spitItem.setThrower(this._foxie.getUUID());
+        _spitItem.setPickUpDelay(40);
 
         this._foxie.playSound(SoundEvents.FOX_SPIT, 1.0F, 1.0F);
-        this._foxie.level.addFreshEntity(item);
+        this._foxie.level.addFreshEntity(_spitItem);
     }
 
     public void drop() {
@@ -74,17 +75,25 @@ public final class FoxieMouthControl {
 
     public void pickupItem(@NotNull ItemEntity item) {
         var stack = item.getItem();
+
+        if (this._spitItem == item) return;
         if (!this._foxie.canHoldItem(stack)) return;
 
+        if (this._foxie.ownerControl.canBeTamedByItemPickup(item)) {
+            this._foxie.ownerControl.onItemPickup(item);
+            return;
+        }
+
         int count = stack.getCount();
-        if (count > 1) this.dropItemStack(stack.split(count - 1));
+        var taken = stack.split(count - 1);
+        if (count > 1) this.dropItemStack(taken);
 
         this.spitOutItem(this._foxie.getItemBySlot(EquipmentSlot.MAINHAND));
         this._foxie.onItemPickup(item);
         this._foxie.setItemSlot(EquipmentSlot.MAINHAND, stack.split(1));
         this._foxie
             .getHandDropChances()[EquipmentSlot.MAINHAND.getIndex()] = 1.0F;
-        this._foxie.take(item, stack.getCount());
+
         item.discard();
     }
 
