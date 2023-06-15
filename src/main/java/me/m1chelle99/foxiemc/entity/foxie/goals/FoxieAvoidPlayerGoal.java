@@ -24,13 +24,11 @@ public class FoxieAvoidPlayerGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return false;
-//        
-//        if (!this._foxie.aiControl.canAvoidPlayer())
-//            return false;
-//
-//        this.findScaryPlayer();
-//        return this.player != null;
+        if (!this._foxie.aiControl.canAvoidPlayer())
+            return false;
+
+        this.findScaryPlayer();
+        return this.player != null;
     }
 
     @Override
