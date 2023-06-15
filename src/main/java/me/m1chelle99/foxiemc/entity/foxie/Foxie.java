@@ -28,6 +28,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class Foxie extends TamableAnimal {
     public static final String ID = "foxie";
+    public final FoxieAIControl aiControl;
+    public final FoxieMouthControl mouthControl;
+    public final FoxieDataControl dataControl;
+    public final FoxieHungerControl hungerControl;
+    public final FoxieOwnerControl ownerControl;
 
     public Foxie(EntityType<? extends TamableAnimal> type, Level level) {
         super(type, level);
@@ -42,15 +47,10 @@ public class Foxie extends TamableAnimal {
 
         this.setPathfindingMalus(BlockPathTypes.DANGER_OTHER, 0.0F);
         this.setPathfindingMalus(BlockPathTypes.DAMAGE_OTHER, 0.0F);
+        this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
 
         this.setCanPickUpLoot(true);
     }
-    
-    public final FoxieAIControl aiControl;
-    public final FoxieMouthControl mouthControl;
-    public final FoxieDataControl dataControl;
-    public final FoxieHungerControl hungerControl;
-    public final FoxieOwnerControl ownerControl;
 
     public void runTo(@NotNull Vec3 position, double speed_modifier) {
         var blockpos = new BlockPos(position.x, position.y, position.z);
@@ -109,9 +109,6 @@ public class Foxie extends TamableAnimal {
     public @NotNull EntityDimensions getDimensions(@NotNull Pose pose) {
         return EntityDimensions.scalable(.65F, .65F);
     }
-
-    // TODO: Doesn't directly have something todo with the 
-    //  leash offset, but to write that idea down:
 
     protected void defineSynchedData() {
         super.defineSynchedData();
