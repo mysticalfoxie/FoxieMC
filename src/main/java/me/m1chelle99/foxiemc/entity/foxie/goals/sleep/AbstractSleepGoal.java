@@ -1,7 +1,7 @@
 package me.m1chelle99.foxiemc.entity.foxie.goals.sleep;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
-import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
+import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieActivities;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 // More than this dev sleeps on a normal work day uwu
@@ -24,7 +24,7 @@ public class AbstractSleepGoal extends Goal {
 
     @Override
     public void start() {
-        this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_SLEEP);
+        this._foxie.aiControl.startActivity(FoxieActivities.Sleep);
         var position = this._foxie.blockPosition();
         this._foxie.startSleeping(position);
     }
@@ -32,7 +32,7 @@ public class AbstractSleepGoal extends Goal {
     @Override
     public void stop() {
         this._foxie.stopSleeping();
-        if (this._foxie.aiControl.hasActivity(FoxieConstants.ACTIVITY_SLEEP))
-            this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
+        if (this._foxie.aiControl.hasActivity(FoxieActivities.Sleep))
+            this._foxie.aiControl.startActivity(FoxieActivities.None);
     }
 }

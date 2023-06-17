@@ -1,7 +1,7 @@
 package me.m1chelle99.foxiemc.entity.foxie.goals;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
-import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
+import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieActivities;
 import net.minecraft.world.entity.ai.goal.ClimbOnTopOfPowderSnowGoal;
 
 public class FoxieClimbSnowGoal extends ClimbOnTopOfPowderSnowGoal {
@@ -14,6 +14,6 @@ public class FoxieClimbSnowGoal extends ClimbOnTopOfPowderSnowGoal {
 
     @Override
     public void start() {
-        this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
+        this._foxie.aiControl.startActivity(FoxieActivities.None);
     }
 }

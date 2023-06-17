@@ -1,7 +1,7 @@
 package me.m1chelle99.foxiemc.entity.foxie.goals;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
-import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
+import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieMovementSpeed;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -43,20 +43,20 @@ public class FoxieAvoidPlayerGoal extends Goal {
         if (position == null)
             return;
 
-        var mod = FoxieConstants.AVOID_PLAYER_MOVEMENT_SPEED_MULTIPLIER;
+        var mod = FoxieMovementSpeed.AVOID_PLAYER;
         this._foxie.runTo(position, mod);
     }
 
     @Override
     public void tick() {
         if (this._foxie.distanceToSqr(this.player) < 15) {
-            var mod = FoxieConstants.AVOID_PLAYER_MOVEMENT_SPEED_MULTIPLIER;
+            var mod = FoxieMovementSpeed.AVOID_PLAYER;
             this._foxie.getNavigation().setSpeedModifier(mod);
             return;
         }
 
         if (this._foxie.distanceToSqr(this.player) < 2) {
-            var mod = FoxieConstants.AVOID_PLAYER_MOVEMENT_SPEED_MULTIPLIER;
+            var mod = FoxieMovementSpeed.AVOID_PLAYER;
             this._foxie.getNavigation().setSpeedModifier(mod * 2);
             return;
         }

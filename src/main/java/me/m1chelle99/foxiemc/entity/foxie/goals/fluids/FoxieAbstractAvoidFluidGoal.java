@@ -1,7 +1,8 @@
 package me.m1chelle99.foxiemc.entity.foxie.goals.fluids;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
-import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
+import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieActivities;
+import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieMovementSpeed;
 import me.m1chelle99.foxiemc.helper.Pathfinder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -10,11 +11,11 @@ import net.minecraft.world.level.material.FluidState;
 
 public abstract class FoxieAbstractAvoidFluidGoal extends Goal {
     protected final Foxie _foxie;
-    protected final byte _activity;
+    protected final FoxieActivities _activity;
 
     public FoxieAbstractAvoidFluidGoal(
         Foxie foxie,
-        byte activity
+        FoxieActivities activity
     ) {
         this._foxie = foxie;
         this._activity = activity;
@@ -44,7 +45,7 @@ public abstract class FoxieAbstractAvoidFluidGoal extends Goal {
 
     @Override
     public void stop() {
-        this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
+        this._foxie.aiControl.startActivity(FoxieActivities.None);
     }
 
     @Override
@@ -59,7 +60,7 @@ public abstract class FoxieAbstractAvoidFluidGoal extends Goal {
             return;
         }
 
-        var mod = FoxieConstants.AVOID_FLUID_MOVEMENT_SPEED_MULTIPLIER;
+        var mod = FoxieMovementSpeed.AVOID_FLUID;
         this._foxie.getNavigation().setSpeedModifier(mod);
     }
 

@@ -1,7 +1,8 @@
 package me.m1chelle99.foxiemc.entity.foxie.controls;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
-import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
+import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieActivities;
+import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieCommands;
 import me.m1chelle99.foxiemc.entity.foxie.goals.*;
 import me.m1chelle99.foxiemc.entity.foxie.goals.fluids.FoxieAvoidCustomFluidsGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.fluids.FoxieAvoidLavaGoal;
@@ -28,7 +29,7 @@ public final class FoxieAIControl {
 
     public boolean isPanic() {
         var activity = this._foxie.dataControl.getActivity();
-        return activity == FoxieConstants.ACTIVITY_PANIC;
+        return activity == FoxieActivities.Panic;
     }
 
     public void trust(@Nullable UUID id) {
@@ -38,36 +39,27 @@ public final class FoxieAIControl {
     }
 
     public boolean isCommanded() {
-        return !this.hasCommand(FoxieConstants.COMMAND_NONE);
+        return !this.hasCommand(FoxieCommands.None);
     }
 
     public boolean canEat() {
         if (this._foxie.isInWater()) return false;
-        if (this.hasActivity(FoxieConstants.ACTIVITY_SLEEP)) return false;
-        if (this.hasActivity(FoxieConstants.ACTIVITY_PANIC)) return false;
-        return !this.hasActivity(FoxieConstants.ACTIVITY_SEEK_SHELTER);
-    }
-
-    public boolean isTamable() {
-        if (this._foxie.isInWater()) return false;
-        var activity = this._foxie.dataControl.getActivity();
-        if (activity == FoxieConstants.ACTIVITY_SLEEP) return false;
-        if (activity == FoxieConstants.ACTIVITY_PANIC) return false;
-        if (activity == FoxieConstants.ACTIVITY_HUNT) return false;
-        return activity != FoxieConstants.ACTIVITY_SEEK_SHELTER;
+        if (this.hasActivity(FoxieActivities.Sleep)) return false;
+        if (this.hasActivity(FoxieActivities.Panic)) return false;
+        return !this.hasActivity(FoxieActivities.SeekRainShelter);
     }
 
     public boolean canSeekShelter() {
         if (this._foxie.isInWater()) return false;
         var activity = this._foxie.dataControl.getActivity();
-        if (activity == FoxieConstants.ACTIVITY_OBEY) return false;
-        return activity != FoxieConstants.ACTIVITY_PANIC;
+        if (activity == FoxieActivities.Obey) return false;
+        return activity != FoxieActivities.Panic;
     }
 
     public boolean canMove() {
         var activity = this._foxie.dataControl.getActivity();
-        if (activity == FoxieConstants.ACTIVITY_OBEY) return false;
-        return activity != FoxieConstants.ACTIVITY_SLEEP;
+        if (activity == FoxieActivities.Obey) return false;
+        return activity != FoxieActivities.Sleep;
     }
 
     // TODO: Trusted state holds forever currently. Change that.
@@ -78,29 +70,29 @@ public final class FoxieAIControl {
 
     public void onHurt() {
         // Foxie receives lava damage. The fleeing logic is already handled.
-        if (this.hasActivity(FoxieConstants.ACTIVITY_AVOID_FLUID) &&
+        if (this.hasActivity(FoxieActivities.AvoidFluid) &&
             this._foxie.isInLava())
             return;
 
-        this.startActivity(FoxieConstants.ACTIVITY_PANIC);
+        this.startActivity(FoxieActivities.Panic);
     }
 
     public boolean isSleeping() {
-        return this.hasActivity(FoxieConstants.ACTIVITY_SLEEP);
+        return this.hasActivity(FoxieActivities.Sleep);
     }
 
     public boolean isSitting() {
-        if (!this.hasActivity(FoxieConstants.ACTIVITY_OBEY)) return false;
-        return this.hasCommand(FoxieConstants.COMMAND_SIT);
+        if (!this.hasActivity(FoxieActivities.Obey)) return false;
+        return this.hasCommand(FoxieCommands.Sit);
     }
 
-    private boolean hasCommand(Byte command) {
+    private boolean hasCommand(FoxieCommands command) {
         return this._foxie.dataControl.getCommand() == command;
     }
 
     public SoundEvent getAmbientSound() {
         var activity = this._foxie.dataControl.getActivity();
-        if (activity == FoxieConstants.ACTIVITY_SLEEP)
+        if (activity == FoxieActivities.Sleep)
             return SoundEvents.FOX_SLEEP;
 
         if (this._foxie.level.isDay())
@@ -115,75 +107,98 @@ public final class FoxieAIControl {
         return SoundEvents.FOX_AMBIENT;
     }
 
-    public void startActivity(Byte activity) {
+    public void startActivity(FoxieActivities activity) {
         this._foxie.dataControl.setActivity(activity);
     }
 
-    public Byte getActivity() {
+    public FoxieActivities getActivity() {
         return this._foxie.dataControl.getActivity();
     }
 
-    public boolean hasActivity(Byte activity) {
-        return this.getActivity().equals(activity);
+    public boolean hasActivity(FoxieActivities activity) {
+        return this.getActivity() == activity;
     }
 
-    public void setCommand(Byte command) {
-        if (Objects.equals(command, FoxieConstants.COMMAND_NONE)) {
-            this.startActivity(FoxieConstants.ACTIVITY_NONE);
-            this._foxie.dataControl.setCommand(FoxieConstants.COMMAND_NONE);
+    public void setCommand(FoxieCommands command) {
+        if (Objects.equals(command, FoxieCommands.None)) {
+            this.startActivity(FoxieActivities.None);
+            this._foxie.dataControl.setCommand(FoxieCommands.None);
             return;
         }
 
-        this.startActivity(FoxieConstants.ACTIVITY_OBEY);
+        this.startActivity(FoxieActivities.Obey);
         this._foxie.dataControl.setCommand(command);
     }
 
     public boolean canBeCommanded() {
         if (this._foxie.isInWater()) return false;
         var activity = this._foxie.dataControl.getActivity();
-        return activity != FoxieConstants.ACTIVITY_PANIC;
+        return activity != FoxieActivities.Panic;
     }
 
     public boolean canLook() {
         var activity = this._foxie.dataControl.getActivity();
-        return activity != FoxieConstants.ACTIVITY_SLEEP;
+        return activity != FoxieActivities.Sleep;
     }
 
     public boolean canSleep() {
         var activity = this._foxie.dataControl.getActivity();
-        if (activity == FoxieConstants.ACTIVITY_PANIC) return false;
+        if (activity == FoxieActivities.Panic) return false;
         if (this._foxie.isInFluid()) return false;
-        if (activity == FoxieConstants.ACTIVITY_SEEK_SHELTER) return false;
-        if (activity == FoxieConstants.ACTIVITY_AVOID_FLUID) return false;
-        if (activity == FoxieConstants.ACTIVITY_AVOID_LAVA) return false;
-        if (activity == FoxieConstants.ACTIVITY_AVOID_PLAYER) return false;
+        if (activity == FoxieActivities.SeekRainShelter) return false;
+        if (activity == FoxieActivities.AvoidFluid) return false;
+        if (activity == FoxieActivities.AvoidLava) return false;
+        if (activity == FoxieActivities.AvoidPlayer) return false;
         if (this._foxie.hungerControl.isHeavilyHungry()) return false;
-        return activity != FoxieConstants.ACTIVITY_HUNT;
+        return activity != FoxieActivities.Attack;
     }
 
     public boolean canAvoidWater() {
         var activity = this._foxie.dataControl.getActivity();
-        if (activity == FoxieConstants.ACTIVITY_PANIC) return false;
-        if (activity == FoxieConstants.ACTIVITY_AVOID_PLAYER) return false;
-        return activity != FoxieConstants.ACTIVITY_HUNT;
+        if (activity == FoxieActivities.Panic) return false;
+        if (activity == FoxieActivities.AvoidPlayer) return false;
+        return activity != FoxieActivities.Attack;
+    }
+
+    public boolean canBeTamed() {
+        if (this._foxie.isInWater()) return false;
+        var activity = this._foxie.dataControl.getActivity();
+        if (activity == FoxieActivities.Sleep) return false;
+        if (activity == FoxieActivities.Panic) return false;
+        if (activity == FoxieActivities.Attack) return false;
+        return activity != FoxieActivities.SeekRainShelter;
     }
 
     public boolean canAvoidPlayer() {
         var activity = this._foxie.dataControl.getActivity();
-        if (activity == FoxieConstants.ACTIVITY_PANIC) return false;
+        if (activity == FoxieActivities.Panic) return false;
         if (this._foxie.isInFluid()) return false;
-        if (activity == FoxieConstants.ACTIVITY_SEEK_SHELTER) return false;
-        if (activity == FoxieConstants.ACTIVITY_AVOID_FLUID) return false;
-        return activity != FoxieConstants.ACTIVITY_AVOID_LAVA;
+        if (activity == FoxieActivities.SeekRainShelter) return false;
+        if (activity == FoxieActivities.AvoidFluid) return false;
+        return activity != FoxieActivities.AvoidLava;
     }
 
     public boolean canLookAtPlayer() {
         if (!this.canLook()) return false;
         var activity = this._foxie.dataControl.getActivity();
-        if (activity == FoxieConstants.ACTIVITY_AVOID_LAVA) return false;
-        if (activity == FoxieConstants.ACTIVITY_AVOID_FLUID) return false;
-        if (activity == FoxieConstants.ACTIVITY_PANIC) return false;
-        return activity != FoxieConstants.ACTIVITY_SEEK_SHELTER;
+        if (activity == FoxieActivities.AvoidLava) return false;
+        if (activity == FoxieActivities.AvoidFluid) return false;
+        if (activity == FoxieActivities.SearchForFood) return false;
+        if (activity == FoxieActivities.Panic) return false;
+        return activity != FoxieActivities.SeekRainShelter;
+    }
+
+    public boolean canHunt() {
+        var activity = this._foxie.dataControl.getActivity();
+        if (activity == FoxieActivities.Obey) return false;
+        if (activity == FoxieActivities.Sleep) return false;
+        if (activity == FoxieActivities.Panic) return false;
+        if (activity == FoxieActivities.AvoidLava) return false;
+        if (activity == FoxieActivities.AvoidFluid) return false;
+        if (activity == FoxieActivities.SeekRainShelter) return false;
+        if (activity == FoxieActivities.AvoidPlayer) return false;
+        if (activity == FoxieActivities.SeekSleepShelter) return false;
+        return activity != FoxieActivities.Attack;
     }
 
     public static void register(Foxie foxie) {

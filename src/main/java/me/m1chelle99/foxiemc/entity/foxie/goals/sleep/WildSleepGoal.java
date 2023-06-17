@@ -1,19 +1,20 @@
 package me.m1chelle99.foxiemc.entity.foxie.goals.sleep;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
-import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
+import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieActivities;
+import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieMovementSpeed;
 import me.m1chelle99.foxiemc.helper.Pathfinder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 
 public class WildSleepGoal extends AbstractSleepGoal {
-    private BlockPos _target;
-    private int _cooldown;
-
     public WildSleepGoal(Foxie foxie) {
         super(foxie);
     }
+
+    private BlockPos _target;
+    private int _cooldown;
 
     @Override
     public boolean canUse() {
@@ -30,7 +31,7 @@ public class WildSleepGoal extends AbstractSleepGoal {
 
     @Override
     public void start() {
-        var activity = FoxieConstants.ACTIVITY_SEARCH_FOR_SLEEP;
+        var activity = FoxieActivities.SeekSleepShelter;
         this._foxie.aiControl.startActivity(activity);
     }
 
@@ -42,12 +43,12 @@ public class WildSleepGoal extends AbstractSleepGoal {
         if (!this._foxie.getNavigation().isDone())
             this._foxie.getNavigation().stop();
 
-        if (this._foxie.aiControl.hasActivity(FoxieConstants.ACTIVITY_SLEEP))
-            this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
+        if (this._foxie.aiControl.hasActivity(FoxieActivities.Sleep))
+            this._foxie.aiControl.startActivity(FoxieActivities.None);
 
-        var stillOnSearch = FoxieConstants.ACTIVITY_SEARCH_FOR_SLEEP;
+        var stillOnSearch = FoxieActivities.SeekSleepShelter;
         if (this._foxie.aiControl.hasActivity(stillOnSearch))
-            this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_NONE);
+            this._foxie.aiControl.startActivity(FoxieActivities.None);
     }
 
     private boolean canSleepAtTimeOfDay() {
@@ -76,10 +77,10 @@ public class WildSleepGoal extends AbstractSleepGoal {
         if (!this._foxie.getNavigation().isDone())
             return;
 
-        if (this._foxie.aiControl.hasActivity(FoxieConstants.ACTIVITY_SLEEP)) {
+        if (this._foxie.aiControl.hasActivity(FoxieActivities.Sleep)) {
             if (!this.areThreadsNearby()) return;
             this._foxie.stopSleeping();
-            var activity = FoxieConstants.ACTIVITY_SEARCH_FOR_SLEEP;
+            var activity = FoxieActivities.SeekSleepShelter;
             this._foxie.aiControl.startActivity(activity);
             this._cooldown = 0;
         }
@@ -93,7 +94,7 @@ public class WildSleepGoal extends AbstractSleepGoal {
         var position = this._foxie.blockPosition();
         if (this.isDesiredPosition(position)) {
             this._foxie.startSleeping(position);
-            this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_SLEEP);
+            this._foxie.aiControl.startActivity(FoxieActivities.Sleep);
             this._cooldown = this._foxie.getRandom().nextInt(20, 100);
             return;
         }
@@ -101,7 +102,7 @@ public class WildSleepGoal extends AbstractSleepGoal {
         this.setNewTargetPosition();
         this._cooldown = this._foxie.getRandom().nextInt(20, 100);
         if (this._target != null) {
-            var mod = FoxieConstants.SEARCH_SLEEP_MOVEMENT_SPEED_MULTIPLIER;
+            var mod = FoxieMovementSpeed.SEEK_SLEEP_SHELTER;
             this._foxie.runTo(this._target, mod);
         }
     }
@@ -117,14 +118,14 @@ public class WildSleepGoal extends AbstractSleepGoal {
 
     private void setNewTargetPosition() {
         this._target = Pathfinder.getClosestPathWhere(
-                this._foxie, 15, 3,
-                this::isDesiredPosition);
+            this._foxie, 15, 3,
+            this::isDesiredPosition);
 
         if (_target != null)
             return;
 
         var target = Pathfinder
-                .getPathInLookDirection(this._foxie, 20, 4, 10);
+            .getPathInLookDirection(this._foxie, 20, 4, 10);
         if (target == null)
             return;
 

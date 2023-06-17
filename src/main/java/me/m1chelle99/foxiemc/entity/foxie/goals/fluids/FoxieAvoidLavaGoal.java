@@ -1,12 +1,12 @@
 package me.m1chelle99.foxiemc.entity.foxie.goals.fluids;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
-import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
+import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieActivities;
 import net.minecraft.world.level.material.Fluids;
 
 public class FoxieAvoidLavaGoal extends FoxieAbstractAvoidFluidGoal {
     public FoxieAvoidLavaGoal(Foxie foxie) {
-        super(foxie, FoxieConstants.ACTIVITY_AVOID_LAVA);
+        super(foxie, FoxieActivities.AvoidLava);
     }
 
     @Override
@@ -18,6 +18,6 @@ public class FoxieAvoidLavaGoal extends FoxieAbstractAvoidFluidGoal {
 
     @Override
     public void stop() {
-        this._foxie.aiControl.startActivity(FoxieConstants.ACTIVITY_PANIC);
+        this._foxie.aiControl.startActivity(FoxieActivities.Panic);
     }
 }

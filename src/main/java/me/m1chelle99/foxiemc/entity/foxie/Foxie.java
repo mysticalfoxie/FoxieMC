@@ -1,5 +1,6 @@
 package me.m1chelle99.foxiemc.entity.foxie;
 
+import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieMovementSpeed;
 import me.m1chelle99.foxiemc.entity.foxie.controls.*;
 import me.m1chelle99.foxiemc.init.EntityInit;
 import net.minecraft.core.BlockPos;
@@ -213,7 +214,7 @@ public class Foxie extends TamableAnimal {
 
     public static AttributeSupplier.Builder getFoxieAttributes() {
         return LivingEntity.createLivingAttributes()
-            .add(Attributes.MOVEMENT_SPEED, FoxieConstants.MOVEMENT_SPEED)
+            .add(Attributes.MOVEMENT_SPEED, FoxieMovementSpeed.BASE_SPEED)
             .add(Attributes.MAX_HEALTH, FoxieConstants.MAX_HEALTH)
             .add(Attributes.FOLLOW_RANGE, FoxieConstants.FOLLOW_RANGE)
             .add(Attributes.ATTACK_DAMAGE, FoxieConstants.ATTACK_DAMAGE)

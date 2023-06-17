@@ -2,6 +2,7 @@ package me.m1chelle99.foxiemc.entity.foxie.controls;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
+import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieCommands;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -26,7 +27,7 @@ public final class FoxieOwnerControl {
     }
 
     public boolean isTamable() {
-        if (!this._foxie.aiControl.isTamable()) return false;
+        if (!this._foxie.aiControl.canBeTamed()) return false;
         if (!this._foxie.mouthControl.hasItem()) return true;
 
         var item = this._foxie.mouthControl.getItem();
@@ -52,7 +53,7 @@ public final class FoxieOwnerControl {
 
         this._foxie.tame(player);
         this._foxie.getNavigation().stop();
-        this._foxie.aiControl.setCommand(FoxieConstants.COMMAND_SIT);
+        this._foxie.aiControl.setCommand(FoxieCommands.Sit);
         this._foxie.level.broadcastEntityEvent(
             this._foxie,
             EntityEvent.TAMING_SUCCEEDED
@@ -82,7 +83,7 @@ public final class FoxieOwnerControl {
 
     private InteractionResult ownerInteract(Player player) {
         if (this._foxie.aiControl.isSleeping()) {
-            this._foxie.aiControl.setCommand(FoxieConstants.COMMAND_SIT);
+            this._foxie.aiControl.setCommand(FoxieCommands.Sit);
             return InteractionResult.SUCCESS;
         }
 
@@ -97,9 +98,9 @@ public final class FoxieOwnerControl {
             return InteractionResult.SUCCESS;
 
         if (!this._foxie.aiControl.isCommanded())
-            this._foxie.aiControl.setCommand(FoxieConstants.COMMAND_SIT);
+            this._foxie.aiControl.setCommand(FoxieCommands.Sit);
         else
-            this._foxie.aiControl.setCommand(FoxieConstants.COMMAND_NONE);
+            this._foxie.aiControl.setCommand(FoxieCommands.None);
 
         return InteractionResult.PASS;
     }
