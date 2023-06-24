@@ -1,16 +1,16 @@
 package me.m1chelle99.foxiemc.entity.foxie.goals.hunt;
 
-import net.minecraft.world.InteractionHand;
+import me.m1chelle99.foxiemc.entity.foxie.Foxie;
+import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieMovementSpeed;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.pathfinder.Path;
 
 import java.util.EnumSet;
 
-public class FoxieAttackPreyGoal extends FoxieAbstractHuntGoal {
+public class FoxieAttackPreyGoal extends FoxieAbstractSearchForFoodGoal {
 //    private final Foxie foxie;
 //
 //    public FoxieMeleeAttackGoal(Foxie foxie, double speed_modifier, boolean followingTargetEvenIfNotSeen) {
@@ -33,110 +33,87 @@ public class FoxieAttackPreyGoal extends FoxieAbstractHuntGoal {
 //        }
 //    }
 //
-//    public void start() {
-//        foxie.setFlag(FoxieAIControl.INTERESTED, false);
-//        super.start();
-//    }
-//
-//    public boolean canUse() {
-//        return foxie.getTicksSinceLastFood() > Foxie.TICKS_UNTIL_HUNGER
-//                && !foxie.getFlag(FoxieAIControl.SITTING)
-//                && !foxie.getFlag(FoxieAIControl.COMMAND_DOWN)
-//                && !foxie.getFlag(FoxieAIControl.SLEEPING)
-//                && !foxie.getFlag(FoxieAIControl.CROUCHING)
-//                && !foxie.getFlag(FoxieAIControl.FACEPLANTED)
-//                && foxie.getMainHandItem().isEmpty()
-//                && super.canUse();
-//    }
-//
 //    @Override
 //    public boolean canContinueToUse() {
 //        return canUse() && super.canContinueToUse();
 //    }
 
+    public FoxieAttackPreyGoal(Foxie foxie) {
+        super(foxie);
 
-    private static final long COOLDOWN_BETWEEN_CAN_USE_CHECKS = 20L;
-    private final double speedModifier;
-    private final boolean followingTargetEvenIfNotSeen;
-    private final int attackInterval = 20;
-    protected final PathfinderMob mob;
-    public MeleeAttackGoal(PathfinderMob p_25552_, double p_25553_, boolean p_25554_) {
-        this.mob = p_25552_;
-        this.speedModifier = p_25553_;
-        this.followingTargetEvenIfNotSeen = p_25554_;
-        this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        var flags = EnumSet.of(
+            Goal.Flag.MOVE,
+            Goal.Flag.LOOK
+        );
+
+        this.setFlags(flags);
     }
+
     private Path path;
-    private double pathedTargetX;
-    private double pathedTargetY;
-    private double pathedTargetZ;
-    private int ticksUntilNextPathRecalculation;
+    private double pathTargetX;
+    private double pathTargetY;
+    private double pathTargetZ;
+    private int ticksUntilRecalculation;
     private int ticksUntilNextAttack;
-    private long lastCanUseCheck;
-    private int failedPathFindingPenalty = 0;
-    private final boolean canPenalize = false;
+    private long lastCheck;
 
     public boolean canUse() {
-        long i = this.mob.level.getGameTime();
-        if (i - this.lastCanUseCheck < 20L) {
-            return false;
-        } else {
-            this.lastCanUseCheck = i;
-            LivingEntity livingentity = this.mob.getTarget();
-            if (livingentity == null) {
-                return false;
-            } else if (!livingentity.isAlive()) {
-                return false;
-            } else {
-                if (canPenalize) {
-                    if (--this.ticksUntilNextPathRecalculation <= 0) {
-                        this.path = this.mob.getNavigation().createPath(livingentity, 0);
-                        this.ticksUntilNextPathRecalculation = 4 + this.mob.getRandom().nextInt(7);
-                        return this.path != null;
-                    } else {
-                        return true;
-                    }
-                }
-                this.path = this.mob.getNavigation().createPath(livingentity, 0);
-                if (this.path != null) {
-                    return true;
-                } else {
-                    return this.getAttackReachSqr(livingentity) >= this.mob.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ());
-                }
-            }
-        }
+        return this._prey != null
+            && this._foxie.aiControl.canSearchForFood()
+            && this.canCalculatePath();
     }
 
     public boolean canContinueToUse() {
-        LivingEntity livingentity = this.mob.getTarget();
-        if (livingentity == null) {
+        if (_prey == null)
             return false;
-        } else if (!livingentity.isAlive()) {
+        else if (!_prey.isAlive())
             return false;
-        } else if (!this.followingTargetEvenIfNotSeen) {
-            return !this.mob.getNavigation().isDone();
-        } else if (!this.mob.isWithinRestriction(livingentity.blockPosition())) {
-            return false;
-        } else {
-            return !(livingentity instanceof Player) || !livingentity.isSpectator() && !((Player) livingentity).isCreative();
-        }
+
+        var pos = this._prey.blockPosition();
+        return this._foxie.isWithinRestriction(pos);
     }
 
     public void start() {
-        this.mob.getNavigation().moveTo(this.path, this.speedModifier);
-        this.mob.setAggressive(true);
-        this.ticksUntilNextPathRecalculation = 0;
+        var mod = FoxieMovementSpeed.ATTACK;
+        this._foxie.getNavigation().moveTo(this.path, mod);
+        this._foxie.setAggressive(true);
+        this.ticksUntilRecalculation = 0;
         this.ticksUntilNextAttack = 0;
     }
 
-    public void stop() {
-        LivingEntity livingentity = this.mob.getTarget();
-        if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingentity)) {
-            this.mob.setTarget(null);
-        }
+    private boolean canCalculatePath() {
+        var time = this._foxie.level.getGameTime();
+        if (time - this.lastCheck < 20L)
+            return false;
 
-        this.mob.setAggressive(false);
-        this.mob.getNavigation().stop();
+        this.lastCheck = time;
+
+        var prey = this._foxie.getTarget();
+        if (prey == null) return false;
+        if (!prey.isAlive()) return false;
+
+        this.path = this._foxie
+            .getNavigation()
+            .createPath(prey, 0);
+
+        if (this.path != null) return true;
+
+        var att_dist = this.getAttackReachSqr(prey);
+        var sqr_dist = this._foxie.distanceToSqr(
+            prey.getX(),
+            prey.getY(),
+            prey.getZ());
+
+        return att_dist >= sqr_dist;
+    }
+
+    public void stop() {
+        var prey = this._foxie.getTarget();
+        if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(prey))
+            this._foxie.setTarget(null);
+
+        this._foxie.setAggressive(false);
+        this._foxie.getNavigation().stop();
     }
 
     public boolean requiresUpdateEveryTick() {
@@ -144,73 +121,80 @@ public class FoxieAttackPreyGoal extends FoxieAbstractHuntGoal {
     }
 
     public void tick() {
-        LivingEntity livingentity = this.mob.getTarget();
-        if (livingentity != null) {
-            this.mob.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
-            double d0 = this.mob.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ());
-            this.ticksUntilNextPathRecalculation = Math.max(this.ticksUntilNextPathRecalculation - 1, 0);
-            if ((this.followingTargetEvenIfNotSeen || this.mob.getSensing().hasLineOfSight(livingentity)) && this.ticksUntilNextPathRecalculation <= 0 && (this.pathedTargetX == 0.0D && this.pathedTargetY == 0.0D && this.pathedTargetZ == 0.0D || livingentity.distanceToSqr(this.pathedTargetX, this.pathedTargetY, this.pathedTargetZ) >= 1.0D || this.mob.getRandom().nextFloat() < 0.05F)) {
-                this.pathedTargetX = livingentity.getX();
-                this.pathedTargetY = livingentity.getY();
-                this.pathedTargetZ = livingentity.getZ();
-                this.ticksUntilNextPathRecalculation = 4 + this.mob.getRandom().nextInt(7);
-                if (this.canPenalize) {
-                    this.ticksUntilNextPathRecalculation += failedPathFindingPenalty;
-                    if (this.mob.getNavigation().getPath() != null) {
-                        net.minecraft.world.level.pathfinder.Node finalPathPoint = this.mob.getNavigation().getPath().getEndNode();
-                        if (finalPathPoint != null && livingentity.distanceToSqr(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < 1)
-                            failedPathFindingPenalty = 0;
-                        else
-                            failedPathFindingPenalty += 10;
-                    } else {
-                        failedPathFindingPenalty += 10;
-                    }
-                }
-                if (d0 > 1024.0D) {
-                    this.ticksUntilNextPathRecalculation += 10;
-                } else if (d0 > 256.0D) {
-                    this.ticksUntilNextPathRecalculation += 5;
-                }
+        var prey = this._foxie.getTarget();
+        if (prey == null) return;
 
-                if (!this.mob.getNavigation().moveTo(livingentity, this.speedModifier)) {
-                    this.ticksUntilNextPathRecalculation += 15;
-                }
+        this._foxie.getLookControl().setLookAt(prey, 30.0F, 30.0F);
+        var d0 = this._foxie.distanceToSqr(
+            prey.getX(),
+            prey.getY(),
+            prey.getZ()
+        );
 
-                this.ticksUntilNextPathRecalculation = this.adjustedTickDelay(this.ticksUntilNextPathRecalculation);
-            }
+        this.ticksUntilRecalculation = Math.max(
+            this.ticksUntilRecalculation - 1, 0);
 
-            this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
-            this.checkAndPerformAttack(livingentity, d0);
-        }
-    }
-
-    protected void checkAndPerformAttack(LivingEntity p_25557_, double p_25558_) {
-        double d0 = this.getAttackReachSqr(p_25557_);
-        if (p_25558_ <= d0 && this.ticksUntilNextAttack <= 0) {
-            this.resetAttackCooldown();
-            this.mob.swing(InteractionHand.MAIN_HAND);
-            this.mob.doHurtTarget(p_25557_);
+        if (shouldRecalculatePath(prey)) {
+            recalculatePath(prey, d0);
         }
 
+        this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
+        this.checkAndPerformAttack(prey, d0);
     }
 
-    protected void resetAttackCooldown() {
+    private void recalculatePath(LivingEntity prey, double d0) {
+        this.pathTargetX = prey.getX();
+        this.pathTargetY = prey.getY();
+        this.pathTargetZ = prey.getZ();
+        this.ticksUntilRecalculation =
+            4 + this._foxie.getRandom().nextInt(7);
+
+        if (d0 > 1024.0D)
+            this.ticksUntilRecalculation += 10;
+        else if (d0 > 256.0D)
+            this.ticksUntilRecalculation += 5;
+
+        var canMove = this._foxie
+            .getNavigation()
+            .moveTo(prey, FoxieMovementSpeed.ATTACK);
+
+        if (!canMove)
+            this.ticksUntilRecalculation += 15;
+
+        this.ticksUntilRecalculation =
+            this.adjustedTickDelay(this.ticksUntilRecalculation);
+    }
+
+    private boolean shouldRecalculatePath(LivingEntity prey) {
+        if (this.ticksUntilRecalculation > 0)
+            return false;
+
+        var pathTargetEmpty = this.pathTargetX == 0.0D
+            && this.pathTargetY == 0.0D
+            && this.pathTargetZ == 0.0D;
+
+        var dist = prey.distanceToSqr(
+            this.pathTargetX,
+            this.pathTargetY,
+            this.pathTargetZ);
+
+        var rnd = this._foxie.getRandom().nextFloat() < 0.05F;
+
+        return pathTargetEmpty || dist >= 1.0D || rnd;
+    }
+
+    protected void checkAndPerformAttack(LivingEntity prey, double dist) {
+        var d0 = this.getAttackReachSqr(prey);
+        if (dist > d0 || this.ticksUntilNextAttack > 0)
+            return;
+
         this.ticksUntilNextAttack = this.adjustedTickDelay(20);
+        this._foxie.doHurtTarget(prey);
+        this._foxie.playSound(SoundEvents.FOX_BITE, 1.0F, 1.0F);
     }
 
-    protected boolean isTimeToAttack() {
-        return this.ticksUntilNextAttack <= 0;
-    }
-
-    protected int getTicksUntilNextAttack() {
-        return this.ticksUntilNextAttack;
-    }
-
-    protected int getAttackInterval() {
-        return this.adjustedTickDelay(20);
-    }
-
-    protected double getAttackReachSqr(LivingEntity p_25556_) {
-        return this.mob.getBbWidth() * 2.0F * this.mob.getBbWidth() * 2.0F + p_25556_.getBbWidth();
+    protected double getAttackReachSqr(LivingEntity prey) {
+        var bbWidth = Math.pow(this._foxie.getBbWidth(), 2);
+        return bbWidth * 4.0F + prey.getBbWidth();
     }
 }

@@ -5,7 +5,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.*;
 
-public class FoxieSearchForPreyGoal extends FoxieAbstractHuntGoal {
+public class FoxieSearchForPreyGoal extends FoxieAbstractSearchForFoodGoal {
     private final TargetingConditions _targeting = TargetingConditions
         .forNonCombat()
         .range(20)
