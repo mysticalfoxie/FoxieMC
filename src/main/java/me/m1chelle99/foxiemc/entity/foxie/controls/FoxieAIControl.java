@@ -7,7 +7,8 @@ import me.m1chelle99.foxiemc.entity.foxie.goals.*;
 import me.m1chelle99.foxiemc.entity.foxie.goals.fluids.FoxieAvoidCustomFluidsGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.fluids.FoxieAvoidLavaGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.fluids.FoxieAvoidWaterGoal;
-import me.m1chelle99.foxiemc.entity.foxie.goals.hunt.FoxieSearchForPreyGoal;
+import me.m1chelle99.foxiemc.entity.foxie.goals.hunt.FoxieAttackPreyGoal;
+import me.m1chelle99.foxiemc.entity.foxie.goals.hunt.FoxieSearchForFoodGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.panic.FoxieAttackedPanicGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.panic.FoxieDefaultPanicGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.panic.FoxieFirePanicGoal;
@@ -227,7 +228,8 @@ public final class FoxieAIControl {
         foxie.goalSelector.addGoal(3, new FoxieAvoidPlayerGoal(foxie));
         foxie.goalSelector.addGoal(3, new FoxieLookAtPlayerGoal(foxie));
 
-        foxie.goalSelector.addGoal(4, new FoxieSearchForPreyGoal(foxie));
+        foxie.goalSelector.addGoal(4, new FoxieSearchForFoodGoal(foxie));
+        foxie.goalSelector.addGoal(4, new FoxieAttackPreyGoal(foxie));
 
         foxie.goalSelector.addGoal(5, new FoxieSeekShelterGoal(foxie));
 

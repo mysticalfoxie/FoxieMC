@@ -34,6 +34,7 @@ public class Foxie extends TamableAnimal {
     public final FoxieDataControl dataControl;
     public final FoxieHungerControl hungerControl;
     public final FoxieOwnerControl ownerControl;
+    public final FoxieHuntControl huntControl;
 
     public Foxie(EntityType<? extends TamableAnimal> type, Level level) {
         super(type, level);
@@ -45,6 +46,7 @@ public class Foxie extends TamableAnimal {
         this.mouthControl = new FoxieMouthControl(this);
         this.hungerControl = new FoxieHungerControl(this);
         this.ownerControl = new FoxieOwnerControl(this);
+        this.huntControl = new FoxieHuntControl();
 
         this.setPathfindingMalus(BlockPathTypes.DANGER_OTHER, 0.0F);
         this.setPathfindingMalus(BlockPathTypes.DAMAGE_OTHER, 0.0F);
