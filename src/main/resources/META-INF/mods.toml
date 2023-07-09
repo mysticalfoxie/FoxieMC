@@ -14,15 +14,15 @@ It behaves a lot like a fox, but... I dont want to spoil you there. ;p
 '''
 
 [[dependencies.foxiemc]]
-    modId = "forge"
-    mandatory = true
-    versionRange = "[40,)"
-    ordering = "NONE"
-    side = "BOTH"
+modId = "forge"
+mandatory = true
+versionRange = "[40,)"
+ordering = "NONE"
+side = "BOTH"
 
 [[dependencies.foxiemc]]
-    modId = "minecraft"
-    mandatory = true
-    versionRange = "[1.18.2]"
-    ordering = "NONE"
-    side = "BOTH"
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.18.2]"
+ordering = "NONE"
+side = "BOTH"
