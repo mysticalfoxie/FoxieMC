@@ -1,6 +1,7 @@
 package me.m1chelle99.foxiemc.entity.foxie.goals.hunt;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
+import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieActivities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -75,6 +76,7 @@ public class FoxieCollectBerriesGoal extends Goal {
         this._foxie.level.setBlock(berries, state, 2);
 
         this._foxie.huntControl.berries = null;
+        this._foxie.aiControl.startActivity(FoxieActivities.None);
     }
 
     private boolean isBerryBushEatable() {

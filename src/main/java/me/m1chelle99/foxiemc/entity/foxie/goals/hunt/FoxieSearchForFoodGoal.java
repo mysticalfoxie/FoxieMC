@@ -24,7 +24,6 @@ public class FoxieSearchForFoodGoal extends Goal {
     private final Foxie _foxie;
 
     public FoxieSearchForFoodGoal(Foxie foxie) {
-
         this._foxie = foxie;
     }
 
@@ -57,6 +56,7 @@ public class FoxieSearchForFoodGoal extends Goal {
         this._foxie.aiControl.startActivity(FoxieActivities.SearchForFood);
     }
 
+    @Override
     public void tick() {
         if (this._foxie.getNavigation().isInProgress())
             return;
@@ -73,9 +73,9 @@ public class FoxieSearchForFoodGoal extends Goal {
         if (this._foxie.huntControl.berries != null)
             return;
 
-        this._foxie.huntControl.foodItem = this.findFoodItems(boundary);
-        if (this._foxie.huntControl.foodItem != null)
-            return;
+//        this._foxie.huntControl.foodItem = this.findFoodItems(boundary);
+//        if (this._foxie.huntControl.foodItem != null)
+//            return;
 
         var random = Pathfinder.getRandomPositionWithin(this._foxie, 20, 5, 3);
         if (random == null)

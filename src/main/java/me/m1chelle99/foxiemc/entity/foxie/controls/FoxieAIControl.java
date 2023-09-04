@@ -3,10 +3,7 @@ package me.m1chelle99.foxiemc.entity.foxie.controls;
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieActivities;
 import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieCommands;
-import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieClimbSnowGoal;
-import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieFloatGoal;
-import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieLookAtPlayerGoal;
-import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieSeekShelterGoal;
+import me.m1chelle99.foxiemc.entity.foxie.goals.*;
 import me.m1chelle99.foxiemc.entity.foxie.goals.fluids.FoxieAvoidCustomFluidsGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.fluids.FoxieAvoidLavaGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.fluids.FoxieAvoidWaterGoal;
@@ -45,7 +42,7 @@ public final class FoxieAIControl {
         foxie.goalSelector.addGoal(2, new FoxieAvoidWaterGoal(foxie));
         foxie.goalSelector.addGoal(2, new FoxieAvoidCustomFluidsGoal(foxie));
 
-        //foxie.goalSelector.addGoal(3, new FoxieAvoidPlayerGoal(foxie));
+        foxie.goalSelector.addGoal(3, new FoxieAvoidPlayerGoal(foxie));
         foxie.goalSelector.addGoal(3, new FoxieLookAtPlayerGoal(foxie));
 
         foxie.goalSelector.addGoal(4, new FoxieSearchForFoodGoal(foxie));
@@ -56,6 +53,8 @@ public final class FoxieAIControl {
 
         foxie.goalSelector.addGoal(6, new WildSleepGoal(foxie));
         foxie.goalSelector.addGoal(6, new TamedSleepGoal(foxie));
+
+        foxie.goalSelector.addGoal(7, new FoxieStrayGoal(foxie));
     }
 
     public boolean isPanic() {
@@ -240,5 +239,19 @@ public final class FoxieAIControl {
         if (activity == FoxieActivities.Sleep) return false;
         if (activity == FoxieActivities.Panic) return false;
         return activity != FoxieActivities.AvoidLava;
+    }
+
+    public boolean canStray() {
+        var activity = this._foxie.dataControl.getActivity();
+        if (activity == FoxieActivities.Panic) return false;
+        if (activity == FoxieActivities.Obey) return false;
+        if (activity == FoxieActivities.Sleep) return false;
+        if (activity == FoxieActivities.AvoidFluid) return false;
+        if (activity == FoxieActivities.AvoidLava) return false;
+        if (activity == FoxieActivities.AvoidPlayer) return false;
+        if (activity == FoxieActivities.SeekSleepShelter) return false;
+        if (activity == FoxieActivities.Attack) return false;
+        if (activity == FoxieActivities.SeekRainShelter) return false;
+        return activity != FoxieActivities.SearchForFood;
     }
 }

@@ -1,6 +1,7 @@
 package me.m1chelle99.foxiemc.entity.foxie.goals.hunt;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
+import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieActivities;
 import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieMovementSpeed;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntitySelector;
@@ -12,7 +13,13 @@ import java.util.EnumSet;
 
 public class FoxieAttackPreyGoal extends Goal {
     private final Foxie _foxie;
-
+    private Path path;
+    private double pathTargetX;
+    private double pathTargetY;
+    private double pathTargetZ;
+    private int ticksUntilRecalculation;
+    private int ticksUntilNextAttack;
+    private long lastCheck;
     public FoxieAttackPreyGoal(Foxie foxie) {
         this._foxie = foxie;
 
@@ -23,14 +30,6 @@ public class FoxieAttackPreyGoal extends Goal {
 
         this.setFlags(flags);
     }
-
-    private Path path;
-    private double pathTargetX;
-    private double pathTargetY;
-    private double pathTargetZ;
-    private int ticksUntilRecalculation;
-    private int ticksUntilNextAttack;
-    private long lastCheck;
 
     public boolean canUse() {
         return this._foxie.huntControl.prey != null
@@ -166,8 +165,11 @@ public class FoxieAttackPreyGoal extends Goal {
         this._foxie.doHurtTarget(prey);
         this._foxie.playSound(SoundEvents.FOX_BITE, 1.0F, 1.0F);
 
-        if (prey.isDeadOrDying())
+        if (prey.isDeadOrDying()) {
             this._foxie.hungerControl.setTicksSinceLastFood(0);
+            this._foxie.huntControl.prey = null;
+            this._foxie.aiControl.startActivity(FoxieActivities.None);
+        }
     }
 
     protected double getAttackReachSqr(LivingEntity prey) {
