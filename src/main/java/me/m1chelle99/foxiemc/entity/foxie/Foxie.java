@@ -50,9 +50,19 @@ public class Foxie extends TamableAnimal {
 
         this.setPathfindingMalus(BlockPathTypes.DANGER_OTHER, 0.0F);
         this.setPathfindingMalus(BlockPathTypes.DAMAGE_OTHER, 0.0F);
+        this.setPathfindingMalus(BlockPathTypes.LEAVES, 0.0F);
         this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
 
         this.setCanPickUpLoot(true);
+    }
+
+    public static AttributeSupplier.Builder getFoxieAttributes() {
+        return LivingEntity.createLivingAttributes()
+            .add(Attributes.MOVEMENT_SPEED, FoxieMovementSpeed.BASE_SPEED)
+            .add(Attributes.MAX_HEALTH, FoxieConstants.MAX_HEALTH)
+            .add(Attributes.FOLLOW_RANGE, FoxieConstants.FOLLOW_RANGE)
+            .add(Attributes.ATTACK_DAMAGE, FoxieConstants.ATTACK_DAMAGE)
+            .add(Attributes.ATTACK_KNOCKBACK);
     }
 
     public void runTo(@NotNull Vec3 position, double speed_modifier) {
@@ -192,9 +202,10 @@ public class Foxie extends TamableAnimal {
     }
 
     public @NotNull InteractionResult mobInteract(
-        @NotNull Player player, @NotNull InteractionHand hand) {
+        @NotNull Player player,
+        @NotNull InteractionHand hand) {
         if (this.level.isClientSide)
-            return InteractionResult.SUCCESS;
+            return InteractionResult.PASS;
 
         if (this.ownerControl.canInteract(player))
             return this.ownerControl.interact(player);
@@ -212,14 +223,5 @@ public class Foxie extends TamableAnimal {
 
     public float[] getHandDropChances() {
         return this.handDropChances;
-    }
-
-    public static AttributeSupplier.Builder getFoxieAttributes() {
-        return LivingEntity.createLivingAttributes()
-            .add(Attributes.MOVEMENT_SPEED, FoxieMovementSpeed.BASE_SPEED)
-            .add(Attributes.MAX_HEALTH, FoxieConstants.MAX_HEALTH)
-            .add(Attributes.FOLLOW_RANGE, FoxieConstants.FOLLOW_RANGE)
-            .add(Attributes.ATTACK_DAMAGE, FoxieConstants.ATTACK_DAMAGE)
-            .add(Attributes.ATTACK_KNOCKBACK);
     }
 }

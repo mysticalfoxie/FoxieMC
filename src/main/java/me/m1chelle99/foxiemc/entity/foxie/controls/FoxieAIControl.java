@@ -3,11 +3,15 @@ package me.m1chelle99.foxiemc.entity.foxie.controls;
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieActivities;
 import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieCommands;
-import me.m1chelle99.foxiemc.entity.foxie.goals.*;
+import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieClimbSnowGoal;
+import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieFloatGoal;
+import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieLookAtPlayerGoal;
+import me.m1chelle99.foxiemc.entity.foxie.goals.FoxieSeekShelterGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.fluids.FoxieAvoidCustomFluidsGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.fluids.FoxieAvoidLavaGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.fluids.FoxieAvoidWaterGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.hunt.FoxieAttackPreyGoal;
+import me.m1chelle99.foxiemc.entity.foxie.goals.hunt.FoxieCollectBerriesGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.hunt.FoxieSearchForFoodGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.panic.FoxieAttackedPanicGoal;
 import me.m1chelle99.foxiemc.entity.foxie.goals.panic.FoxieDefaultPanicGoal;
@@ -27,6 +31,31 @@ public final class FoxieAIControl {
 
     public FoxieAIControl(Foxie foxie) {
         this._foxie = foxie;
+    }
+
+    public static void register(Foxie foxie) {
+        foxie.goalSelector.addGoal(0, new FoxieFloatGoal(foxie));
+        foxie.goalSelector.addGoal(0, new FoxieClimbSnowGoal(foxie));
+        foxie.goalSelector.addGoal(0, new FoxieAvoidLavaGoal(foxie));
+
+        foxie.goalSelector.addGoal(1, new FoxieFirePanicGoal(foxie));
+        foxie.goalSelector.addGoal(1, new FoxieAttackedPanicGoal(foxie));
+        foxie.goalSelector.addGoal(1, new FoxieDefaultPanicGoal(foxie));
+
+        foxie.goalSelector.addGoal(2, new FoxieAvoidWaterGoal(foxie));
+        foxie.goalSelector.addGoal(2, new FoxieAvoidCustomFluidsGoal(foxie));
+
+        //foxie.goalSelector.addGoal(3, new FoxieAvoidPlayerGoal(foxie));
+        foxie.goalSelector.addGoal(3, new FoxieLookAtPlayerGoal(foxie));
+
+        foxie.goalSelector.addGoal(4, new FoxieSearchForFoodGoal(foxie));
+        foxie.goalSelector.addGoal(4, new FoxieAttackPreyGoal(foxie));
+        foxie.goalSelector.addGoal(4, new FoxieCollectBerriesGoal(foxie));
+
+        foxie.goalSelector.addGoal(5, new FoxieSeekShelterGoal(foxie));
+
+        foxie.goalSelector.addGoal(6, new WildSleepGoal(foxie));
+        foxie.goalSelector.addGoal(6, new TamedSleepGoal(foxie));
     }
 
     public boolean isPanic() {
@@ -211,29 +240,5 @@ public final class FoxieAIControl {
         if (activity == FoxieActivities.Sleep) return false;
         if (activity == FoxieActivities.Panic) return false;
         return activity != FoxieActivities.AvoidLava;
-    }
-
-    public static void register(Foxie foxie) {
-        foxie.goalSelector.addGoal(0, new FoxieFloatGoal(foxie));
-        foxie.goalSelector.addGoal(0, new FoxieClimbSnowGoal(foxie));
-        foxie.goalSelector.addGoal(0, new FoxieAvoidLavaGoal(foxie));
-
-        foxie.goalSelector.addGoal(1, new FoxieFirePanicGoal(foxie));
-        foxie.goalSelector.addGoal(1, new FoxieAttackedPanicGoal(foxie));
-        foxie.goalSelector.addGoal(1, new FoxieDefaultPanicGoal(foxie));
-
-        foxie.goalSelector.addGoal(2, new FoxieAvoidWaterGoal(foxie));
-        foxie.goalSelector.addGoal(2, new FoxieAvoidCustomFluidsGoal(foxie));
-
-        foxie.goalSelector.addGoal(3, new FoxieAvoidPlayerGoal(foxie));
-        foxie.goalSelector.addGoal(3, new FoxieLookAtPlayerGoal(foxie));
-
-        foxie.goalSelector.addGoal(4, new FoxieSearchForFoodGoal(foxie));
-        foxie.goalSelector.addGoal(4, new FoxieAttackPreyGoal(foxie));
-
-        foxie.goalSelector.addGoal(5, new FoxieSeekShelterGoal(foxie));
-
-        foxie.goalSelector.addGoal(6, new WildSleepGoal(foxie));
-        foxie.goalSelector.addGoal(6, new TamedSleepGoal(foxie));
     }
 }

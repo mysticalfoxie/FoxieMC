@@ -39,6 +39,8 @@ public class FoxieSearchForFoodGoal extends Goal {
     public boolean canUse() {
         if (!this._foxie.aiControl.canSearchForFood()) return false;
         if (!this._foxie.hungerControl.isHungry()) return false;
+        var heldItem = this._foxie.mouthControl.getItem();
+        if (this._foxie.hungerControl.isEdible(heldItem)) return false;
         if (!this._foxie.getNavigation().isDone()) return false;
         return !this._foxie.huntControl.foundFood();
     }
