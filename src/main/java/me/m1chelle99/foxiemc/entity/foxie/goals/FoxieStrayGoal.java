@@ -30,7 +30,7 @@ public class FoxieStrayGoal extends Goal {
 
     @Override
     public void stop() {
-        this._foxie.aiControl.startActivity(FoxieActivities.None);
+        this._foxie.getNavigation().stop();
     }
 
     @Override

@@ -94,19 +94,19 @@ public final class FoxieOwnerControl {
         }
 
         if (!this._foxie.aiControl.canBeCommanded())
-            return InteractionResult.SUCCESS;
+            return InteractionResult.PASS;
 
         if (!this._foxie.aiControl.isCommanded())
             this._foxie.aiControl.setCommand(FoxieCommands.Sit);
         else
             this._foxie.aiControl.setCommand(FoxieCommands.None);
 
-        return InteractionResult.PASS;
+        return InteractionResult.SUCCESS;
     }
 
     public InteractionResult interact(Player player) {
-        if (this._cooldown > 0) return InteractionResult.SUCCESS;
-        this._cooldown = 1;
+        if (this._cooldown > 0) return InteractionResult.PASS;
+        this._cooldown = 10;
 
         if (this.isTame() && this.isOwner(player.getUUID()))
             return this.ownerInteract(player);

@@ -55,6 +55,10 @@ public class FoxieSearchForFoodGoal extends Goal {
     public void start() {
         this._foxie.aiControl.startActivity(FoxieActivities.SearchForFood);
     }
+    
+    public void stop() {
+        this._foxie.getNavigation().stop();
+    }
 
     @Override
     public void tick() {

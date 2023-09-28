@@ -40,6 +40,7 @@ public class FoxieCollectBerriesGoal extends Goal {
 
     public void stop() {
         this._foxie.huntControl.berries = null;
+        this._foxie.getNavigation().stop();
     }
 
     public void tick() {

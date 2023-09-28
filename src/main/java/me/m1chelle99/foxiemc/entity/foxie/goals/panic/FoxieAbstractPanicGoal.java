@@ -39,6 +39,8 @@ public abstract class FoxieAbstractPanicGoal extends Goal {
         this._cooldown = 0;
         if (this._foxie.aiControl.hasActivity(FoxieActivities.Panic))
             this._foxie.aiControl.startActivity(FoxieActivities.None);
+        
+        this._foxie.getNavigation().stop();
     }
 
     public boolean requiresUpdateEveryTick() {

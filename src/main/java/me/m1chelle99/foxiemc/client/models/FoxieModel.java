@@ -1196,7 +1196,6 @@ public final class FoxieModel extends EntityModel<Foxie> {
             this.setRotateAngle(
                 this.rHindLeg02, 0.8996066167365371F, 0.0F, 0.0F);
             this.setRotateAngleDeg(this.rHindpaw, 90, 0, 0);
-            this.head.xRot -= Math.toRadians(20);
         }
 
 

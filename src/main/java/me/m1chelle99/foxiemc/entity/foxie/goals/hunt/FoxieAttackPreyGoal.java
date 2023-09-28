@@ -4,7 +4,6 @@ import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieActivities;
 import me.m1chelle99.foxiemc.entity.foxie.constants.FoxieMovementSpeed;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.pathfinder.Path;
@@ -56,10 +55,7 @@ public class FoxieAttackPreyGoal extends Goal {
     }
 
     public void stop() {
-        var prey = this._foxie.huntControl.prey;
-        if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(prey))
-            this._foxie.huntControl.prey = null;
-
+        this._foxie.huntControl.prey = null;
         this._foxie.setAggressive(false);
         this._foxie.getNavigation().stop();
     }

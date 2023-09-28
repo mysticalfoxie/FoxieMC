@@ -80,6 +80,8 @@ public final class FoxieAIControl {
     }
 
     public boolean isCommanded() {
+        if (!this._foxie.aiControl.hasActivity(FoxieActivities.Obey))
+            return false;
         return !this.hasCommand(FoxieCommands.None);
     }
 
@@ -172,8 +174,9 @@ public final class FoxieAIControl {
     }
 
     public boolean canBeCommanded() {
-        if (this._foxie.isInWater()) return false;
         var activity = this._foxie.dataControl.getActivity();
+        if (activity == FoxieActivities.AvoidFluid) return false;
+        if (activity == FoxieActivities.SeekRainShelter) return false;
         return activity != FoxieActivities.Panic;
     }
 

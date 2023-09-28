@@ -45,6 +45,10 @@ public class FoxieAvoidPlayerGoal extends Goal {
         var mod = FoxieMovementSpeed.AVOID_PLAYER;
         this._foxie.runTo(position, mod);
     }
+    
+    public void stop() {
+        this._foxie.getNavigation().stop();
+    }
 
     @Override
     public void tick() {

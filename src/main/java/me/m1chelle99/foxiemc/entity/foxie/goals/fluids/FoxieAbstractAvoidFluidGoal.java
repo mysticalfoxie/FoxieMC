@@ -44,7 +44,10 @@ public abstract class FoxieAbstractAvoidFluidGoal extends Goal {
 
     @Override
     public void stop() {
-        this._foxie.aiControl.startActivity(FoxieActivities.None);
+        if (this._foxie.aiControl.hasActivity(FoxieActivities.AvoidFluid) ||
+            this._foxie.aiControl.hasActivity(FoxieActivities.AvoidLava))
+            this._foxie.aiControl.startActivity(FoxieActivities.None);
+        this._foxie.getNavigation().stop();
     }
 
     @Override

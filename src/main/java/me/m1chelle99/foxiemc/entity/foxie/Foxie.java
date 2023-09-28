@@ -16,6 +16,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -39,7 +40,7 @@ public class Foxie extends TamableAnimal {
     public Foxie(EntityType<? extends TamableAnimal> type, Level level) {
         super(type, level);
 
-        this.moveControl = new FoxieMoveControl(this);
+        this.moveControl = new MoveControl(this);
         this.lookControl = new FoxieLookControl(this);
         this.dataControl = new FoxieDataControl(this);
         this.aiControl = new FoxieAIControl(this);
@@ -207,6 +208,9 @@ public class Foxie extends TamableAnimal {
         if (this.level.isClientSide)
             return InteractionResult.PASS;
 
+        if (hand.name().equals("OFF_HAND"))
+            return InteractionResult.PASS;
+        
         if (this.ownerControl.canInteract(player))
             return this.ownerControl.interact(player);
 
