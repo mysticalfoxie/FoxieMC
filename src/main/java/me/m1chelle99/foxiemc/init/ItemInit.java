@@ -10,17 +10,14 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Supplier;
+
 public final class ItemInit {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister
         .create(ForgeRegistries.ITEMS, FoxieMCMod.ID);
-
-    public static Item.Properties props() {
-        return new Item.Properties().tab(CREATIVE_MODE_TAB);
-    }
-
+    
     public static final RegistryObject<ForgeSpawnEggItem> FOXIE_SPAWN_EGG =
-        ITEMS.register("foxie_spawn_egg", () -> new ForgeSpawnEggItem(
-            EntityInit.FOXIE, 0x0, 0xffffff, props().stacksTo(16)));
+        ITEMS.register("foxie_spawn_egg", createSpawnEggItem());
 
     public static final CreativeModeTab CREATIVE_MODE_TAB =
         new CreativeModeTab(FoxieMCMod.ID) {
@@ -30,5 +27,13 @@ public final class ItemInit {
             }
         };
 
+    @NotNull
+    private static Supplier<ForgeSpawnEggItem> createSpawnEggItem() {
+        return () -> new ForgeSpawnEggItem(
+            EntityInit.FOXIE, 0x777777, 0xffffff, props().stacksTo(16));
+    }
 
+    public static Item.Properties props() {
+        return new Item.Properties().tab(CREATIVE_MODE_TAB);
+    }
 }

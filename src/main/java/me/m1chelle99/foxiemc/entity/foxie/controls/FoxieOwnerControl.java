@@ -14,13 +14,12 @@ import java.util.UUID;
 
 public final class FoxieOwnerControl {
     private final Foxie _foxie;
+    private int _cooldown;
 
     public FoxieOwnerControl(Foxie foxie) {
         this._foxie = foxie;
         this._foxie.setTame(false);
     }
-
-    private int _cooldown;
 
     public boolean isTame() {
         return this._foxie.isTame();
@@ -142,7 +141,7 @@ public final class FoxieOwnerControl {
             return false;
 
         var max_range = FoxieConstants.STALK_PLAYER_DISTANCE;
-        return !(this._foxie.distanceTo(player) > max_range);
+        return this._foxie.distanceTo(player) < max_range;
     }
 
     public void onItemPickup(ItemEntity entity) {

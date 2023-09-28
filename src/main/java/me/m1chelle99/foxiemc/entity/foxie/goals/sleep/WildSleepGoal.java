@@ -9,12 +9,11 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 
 public class WildSleepGoal extends AbstractSleepGoal {
+    private BlockPos _target;
+    private int _cooldown;
     public WildSleepGoal(Foxie foxie) {
         super(foxie);
     }
-
-    private BlockPos _target;
-    private int _cooldown;
 
     @Override
     public boolean canUse() {
@@ -86,7 +85,7 @@ public class WildSleepGoal extends AbstractSleepGoal {
         }
 
         if (this._cooldown > 0) {
-            // To make it perfect look around here a bit.
+            // TODO: To make it perfect look around here a bit.
             this._cooldown--;
             return;
         }

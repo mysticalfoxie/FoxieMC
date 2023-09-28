@@ -10,6 +10,8 @@ import net.minecraft.world.entity.player.Player;
 public class FoxieLookAtPlayerGoal extends Goal {
     private final Foxie _foxie;
     private final TargetingConditions _context;
+    private int duration;
+    private Player player;
 
     public FoxieLookAtPlayerGoal(Foxie foxie) {
         this._foxie = foxie;
@@ -19,9 +21,6 @@ public class FoxieLookAtPlayerGoal extends Goal {
             .selector(this::canLookAtPlayer);
     }
 
-    private int cooldown;
-    private int duration;
-    private Player player;
 
     public boolean canUse() {
         if (!this._foxie.aiControl.canLookAtPlayer())

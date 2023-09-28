@@ -13,13 +13,12 @@ import org.jetbrains.annotations.NotNull;
 
 public final class FoxieMouthControl {
     private final Foxie _foxie;
+    private ItemEntity _spitItem;
 
     public FoxieMouthControl(Foxie foxie) {
 
         this._foxie = foxie;
     }
-
-    private ItemEntity _spitItem;
 
     // todo: doesn't spit out item except for hunger c;
     private void spitOutItem(ItemStack stack) {

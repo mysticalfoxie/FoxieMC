@@ -10,15 +10,14 @@ import java.util.EnumSet;
 
 public abstract class FoxieAbstractPanicGoal extends Goal {
     protected final Foxie _foxie;
+    protected Vec3 _target;
+    protected int _cooldown;
 
     public FoxieAbstractPanicGoal(Foxie foxie) {
         this._foxie = foxie;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE));
     }
-
-    protected Vec3 _target;
-    protected int _cooldown;
-
+    
     public boolean canUse() {
         if (this._foxie.isDeadOrDying()) return false;
         return this._foxie.aiControl.isPanic();

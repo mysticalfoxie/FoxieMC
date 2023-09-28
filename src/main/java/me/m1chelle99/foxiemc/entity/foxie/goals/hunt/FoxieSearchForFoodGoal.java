@@ -73,9 +73,7 @@ public class FoxieSearchForFoodGoal extends Goal {
         if (this._foxie.huntControl.berries != null)
             return;
 
-//        this._foxie.huntControl.foodItem = this.findFoodItems(boundary);
-//        if (this._foxie.huntControl.foodItem != null)
-//            return;
+        // TODO: Search for edible items 
 
         var random = Pathfinder.getRandomPositionWithin(this._foxie, 20, 5, 3);
         if (random == null)

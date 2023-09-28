@@ -12,6 +12,7 @@ import net.minecraft.world.level.material.FluidState;
 public abstract class FoxieAbstractAvoidFluidGoal extends Goal {
     protected final Foxie _foxie;
     protected final FoxieActivities _activity;
+    protected FluidState _fluid;
 
     public FoxieAbstractAvoidFluidGoal(
         Foxie foxie,
@@ -20,8 +21,6 @@ public abstract class FoxieAbstractAvoidFluidGoal extends Goal {
         this._foxie = foxie;
         this._activity = activity;
     }
-
-    protected FluidState _fluid;
 
     @Override
     public boolean canUse() {

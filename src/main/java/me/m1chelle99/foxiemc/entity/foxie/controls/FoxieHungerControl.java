@@ -10,13 +10,13 @@ import net.minecraft.world.item.Items;
 public final class FoxieHungerControl {
     private final Foxie _foxie;
 
+    private int _eatDelay = 80;
+    private int _ticksSinceLastEaten = 0;
+
     public FoxieHungerControl(Foxie foxie) {
 
         this._foxie = foxie;
     }
-
-    private int _eatDelay = 80;
-    private int _ticksSinceLastEaten = 0;
 
     public boolean isYummy(ItemStack stack) {
         // Todo: Implement more c: foxie likes a lot of food

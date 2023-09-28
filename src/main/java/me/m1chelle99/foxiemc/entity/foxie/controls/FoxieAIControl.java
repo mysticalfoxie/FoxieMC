@@ -55,6 +55,17 @@ public final class FoxieAIControl {
         foxie.goalSelector.addGoal(6, new TamedSleepGoal(foxie));
 
         foxie.goalSelector.addGoal(7, new FoxieStrayGoal(foxie));
+
+        // TODO: Custom breeding... I'm not breedable like a casual animal... 
+        //  grrr! put that berries away! *grrr*
+
+        // TODO: Foxie sits in "foxiemc:basket" goal
+        // TODO: Foxie sits on bed goal
+        // TODO: Foxie sits on block goal
+
+        // TODO: Stalk & Pounce as hunting strategy 
+        // TODO: Foxie cant sleep at thunder
+        // TODO: Following the parents
     }
 
     public boolean isPanic() {

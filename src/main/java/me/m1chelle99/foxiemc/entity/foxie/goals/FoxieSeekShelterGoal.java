@@ -11,13 +11,12 @@ import java.util.EnumSet;
 
 public class FoxieSeekShelterGoal extends Goal {
     private final Foxie _foxie;
+    private BlockPos _target;
 
     public FoxieSeekShelterGoal(Foxie foxie) {
         this._foxie = foxie;
         this.setFlags(EnumSet.of(Flag.MOVE));
     }
-
-    private BlockPos _target;
 
     @Override
     public boolean canUse() {
