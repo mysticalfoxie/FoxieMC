@@ -37,7 +37,7 @@ public class FoxieStrayGoal extends Goal {
     public void tick() {
         if (this._foxie.getNavigation().isInProgress())
             return;
-        if (this._foxie.getRandom().nextFloat() > .04F)
+        if (this._foxie.getRandom().nextFloat() > .035F)
             return;
 
         var random = Pathfinder.getRandomPositionWithin(this._foxie, 12, 5, 3);

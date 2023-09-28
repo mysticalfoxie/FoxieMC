@@ -12,15 +12,14 @@ public class FoxieAvoidPlayerGoal extends Goal {
 
     private final Foxie _foxie;
     private final TargetingConditions _context = TargetingConditions
-        .forNonCombat()
-        .range(15)
-        .selector(this::isThreatening);
+            .forNonCombat()
+            .range(15)
+            .selector(this::isThreatening);
+    private Player player;
 
     public FoxieAvoidPlayerGoal(Foxie foxie) {
         this._foxie = foxie;
     }
-
-    private Player player;
 
     @Override
     public boolean canUse() {
@@ -49,29 +48,28 @@ public class FoxieAvoidPlayerGoal extends Goal {
 
     @Override
     public void tick() {
+        double mod = FoxieMovementSpeed.AVOID_PLAYER;
         if (this._foxie.distanceToSqr(this.player) < 15) {
-            var mod = FoxieMovementSpeed.AVOID_PLAYER;
-            this._foxie.getNavigation().setSpeedModifier(mod);
+            this._foxie.getNavigation().setSpeedModifier(mod * 1.5);
             return;
         }
 
         if (this._foxie.distanceToSqr(this.player) < 2) {
-            var mod = FoxieMovementSpeed.AVOID_PLAYER;
             this._foxie.getNavigation().setSpeedModifier(mod * 2);
             return;
         }
 
-        this._foxie.getNavigation().setSpeedModifier(1.0F);
+        this._foxie.getNavigation().setSpeedModifier(mod);
     }
 
     private void findScaryPlayer() {
         var level = this._foxie.level;
         this.player = level.getNearestPlayer(
-            this._context,
-            this._foxie,
-            this._foxie.getX(),
-            this._foxie.getY(),
-            this._foxie.getZ()
+                this._context,
+                this._foxie,
+                this._foxie.getX(),
+                this._foxie.getY(),
+                this._foxie.getZ()
         );
     }
 
@@ -79,7 +77,7 @@ public class FoxieAvoidPlayerGoal extends Goal {
         if (!(entity instanceof Player)) return false;
 
         if (this._foxie.ownerControl.isTame() &&
-            this._foxie.isOwnedBy(entity))
+                this._foxie.isOwnedBy(entity))
             return false;
 
         if (!entity.isCrouching())

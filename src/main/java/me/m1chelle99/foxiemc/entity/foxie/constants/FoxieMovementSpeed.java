@@ -7,7 +7,7 @@ public final class FoxieMovementSpeed {
     // Modifiers
     public static final Double ATTACK = 1.2D;
     public static final Double SEEK_RAIN_SHELTER = 1.3D;
-    public static final Double AVOID_PLAYER = 1.15D;
+    public static final Double AVOID_PLAYER = 1.25D;
     public static final Double SEEK_SLEEP_SHELTER = .85D;
     public static final Double AVOID_FLUID = 1.8D;
     public static final Double PANIC = 1.5D;
