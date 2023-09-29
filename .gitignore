@@ -14,7 +14,7 @@ eclipse
 run
 
 # publish
-mcmodsrepo
+publish
 
 # Files from Forge MDK
 forge*changelog.txt

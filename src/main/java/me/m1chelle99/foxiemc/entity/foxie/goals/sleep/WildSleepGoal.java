@@ -25,6 +25,7 @@ public class WildSleepGoal extends AbstractSleepGoal {
     @Override
     public boolean canContinueToUse() {
         if (!super.canContinueToUse()) return false;
+        if (this.areThreadsNearby()) return false;
         return this.canSleepAtTimeOfDay();
     }
 
@@ -42,11 +43,8 @@ public class WildSleepGoal extends AbstractSleepGoal {
         if (!this._foxie.getNavigation().isDone())
             this._foxie.getNavigation().stop();
 
-        if (this._foxie.aiControl.hasActivity(FoxieActivities.Sleep))
-            this._foxie.aiControl.startActivity(FoxieActivities.None);
-
-        var stillOnSearch = FoxieActivities.SeekSleepShelter;
-        if (this._foxie.aiControl.hasActivity(stillOnSearch))
+        if (this._foxie.aiControl.hasActivity(FoxieActivities.Sleep) ||
+            this._foxie.aiControl.hasActivity(FoxieActivities.SeekSleepShelter))
             this._foxie.aiControl.startActivity(FoxieActivities.None);
     }
 
@@ -62,9 +60,9 @@ public class WildSleepGoal extends AbstractSleepGoal {
         var boundary = this._foxie.getBoundingBox().inflate(10, 6, 10);
         var level = this._foxie.level;
         var threads = level.getEntities(this._foxie, boundary, entity -> {
-            if (entity.isSprinting()) return true;
             if (entity instanceof Monster) return true;
             if (!(entity instanceof Player player)) return false;
+            if (player.isSpectator()) return false;
             return !player.isCrouching();
         });
 
@@ -98,6 +96,14 @@ public class WildSleepGoal extends AbstractSleepGoal {
             return;
         }
 
+        if (this._foxie.isSleeping()) {
+            this._foxie.stopSleeping();
+
+            var activity = FoxieActivities.SeekSleepShelter;
+            if (!this._foxie.aiControl.hasActivity(activity))
+                this._foxie.aiControl.startActivity(activity);
+        }
+
         this.setNewTargetPosition();
         this._cooldown = this._foxie.getRandom().nextInt(20, 100);
         if (this._target != null) {
@@ -110,7 +116,7 @@ public class WildSleepGoal extends AbstractSleepGoal {
         if (this._foxie.level.canSeeSky(pos)) return false;
         var engine = this._foxie.level.getLightEngine();
         var light = engine.getRawBrightness(pos, 0);
-        if (light > 12) return false;
+        if (light > 13) return false;
         if (light <= 8) return false;
         return !this.areThreadsNearby();
     }
@@ -120,14 +126,15 @@ public class WildSleepGoal extends AbstractSleepGoal {
             this._foxie, 15, 3,
             this::isDesiredPosition);
 
-        if (_target != null)
+        if (this._target != null)
             return;
 
-        var target = Pathfinder
+        this._target = Pathfinder
             .getPathInLookDirection(this._foxie, 20, 4, 10);
-        if (target == null)
+        if (this._target == null)
             return;
 
-        this._target = new BlockPos(target);
+        this._target = Pathfinder
+            .getRandomPositionWithin(this._foxie, 15, 4, 6);
     }
 }

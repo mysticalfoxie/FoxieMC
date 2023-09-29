@@ -13,7 +13,7 @@ plugins {
 
 apply plugin: 'net.minecraftforge.gradle'
 
-version = '0.1.0'
+version = '0.1.1'
 group = 'me.m1chelle99.foxiemc'
 archivesBaseName = 'foxiemc'
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -77,7 +77,7 @@ jar.finalizedBy('reobfJar')
 
 publishing {
     publications { mavenJava(MavenPublication) { artifact jar } }
-    repositories { maven { url "file://${project.projectDir}/mcmodsrepo" } }
+    repositories { maven { url "file://${project.projectDir}/publish" } }
 }
 
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
