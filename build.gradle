@@ -13,7 +13,7 @@ plugins {
 
 apply plugin: 'net.minecraftforge.gradle'
 
-version = '1.0'
+version = '0.1.0'
 group = 'me.m1chelle99.foxiemc'
 archivesBaseName = 'foxiemc'
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
