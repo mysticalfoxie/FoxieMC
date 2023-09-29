@@ -66,16 +66,18 @@ public final class FoxieHeldItemLayer extends RenderLayer<Foxie, FoxieModel> {
         if (foxie.aiControl.isSleeping())
             pose.mulPose(Vector3f.ZP.rotationDegrees(90F));
 
-        var renderer = Minecraft.getInstance().getItemInHandRenderer();
+        var minecraft = Minecraft.getInstance();
+        var dispatcher = minecraft.getEntityRenderDispatcher();
+        var renderer = dispatcher.getItemInHandRenderer();
         var item = foxie.mouthControl.getItem();
         renderer.renderItem(
-                foxie,
-                item,
-                ItemTransforms.TransformType.GROUND,
-                false,
-                pose,
-                bufferIn,
-                packedLightIn
+            foxie,
+            item,
+            ItemTransforms.TransformType.GROUND,
+            false,
+            pose,
+            bufferIn,
+            packedLightIn
         );
 
         pose.popPose();

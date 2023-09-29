@@ -2,6 +2,7 @@ package me.m1chelle99.foxiemc.entity.foxie.goals;
 
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import me.m1chelle99.foxiemc.entity.foxie.FoxieConstants;
+import me.m1chelle99.foxiemc.helper.RandomHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -92,12 +93,11 @@ public final class FoxieFollowOwnerGoal extends Goal {
     
     private void teleport() {
         var blockpos = this.owner.blockPosition();
-        var random = this._foxie.getRandom();
         
         for (int i = 0; i < 10; ++i) {
-            var xMod = random.nextFloat(-5, 5);
-            var yMod = random.nextFloat(-2, 2);
-            var zMod = random.nextFloat(-5, 5);
+            var xMod = RandomHelper.nextFloat(-5, 5);
+            var yMod = RandomHelper.nextFloat(-2, 2);
+            var zMod = RandomHelper.nextFloat(-5, 5);
             
             var succeeded = this.tryTeleport(
                 (int)(blockpos.getX() + xMod),
