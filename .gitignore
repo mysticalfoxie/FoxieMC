@@ -13,6 +13,9 @@ build
 eclipse
 run
 
+# publish
+mcmodsrepo
+
 # Files from Forge MDK
 forge*changelog.txt
 
