@@ -28,4 +28,6 @@ public final class FoxieConstants {
     // Behavior towards players
     public static final int STALK_PLAYER_DISTANCE = 25;
     public static final int AVOID_PLAYER_DISTANCE = 13;
+    public static final int MAX_DIST_TO_OWNER = 8; 
+    public static final int PREFERRED_DIST_TO_OWNER = 3;
 }

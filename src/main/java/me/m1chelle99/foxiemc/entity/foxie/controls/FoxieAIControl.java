@@ -42,6 +42,7 @@ public final class FoxieAIControl {
         foxie.goalSelector.addGoal(2, new FoxieAvoidWaterGoal(foxie));
         foxie.goalSelector.addGoal(2, new FoxieAvoidCustomFluidsGoal(foxie));
 
+        foxie.goalSelector.addGoal(3, new FoxieFollowOwnerGoal(foxie));
         foxie.goalSelector.addGoal(3, new FoxieAvoidPlayerGoal(foxie));
         foxie.goalSelector.addGoal(3, new FoxieLookAtPlayerGoal(foxie));
 
@@ -267,5 +268,15 @@ public final class FoxieAIControl {
         if (activity == FoxieActivities.Attack) return false;
         if (activity == FoxieActivities.SeekRainShelter) return false;
         return activity != FoxieActivities.SearchForFood;
+    }
+
+    public boolean canFollowPlayer() {
+        var activity = this._foxie.dataControl.getActivity();
+        if (activity == FoxieActivities.Panic) return false;
+        if (activity == FoxieActivities.Obey) return false;
+        if (activity == FoxieActivities.Sleep) return false;
+        if (activity == FoxieActivities.AvoidLava) return false;
+        if (activity == FoxieActivities.Attack) return false;
+        return activity != FoxieActivities.SeekRainShelter;
     }
 }

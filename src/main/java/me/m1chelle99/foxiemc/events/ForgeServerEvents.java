@@ -46,14 +46,30 @@ public final class ForgeServerEvents {
 
     @SubscribeEvent
     public static void onBiomeLoading(BiomeLoadingEvent event) {
-        var spawners = event.getSpawns().getSpawner(MobCategory.CREATURE);
-        spawners.removeIf(x -> x.type == EntityType.FOX);
+        var spawns = event.getSpawns();
+        var spawner = spawns.getSpawner(MobCategory.CREATURE);
+        spawner.removeIf(x -> x.type == EntityType.FOX);
         
-        if (event.getCategory() != Biome.BiomeCategory.TAIGA)
+        if (event.getCategory() != Biome.BiomeCategory.TAIGA &&
+            event.getCategory() != Biome.BiomeCategory.FOREST &&
+            event.getCategory() != Biome.BiomeCategory.PLAINS)
             return;
         
         var foxie = EntityInit.FOXIE.get();
-        var foxieSpawnInfo = new MobSpawnSettings.SpawnerData(foxie, 10, 2, 4);
-        spawners.add(foxieSpawnInfo);
+        
+        if (event.getCategory() == Biome.BiomeCategory.FOREST) {
+            var data = new MobSpawnSettings.SpawnerData(foxie, 12, 1, 2);
+            spawns.addSpawn(MobCategory.CREATURE, data);
+        }
+
+        if (event.getCategory() == Biome.BiomeCategory.TAIGA) {
+            var data = new MobSpawnSettings.SpawnerData(foxie, 7, 1, 2);
+            spawns.addSpawn(MobCategory.CREATURE, data);
+        }
+
+        if (event.getCategory() == Biome.BiomeCategory.PLAINS) {
+            var data = new MobSpawnSettings.SpawnerData(foxie, 3, 1, 1);
+            spawns.addSpawn(MobCategory.CREATURE, data);
+        }
     }
 }
