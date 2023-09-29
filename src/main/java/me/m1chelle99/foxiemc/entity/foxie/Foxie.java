@@ -49,10 +49,10 @@ public class Foxie extends TamableAnimal {
         this.ownerControl = new FoxieOwnerControl(this);
         this.huntControl = new FoxieHuntControl();
 
-        this.setPathfindingMalus(BlockPathTypes.DANGER_OTHER, 0.0F);
-        this.setPathfindingMalus(BlockPathTypes.DAMAGE_OTHER, 0.0F);
+        this.setPathfindingMalus(BlockPathTypes.DANGER_OTHER, 16.0F);
+        this.setPathfindingMalus(BlockPathTypes.DAMAGE_OTHER, 16.0F);
         this.setPathfindingMalus(BlockPathTypes.LEAVES, 0.0F);
-        this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
+        this.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
 
         this.setCanPickUpLoot(true);
     }
