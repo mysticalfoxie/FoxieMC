@@ -70,7 +70,7 @@ public class FoxieAvoidPlayerGoal extends Goal {
     }
 
     private void findScaryPlayer() {
-        var level = this._foxie.level;
+        var level = this._foxie.level();
         this.player = level.getNearestPlayer(
                 this._context,
                 this._foxie,

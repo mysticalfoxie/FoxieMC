@@ -18,6 +18,8 @@ public class FoxieFloatGoal extends Goal {
     @Override
     public boolean canUse() {
         if (!this._foxie.isInFluid()) return false;
+
+        @SuppressWarnings("deprecation")
         var fluid_height = this._foxie.getFluidHeight(FluidTags.WATER);
         return fluid_height > 0.25;
     }

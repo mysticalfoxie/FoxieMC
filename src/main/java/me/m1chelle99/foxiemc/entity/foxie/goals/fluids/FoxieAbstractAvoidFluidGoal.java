@@ -68,7 +68,7 @@ public abstract class FoxieAbstractAvoidFluidGoal extends Goal {
 
     private FluidState getFluid() {
         var position = this._foxie.blockPosition();
-        var level = this._foxie.level;
+        var level = this._foxie.level();
         var fluid = level.getFluidState(position);
         var fluidBelow = level.getFluidState(position.below());
         return this._fluid = fluid.isEmpty() ? fluidBelow : fluid;
@@ -76,7 +76,7 @@ public abstract class FoxieAbstractAvoidFluidGoal extends Goal {
 
     private BlockPos getTarget() {
         var target = Pathfinder.getClosestPathWhere(this._foxie, 7, 2, block ->
-            this._foxie.level
+            this._foxie.level()
                 .isFluidAtPosition(block, FluidState::isEmpty));
 
         if (target != null)
@@ -90,7 +90,7 @@ public abstract class FoxieAbstractAvoidFluidGoal extends Goal {
         var vector = DefaultRandomPos.getPos(this._foxie, 7, 2);
 
         if (vector != null)
-            target = new BlockPos(vector);
+            target = new BlockPos((int)vector.x, (int)vector.y, (int)vector.z);
 
         return target;
     }

@@ -139,7 +139,7 @@ public final class FoxieAIControl {
         if (activity == FoxieActivities.Sleep)
             return SoundEvents.FOX_SLEEP;
 
-        if (this._foxie.level.isDay())
+        if (this._foxie.level().isDay())
             return SoundEvents.FOX_AMBIENT;
 
         if (this._foxie.getRandom().nextFloat() >= 0.1F)

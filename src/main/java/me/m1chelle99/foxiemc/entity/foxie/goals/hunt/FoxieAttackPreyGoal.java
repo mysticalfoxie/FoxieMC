@@ -86,7 +86,7 @@ public class FoxieAttackPreyGoal extends Goal {
     }
 
     private boolean canCalculatePath() {
-        var time = this._foxie.level.getGameTime();
+        var time = this._foxie.level().getGameTime();
         if (time - this.lastCheck < 20L)
             return false;
 

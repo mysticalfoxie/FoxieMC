@@ -48,7 +48,7 @@ public abstract class FoxieAbstractPanicGoal extends Goal {
     }
 
     public void tick() {
-        if (this._foxie.level.isClientSide) return;
+        if (this._foxie.level().isClientSide) return;
         if (this._cooldown <= 0) return;
         this._cooldown--;
 

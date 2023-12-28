@@ -67,7 +67,7 @@ public class Foxie extends TamableAnimal {
     }
 
     public void runTo(@NotNull Vec3 position, double speed_modifier) {
-        var blockpos = new BlockPos(position.x, position.y, position.z);
+        var blockpos = new BlockPos((int)position.x, (int)position.y, (int)position.z);
         this.runTo(blockpos, speed_modifier);
     }
 
@@ -79,7 +79,8 @@ public class Foxie extends TamableAnimal {
 
     public boolean isInFluid() {
         var position = this.blockPosition();
-        var fluid = this.level.getFluidState(position);
+        var level = this.level();
+        var fluid = level.getFluidState(position);
         var fluidBelow = level.getFluidState(position.below());
         return !fluid.isEmpty() || !fluidBelow.isEmpty();
     }
@@ -205,7 +206,7 @@ public class Foxie extends TamableAnimal {
     public @NotNull InteractionResult mobInteract(
         @NotNull Player player,
         @NotNull InteractionHand hand) {
-        if (this.level.isClientSide)
+        if (this.level().isClientSide)
             return InteractionResult.PASS;
 
         if (hand.name().equals("OFF_HAND"))

@@ -49,7 +49,7 @@ public class WildSleepGoal extends AbstractSleepGoal {
     }
 
     private boolean canSleepAtTimeOfDay() {
-        var time = this._foxie.level.getDayTime();
+        var time = this._foxie.level().getDayTime();
         if (time > 22_000) return false;
         if (time > 15_000) return true;
         if (time > 8_000) return false;
@@ -58,7 +58,7 @@ public class WildSleepGoal extends AbstractSleepGoal {
 
     private boolean areThreadsNearby() {
         var boundary = this._foxie.getBoundingBox().inflate(10, 6, 10);
-        var level = this._foxie.level;
+        var level = this._foxie.level();
         var threads = level.getEntities(this._foxie, boundary, entity -> {
             if (entity instanceof Monster) return true;
             if (!(entity instanceof Player player)) return false;
@@ -113,8 +113,8 @@ public class WildSleepGoal extends AbstractSleepGoal {
     }
 
     private boolean isDesiredPosition(BlockPos pos) {
-        if (this._foxie.level.canSeeSky(pos)) return false;
-        var engine = this._foxie.level.getLightEngine();
+        if (this._foxie.level().canSeeSky(pos)) return false;
+        var engine = this._foxie.level().getLightEngine();
         var light = engine.getRawBrightness(pos, 0);
         if (light > 13) return false;
         if (light <= 8) return false;

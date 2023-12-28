@@ -54,7 +54,7 @@ public final class FoxieHungerControl {
         this._ticksSinceLastEaten = 0;
 
         this.startFoodEffects();
-        this._foxie.level
+        this._foxie.level()
             .broadcastEntityEvent(this._foxie, EntityEvent.FOX_EAT);
         this._foxie.heal(nutrition);
     }
@@ -106,7 +106,7 @@ public final class FoxieHungerControl {
     }
 
     public void tick() {
-        if (this._foxie.level.isClientSide) return;
+        if (this._foxie.level().isClientSide) return;
         if (!this._foxie.isAlive()) return;
         if (!this._foxie.isEffectiveAi()) return;
 

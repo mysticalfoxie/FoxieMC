@@ -23,7 +23,7 @@ public class FoxieSeekShelterGoal extends Goal {
         if (!this._foxie.aiControl.canSeekShelter()) return false;
         if (!this.isRainingOrThundering()) return false;
         var position = this._foxie.blockPosition();
-        return this._foxie.level.canSeeSky(position);
+        return this._foxie.level().canSeeSky(position);
     }
 
     @Override
@@ -61,8 +61,8 @@ public class FoxieSeekShelterGoal extends Goal {
     }
 
     private boolean isRainingOrThundering() {
-        return this._foxie.level.isRaining()
-            || this._foxie.level.isThundering();
+        return this._foxie.level().isRaining()
+            || this._foxie.level().isThundering();
     }
 
     public void setNewTargetPosition() {
@@ -70,7 +70,7 @@ public class FoxieSeekShelterGoal extends Goal {
 
         this._target = Pathfinder
             .getClosestPathWhere(this._foxie, range, 5, b ->
-                !this._foxie.level.canSeeSky(b));
+                !this._foxie.level().canSeeSky(b));
 
         if (_target != null)
             return;

@@ -116,7 +116,7 @@ public final class FoxieFollowOwnerGoal extends Goal {
             return false;
 
         var position = new BlockPos(x, y, z);
-        var level = this._foxie.level;
+        var level = this._foxie.level();
         var foxie = this._foxie;
         var types = WalkNodeEvaluator.getBlockPathTypeStatic(
             level, position.mutable());

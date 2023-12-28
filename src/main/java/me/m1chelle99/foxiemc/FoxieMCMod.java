@@ -2,6 +2,7 @@ package me.m1chelle99.foxiemc;
 
 import com.mojang.logging.LogUtils;
 import me.m1chelle99.foxiemc.events.ForgeServerEvents;
+import me.m1chelle99.foxiemc.init.BiomeInit;
 import me.m1chelle99.foxiemc.init.EntityInit;
 import me.m1chelle99.foxiemc.init.ItemInit;
 import net.minecraftforge.common.MinecraftForge;
@@ -17,8 +18,10 @@ public final class FoxieMCMod {
     public FoxieMCMod() {
         var bus = FMLJavaModLoadingContext.get().getModEventBus();
 
+        BiomeInit.SERIALIZERS.register(bus);
         EntityInit.ENTITIES.register(bus);
         ItemInit.ITEMS.register(bus);
+        ItemInit.TABS.register(bus);
 
         MinecraftForge.EVENT_BUS.register(ForgeServerEvents.class);
     }

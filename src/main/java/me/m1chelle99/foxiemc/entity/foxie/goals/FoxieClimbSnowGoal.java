@@ -8,7 +8,7 @@ public class FoxieClimbSnowGoal extends ClimbOnTopOfPowderSnowGoal {
     private final Foxie _foxie;
 
     public FoxieClimbSnowGoal(Foxie foxie) {
-        super(foxie, foxie.level);
+        super(foxie, foxie.level());
         this._foxie = foxie;
     }
 

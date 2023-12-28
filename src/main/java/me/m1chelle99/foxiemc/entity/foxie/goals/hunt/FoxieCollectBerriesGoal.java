@@ -67,14 +67,14 @@ public class FoxieCollectBerriesGoal extends Goal {
     }
 
     private void pickBerries(BlockPos berries) {
-        var state = this._foxie.level.getBlockState(berries);
+        var state = this._foxie.level().getBlockState(berries);
         state.setValue(SweetBerryBushBlock.AGE, 1);
         var item = new ItemStack(Items.SWEET_BERRIES, 1);
         this._foxie.mouthControl.takeItem(item);
 
         var sound = SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES;
         this._foxie.playSound(sound, 1.0F, 1.0F);
-        this._foxie.level.setBlock(berries, state, 2);
+        this._foxie.level().setBlock(berries, state, 2);
 
         this._foxie.huntControl.berries = null;
         this._foxie.aiControl.startActivity(FoxieActivities.None);
@@ -82,7 +82,7 @@ public class FoxieCollectBerriesGoal extends Goal {
 
     private boolean isBerryBushEatable() {
         var pos = this._foxie.huntControl.berries;
-        var state = this._foxie.level.getBlockState(pos);
+        var state = this._foxie.level().getBlockState(pos);
         if (!state.is(Blocks.SWEET_BERRY_BUSH)) return false;
         return state.getValue(SweetBerryBushBlock.AGE) >= 2;
     }

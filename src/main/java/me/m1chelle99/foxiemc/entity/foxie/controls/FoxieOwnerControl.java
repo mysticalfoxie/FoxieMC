@@ -42,7 +42,7 @@ public final class FoxieOwnerControl {
 
         var success = this._foxie.getRandom().nextInt(5) == 0;
         if (!success) {
-            this._foxie.level.broadcastEntityEvent(
+            this._foxie.level().broadcastEntityEvent(
                 this._foxie,
                 EntityEvent.TAMING_FAILED
             );
@@ -53,7 +53,7 @@ public final class FoxieOwnerControl {
         this._foxie.tame(player);
         this._foxie.getNavigation().stop();
         this._foxie.aiControl.setCommand(FoxieCommands.Sit);
-        this._foxie.level.broadcastEntityEvent(
+        this._foxie.level().broadcastEntityEvent(
             this._foxie,
             EntityEvent.TAMING_SUCCEEDED
         );
@@ -131,12 +131,7 @@ public final class FoxieOwnerControl {
         if (this._foxie.ownerControl.isTame())
             return false;
 
-        if (entity.getThrower() == null)
-            return false;
-
-        var uuid = entity.getThrower();
-        var player = this._foxie.level.getPlayerByUUID(uuid);
-
+        var player = this.getThrower(entity);
         if (player == null)
             return false;
 
@@ -144,13 +139,25 @@ public final class FoxieOwnerControl {
         return this._foxie.distanceTo(player) < max_range;
     }
 
+    private Player getThrower(ItemEntity entity) {
+        var owner = entity.getOwner();
+
+        Player player = null;
+        if (owner != null) {
+            var uuid = owner.getUUID();
+            player = this._foxie.level().getPlayerByUUID(uuid);
+        }
+
+        return player;
+    }
+
     public void onItemPickup(ItemEntity entity) {
         if (!this._foxie.hungerControl.isYummy(entity.getItem())) return;
         if (this._foxie.ownerControl.isTame()) return;
-        if (entity.getThrower() == null) return;
-        var uuid = entity.getThrower();
-        var player = this._foxie.level.getPlayerByUUID(uuid);
+
+        var player = this.getThrower(entity);
         if (player == null) return;
+
         var max_range = FoxieConstants.STALK_PLAYER_DISTANCE;
         if (this._foxie.distanceTo(player) > max_range) return;
         this.tryTame(player, entity.getItem());

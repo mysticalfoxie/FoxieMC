@@ -18,7 +18,7 @@ public final class EntityHelper {
             .inflate(distance, distance / 2, distance);
 
         var selector = EntitySelector.NO_SPECTATORS;
-        var list = mob.level.getEntitiesOfClass(Player.class, area, selector);
+        var list = mob.level().getEntitiesOfClass(Player.class, area, selector);
 
         return !list.isEmpty();
     }

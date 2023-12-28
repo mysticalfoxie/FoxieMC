@@ -22,7 +22,7 @@ public final class Pathfinder {
         var current = entity.blockPosition();
         var navigation = entity.getNavigation();
         var evaluator = navigation.getNodeEvaluator();
-        var level = entity.level;
+        var level = entity.level();
 
         BlockPos target = null;
         double targetRange = Double.MAX_VALUE;
@@ -89,7 +89,7 @@ public final class Pathfinder {
         for (int i = 0; i < retries; i++) {
             var target = DefaultRandomPos.getPos(entity, xzRange, yRange);
             if (target != null)
-                return new BlockPos(target);
+                return new BlockPos((int)target.x, (int)target.y, (int)target.z);
         }
 
         return null;
@@ -122,7 +122,7 @@ public final class Pathfinder {
         for (int i = 0; i < retries; i++) {
             var target = DefaultRandomPos.getPosAway(mob, xzRange, yRange, vec);
             if (target != null)
-                return new BlockPos(target);
+                return new BlockPos((int)target.x, (int)target.y, (int)target.z);
         }
 
         return null;

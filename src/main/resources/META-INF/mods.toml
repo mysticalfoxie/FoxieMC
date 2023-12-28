@@ -1,10 +1,10 @@
 modLoader = "javafml"
-loaderVersion = "[43,)"
+loaderVersion = "[47,)"
 license = "All rights reserved"
 
 [[mods]]
 modId = "foxiemc"
-version = "0.2.0"
+version = "0.3.0"
 displayName = "FoxieMC"
 authors = "Made with love by mystical foxie"
 description = '''
@@ -16,13 +16,13 @@ It behaves a lot like a fox, but... I dont want to spoil you there. ;p
 [[dependencies.foxiemc]]
 modId = "forge"
 mandatory = true
-versionRange = "[43,)"
+versionRange = "[47,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.foxiemc]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.19.2,1.20)"
+versionRange = "[1.20,1.21)"
 ordering = "NONE"
 side = "BOTH"

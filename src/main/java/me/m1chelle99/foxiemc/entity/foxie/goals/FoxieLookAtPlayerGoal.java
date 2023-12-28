@@ -80,7 +80,7 @@ public class FoxieLookAtPlayerGoal extends Goal {
     }
 
     private void findPlayer() {
-        var level = this._foxie.level;
+        var level = this._foxie.level();
         this.player = level.getNearestPlayer(
             this._context,
             this._foxie,

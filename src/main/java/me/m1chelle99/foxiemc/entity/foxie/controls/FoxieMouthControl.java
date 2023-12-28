@@ -22,7 +22,7 @@ public final class FoxieMouthControl {
 
     // todo: doesn't spit out item except for hunger c;
     private void spitOutItem(ItemStack stack) {
-        if (stack.isEmpty() || this._foxie.level.isClientSide) return;
+        if (stack.isEmpty() || this._foxie.level().isClientSide) return;
 
         var pos = new Vec3(
             this._foxie.getX() + this._foxie.getLookAngle().x,
@@ -30,7 +30,7 @@ public final class FoxieMouthControl {
             this._foxie.getZ() + this._foxie.getLookAngle().z);
 
         _spitItem = new ItemEntity(
-            this._foxie.level,
+            this._foxie.level(),
             pos.x,
             pos.y,
             pos.z,
@@ -41,7 +41,7 @@ public final class FoxieMouthControl {
         _spitItem.setPickUpDelay(40);
 
         this._foxie.playSound(SoundEvents.FOX_SPIT, 1.0F, 1.0F);
-        this._foxie.level.addFreshEntity(_spitItem);
+        this._foxie.level().addFreshEntity(_spitItem);
     }
 
     public void drop() {
@@ -53,14 +53,14 @@ public final class FoxieMouthControl {
 
     public void dropItemStack(ItemStack stack) {
         var item = new ItemEntity(
-            this._foxie.level,
+            this._foxie.level(),
             this._foxie.getX(),
             this._foxie.getY(),
             this._foxie.getZ(),
             stack
         );
 
-        this._foxie.level.addFreshEntity(item);
+        this._foxie.level().addFreshEntity(item);
     }
 
     public void takeItem(@NotNull ItemStack stack) {
@@ -116,7 +116,7 @@ public final class FoxieMouthControl {
 
     public void eatItem() {
         var item = this.getItem();
-        item = item.finishUsingItem(this._foxie.level, this._foxie);
+        item = item.finishUsingItem(this._foxie.level(), this._foxie);
         if (!item.isEmpty()) this.setItem(item);
     }
 
@@ -145,7 +145,7 @@ public final class FoxieMouthControl {
             var instanceX = foxieX + angle.x / 2.0D;
             var instanceZ = foxieZ + angle.z / 2.0D;
 
-            this._foxie.level.addParticle(
+            this._foxie.level().addParticle(
                 particle,
                 instanceX,
                 foxieY,

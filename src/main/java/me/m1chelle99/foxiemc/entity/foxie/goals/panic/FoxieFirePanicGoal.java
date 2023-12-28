@@ -41,14 +41,14 @@ public class FoxieFirePanicGoal extends FoxieAbstractPanicGoal {
 
     public void setWaterAsTarget() {
         var position = this._foxie.blockPosition();
-        var level = this._foxie.level;
+        var level = this._foxie.level();
         var current_block = level.getBlockState(position);
         var collision = current_block.getCollisionShape(level, position);
         if (!collision.isEmpty())
             return;
 
         var match = BlockPos.findClosestMatch(position, 10, 3,
-                x -> this._foxie.level.getFluidState(x).is(FluidTags.WATER));
+                x -> this._foxie.level().getFluidState(x).is(FluidTags.WATER));
         if (match.isEmpty()) return;
 
         this._target = new Vec3(

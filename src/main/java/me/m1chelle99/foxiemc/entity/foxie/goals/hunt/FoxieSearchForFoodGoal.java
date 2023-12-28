@@ -92,8 +92,8 @@ public class FoxieSearchForFoodGoal extends Goal {
         for (var x = boundary.minX; x < boundary.maxX; x++)
             for (var y = boundary.minY; y < boundary.maxY; y++)
                 for (var z = boundary.minZ; z < boundary.maxZ; z++) {
-                    var block = new BlockPos(x, y, z);
-                    var state = this._foxie.level.getBlockState(block);
+                    var block = new BlockPos((int)x, (int)y, (int)z);
+                    var state = this._foxie.level().getBlockState(block);
                     if (!state.is(Blocks.SWEET_BERRY_BUSH))
                         continue;
 
@@ -117,7 +117,7 @@ public class FoxieSearchForFoodGoal extends Goal {
     }
 
     public ItemEntity findFoodItems(AABB boundary) {
-        var entities = this._foxie.level.getEntities(
+        var entities = this._foxie.level().getEntities(
             this._foxie,
             boundary,
             this::isFoodItem);
@@ -147,7 +147,7 @@ public class FoxieSearchForFoodGoal extends Goal {
     }
 
     public LivingEntity findPrey(AABB boundary) {
-        return this._foxie.level.getNearestEntity(
+        return this._foxie.level().getNearestEntity(
             Animal.class,
             this._preyTargetingContext,
             this._foxie,

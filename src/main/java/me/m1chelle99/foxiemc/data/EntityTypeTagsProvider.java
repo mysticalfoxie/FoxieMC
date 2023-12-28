@@ -1,28 +1,22 @@
 package me.m1chelle99.foxiemc.data;
 
-import me.m1chelle99.foxiemc.FoxieMCMod;
 import me.m1chelle99.foxiemc.init.EntityInit;
-import net.minecraft.core.Registry;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.TagsProvider;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
 import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public final class EntityTypeTagsProvider extends TagsProvider<EntityType<?>> {
+import java.util.concurrent.CompletableFuture;
+
+public final class EntityTypeTagsProvider extends net.minecraft.data.tags.EntityTypeTagsProvider {
     public static final String NAME = "foxiemc_entity_type_tags";
 
-    public EntityTypeTagsProvider(
-        DataGenerator generator,
-        @Nullable ExistingFileHelper helper
-    ) {
-        //noinspection deprecation
-        super(generator, Registry.ENTITY_TYPE, FoxieMCMod.ID, helper);
+    public EntityTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId, ExistingFileHelper existingFileHelper) {
+        super(output, lookupProvider, modId, existingFileHelper);
     }
 
-    protected void addTags() {
+    protected void addTags(HolderLookup.@NotNull Provider provider) {
         this
             .tag(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS)
             .add(EntityInit.FOXIE.get());

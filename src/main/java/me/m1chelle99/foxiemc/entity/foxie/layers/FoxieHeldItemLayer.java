@@ -1,14 +1,14 @@
 package me.m1chelle99.foxiemc.entity.foxie.layers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.m1chelle99.foxiemc.client.models.FoxieModel;
 import me.m1chelle99.foxiemc.entity.foxie.Foxie;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
@@ -54,17 +54,17 @@ public final class FoxieHeldItemLayer extends RenderLayer<Foxie, FoxieModel> {
 
         pose.translate(x_translate, y_translate, z_translate);
 
-        pose.mulPose(Vector3f.ZP.rotation(this.getParentModel().head.zRot));
-        pose.mulPose(Vector3f.YP.rotation(this.getParentModel().head.yRot));
-        pose.mulPose(Vector3f.XP.rotation(this.getParentModel().head.xRot));
+        pose.mulPose(Axis.ZP.rotation(this.getParentModel().head.zRot));
+        pose.mulPose(Axis.YP.rotation(this.getParentModel().head.yRot));
+        pose.mulPose(Axis.XP.rotation(this.getParentModel().head.xRot));
 
         if (foxie.aiControl.isSleeping())
             pose.translate(0.6F, 0.1F, -0.3F);
         else pose.translate(0F, -0.1F, -0.5F);
 
-        pose.mulPose(Vector3f.XP.rotationDegrees(90F));
+        pose.mulPose(Axis.XP.rotationDegrees(90F));
         if (foxie.aiControl.isSleeping())
-            pose.mulPose(Vector3f.ZP.rotationDegrees(90F));
+            pose.mulPose(Axis.ZP.rotationDegrees(90F));
 
         var minecraft = Minecraft.getInstance();
         var dispatcher = minecraft.getEntityRenderDispatcher();
@@ -73,7 +73,7 @@ public final class FoxieHeldItemLayer extends RenderLayer<Foxie, FoxieModel> {
         renderer.renderItem(
             foxie,
             item,
-            ItemTransforms.TransformType.GROUND,
+            ItemDisplayContext.GROUND,
             false,
             pose,
             bufferIn,
